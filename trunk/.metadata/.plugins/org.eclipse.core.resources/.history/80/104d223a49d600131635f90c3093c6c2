@@ -1,0 +1,12 @@
+/*
+ * gpio.h
+ *
+ *  Created on: May 7, 2014
+ *      Author: Severin
+ */
+
+
+typedef enum{
+FIX ME
+} port_t;
+

@@ -1,4 +1,4 @@
 activeuserprofiles=SevBase;Team
 eclipse.preferences.version=1
 org.eclipse.rse.systemtype.local.systemType.defaultUserId=Severin
-useridperkey=SevBase.KL46Z_FLASH_PnE U-MultiLink\=Severin;SevBase.KL46Z_FLASH_PnE U-MultiLink Target\=Severin;
+useridperkey=SevBase.Local\=Severin;SevBase.KL46Z_FLASH_PnE U-MultiLink\=Severin;SevBase.KL46Z_FLASH_PnE U-MultiLink Target\=Severin;
