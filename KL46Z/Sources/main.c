@@ -1,6 +1,8 @@
 /*
- * main implementation: use this 'C' sample to create your own application
+ * main.c
  *
+ *  Created on: May 7, 2014
+ *      Author: Severin
  */
 
 
