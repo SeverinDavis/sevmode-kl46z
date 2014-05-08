@@ -6,9 +6,9 @@
  */
 
 typedef enum{
-	input,
-	output	
-} dir_t;
+	
+	
+}
 
 typedef enum{
 	port_A,
