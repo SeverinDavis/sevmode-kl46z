@@ -1,6 +1,6 @@
 #include <gpio.h>
 
-#define PORTX_PCR_BASE 		PORTA_PCR0 
+#define PORTX_PCR_BASE 			PORTA_PCR0 
 
 #define FGPIOX_PDOR_BASE    	FGPIOA_PDOR                    
 #define FGPIOX_PSOR_BASE    	FGPIOA_PSOR            
@@ -21,7 +21,10 @@ void gpio_pin_set_dir(port_t p_port, pin_t p_pin, dir_t p_dir)
 
 void gpio_pin_set_alt(port_t p_port, pin_t p_pin, alt_t p_alt)
 {
-	int * custom_PCR = (int *)(PORTX_PCR_BASE + (p_port * 0x1000) + (p_pin * 0x4));
+	int test = PORTX_PCR_BASE;
+	unsigned int * custom_PCR = (PORTX_PCR_BASE);
+	custom_PCR += (p_port * 0x1000);
+	custom_PCR += (p_pin * 0x4);
 	
 	*custom_PCR &= ~0x700;
 	
