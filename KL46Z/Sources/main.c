@@ -13,9 +13,15 @@
 #include "uc_led.h"
 #include "gpio.h"
 
+void clock_init()
+{
+	unsigned int set_clock= (MCG_C4 & ~0xE0) | 0xA0;
+	MCG_C4 = set_clock;
+}
 
 int main(void)
 {
+	clock_init();
 	int counter = 0;
 	
 	uc_led_all_init();
