@@ -5,7 +5,10 @@
  *      Author: Severin
  */
 
-#include <derivative.h>
+#ifndef GPIO_H_
+#define GPIO_H_
+
+#include "derivative.h"
 
 typedef enum{
 	input,
@@ -74,3 +77,5 @@ void gpio_port_init(port_t, pin_t, alt_t, dir_t);
 int gpio_get_pin_state(port_t, pin_t);
 void gpio_set_pin_state(port_t, pin_t, int);
 void gpio_toggle_pin_state(port_t, pin_t);
+
+#endif /* GPIO_H_ */
