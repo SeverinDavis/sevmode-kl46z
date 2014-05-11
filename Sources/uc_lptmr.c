@@ -8,7 +8,7 @@ void uc_lptmr_init()
 }
 void uc_lptmr_delay(int p_msec)
 {
-	LPTMR0_CMR = p_msec - 1;
+	LPTMR0_CMR = p_msec;
 	LPTMR0_CSR |= 1;
 	while((LPTMR0_CSR & 0x80) == 0){} //spin while compare isn't equal
 	LPTMR0_CSR &= ~1;
