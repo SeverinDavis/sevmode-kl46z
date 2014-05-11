@@ -9,11 +9,10 @@
 #define INT_H_
 
 typedef enum{
-	port_A,
-	port_B,
-	port_C,
-	port_D,
-	port_E,	
+	priority_0,
+	priority_1,
+	priority_2,
+	priority_3,
 } priority_t;
 
 typedef enum{
