@@ -10,7 +10,7 @@
 
 #include "derivative.h"
 
-typedef void (*callback)();
+typedef void (*callback_t)();
 
 typedef enum{
 	priority_0,

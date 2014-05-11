@@ -19,6 +19,6 @@ typedef enum{
 void pit_enable(pit_t);
 void pit_disable(pit_t);
 void pit_init(pit_t, in);
-void pit_set_callback(pit_t, callback);
+void pit_set_callback(pit_t, callback_t);
 
 #endif /* UC_PIT_H_ */
