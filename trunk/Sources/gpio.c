@@ -1,3 +1,10 @@
+/*
+ * gpio.c
+ *
+ *  Created on: May 7, 2014
+ *      Author: Severin
+ */
+
 #include "gpio.h"
 
 #define PORTX_PCR_BASE 			0x40049000
