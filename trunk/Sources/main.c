@@ -12,6 +12,7 @@
 #include "derivative.h" /* include peripheral declarations */
 #include "uc_led.h"
 #include "gpio.h"
+#include "uc_lptmr.h"
 
 void clock_init()
 {
@@ -22,21 +23,14 @@ void clock_init()
 int main(void)
 {
 	clock_init();
-	int counter = 0;
-	
+
 	uc_led_all_init();
+	uc_lptmr_init();
 	
-	uc_led_on(led_red);
-	uc_led_off(led_red);
-	uc_led_on(led_red);
-	
-	uc_led_toggle(led_red);
-	uc_led_toggle(led_red);
-	uc_led_toggle(led_red);
-	
-	for(;;) {	   
-	   	counter++;
+	while(1)
+	{
+		uc_led_toggle(led_green);
+		uc_lptmr_delay(100);
 	}
-	
 	return 0;
 }
