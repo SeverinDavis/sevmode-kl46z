@@ -22,5 +22,9 @@ typedef enum{
 
 void int_init(IRQInterruptIndex, priority_t);
 
+void int_all_unmask();
+
+void int_all_mask();
+
 
 #endif /* INT_H_ */
