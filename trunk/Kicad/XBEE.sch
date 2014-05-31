@@ -34,13 +34,14 @@ LIBS:__batterybarlug
 LIBS:__freedom_x
 LIBS:__xbee-pro
 LIBS:CAR
+LIBS:car_v3-cache
 EELAYER 27 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 1 14
+Sheet 8 14
 Title ""
-Date "30 may 2014"
+Date "31 may 2014"
 Rev ""
 Comp ""
 Comment1 ""
@@ -48,4 +49,67 @@ Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
+$Comp
+L __XBEE-PRO M?
+U 1 1 538988F6
+P 5750 3700
+F 0 "M?" H 5450 4850 50  0000 L BNN
+F 1 "__XBEE-PRO" H 5550 2750 50  0000 L BNN
+F 2 "xbee_r1-XBEE-PRO" H 5850 2900 50  0001 C CNN
+F 3 "~" H 5750 3700 60  0000 C CNN
+	1    5750 3700
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 5389890A
+P 4950 4450
+F 0 "#PWR?" H 4950 4450 30  0001 C CNN
+F 1 "GND" H 4950 4380 30  0001 C CNN
+F 2 "" H 4950 4450 60  0000 C CNN
+F 3 "" H 4950 4450 60  0000 C CNN
+	1    4950 4450
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4950 4450 4950 4350
+$Comp
+L +3.3V #PWR?
+U 1 1 5389891E
+P 4950 2950
+F 0 "#PWR?" H 4950 2910 30  0001 C CNN
+F 1 "+3.3V" H 4950 3060 30  0000 C CNN
+F 2 "" H 4950 2950 60  0000 C CNN
+F 3 "" H 4950 2950 60  0000 C CNN
+	1    4950 2950
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4950 2950 4950 3000
+NoConn ~ 6650 3000
+NoConn ~ 6650 3150
+NoConn ~ 6650 3300
+NoConn ~ 6650 3450
+NoConn ~ 6650 3750
+NoConn ~ 6650 3600
+$Comp
+L +3.3V #PWR?
+U 1 1 53898952
+P 6750 3850
+F 0 "#PWR?" H 6750 3810 30  0001 C CNN
+F 1 "+3.3V" H 6750 3960 30  0000 C CNN
+F 2 "" H 6750 3850 60  0000 C CNN
+F 3 "" H 6750 3850 60  0000 C CNN
+	1    6750 3850
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6750 3850 6750 3900
+Wire Wire Line
+	6750 3900 6650 3900
+NoConn ~ 4950 3750
+NoConn ~ 4950 3900
+NoConn ~ 4950 3450
+NoConn ~ 6650 4200
+NoConn ~ 6650 4350
 $EndSCHEMATC
