@@ -34,13 +34,14 @@ LIBS:__batterybarlug
 LIBS:__freedom_x
 LIBS:__xbee-pro
 LIBS:CAR
+LIBS:car_v3-cache
 EELAYER 27 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 14
 Title ""
-Date "30 may 2014"
+Date "31 may 2014"
 Rev ""
 Comp ""
 Comment1 ""
