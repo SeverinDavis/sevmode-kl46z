@@ -41,7 +41,7 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 6 14
 Title ""
-Date "31 may 2014"
+Date "1 jun 2014"
 Rev ""
 Comp ""
 Comment1 ""
@@ -277,11 +277,11 @@ F 3 "" H 3000 3650 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 Text HLabel 3000 3050 0    60   UnSpc ~ 0
-SDOUT
+LED_SDOUT
 Text GLabel 3000 3450 0    60   UnSpc ~ 0
 OE_b
 Text HLabel 3000 2950 0    60   UnSpc ~ 0
-SDIN
+LED_SDIN
 Text GLabel 2600 3350 0    60   UnSpc ~ 0
 SRCLR_b
 Wire Wire Line
