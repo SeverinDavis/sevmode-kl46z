@@ -123,11 +123,11 @@ XBEE_RX
 Text HLabel 4900 3150 0    60   UnSpc ~ 0
 XBEE_TX
 Wire Wire Line
-	4900 3150 4950 3150
-Wire Wire Line
 	4900 3300 4950 3300
 Wire Wire Line
 	4900 3600 4950 3600
 Wire Wire Line
 	6700 4050 6650 4050
+Wire Wire Line
+	4900 3150 4950 3150
 $EndSCHEMATC
