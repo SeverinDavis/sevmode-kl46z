@@ -233,4 +233,44 @@ F 3 "" H 900 750 60  0000 C CNN
 $EndComp
 Wire Wire Line
 	900  700  900  750 
+Text Label 4700 1950 0    60   ~ 0
+M0_STEP
+Text Label 4700 2450 0    60   ~ 0
+M1_STEP
+Text Label 4700 2950 0    60   ~ 0
+M2_STEP
+Text Label 4700 3450 0    60   ~ 0
+M3_STEP
+Text Label 4700 2050 0    60   ~ 0
+M0_FR
+Text Label 4700 2550 0    60   ~ 0
+M1_FR
+Text Label 4700 3050 0    60   ~ 0
+M2_FR
+Text Label 4700 3550 0    60   ~ 0
+M3_FR
+Wire Wire Line
+	4700 1950 4600 1950
+Wire Wire Line
+	4600 2050 4700 2050
+Wire Wire Line
+	4600 2450 4700 2450
+Wire Wire Line
+	4600 2550 4700 2550
+Wire Wire Line
+	4600 2950 4700 2950
+Wire Wire Line
+	4600 3050 4700 3050
+Wire Wire Line
+	4600 3450 4700 3450
+Wire Wire Line
+	4600 3550 4700 3550
+NoConn ~ 4700 1950
+NoConn ~ 4700 2450
+NoConn ~ 4700 2950
+NoConn ~ 4700 3450
+NoConn ~ 4700 2050
+NoConn ~ 4700 2550
+NoConn ~ 4700 3050
+NoConn ~ 4700 3550
 $EndSCHEMATC
