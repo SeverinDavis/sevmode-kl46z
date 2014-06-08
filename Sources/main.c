@@ -13,6 +13,7 @@
 #include "uc_led.h"
 #include "gpio.h"
 #include "uc_lptmr.h"
+#include "uc_dac.h"
 
 void clock_init()
 {
@@ -22,15 +23,20 @@ void clock_init()
 
 int main(void)
 {
+	
 	clock_init();
-
+	uc_dac_init();
 	uc_led_all_init();
 	uc_lptmr_init();
 	
+	int a = 100;
+	
 	while(1)
 	{
-		uc_led_toggle(led_green);
-		uc_lptmr_delay(100);
+		uc_led_toggle(led_red);
+		uc_dac_set_output(3600);
+		a += 500;
+		uc_lptmr_delay(3000);
 	}
 	return 0;
 }
