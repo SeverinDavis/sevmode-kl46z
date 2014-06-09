@@ -16,7 +16,7 @@ void int_init(IRQInterruptIndex p_vector, priority_t p_priority)
 
 void int_all_unmask()
 {
-	NVIC_ICER = 0xFFFFFFFF;
+	NVIC_ISER = 0xFFFFFFFF;
 }
 
 void int_all_mask()
