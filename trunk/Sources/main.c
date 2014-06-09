@@ -15,6 +15,17 @@
 #include "uc_lptmr.h"
 #include "uc_dac.h"
 #include "uc_pit.h"
+#include "int.h"
+
+void PIT0_CALLBACK()
+{
+	uc_led_toggle(led_green);
+}
+
+void PIT1_CALLBACK()
+{
+	uc_led_toggle(led_red);
+}
 
 void clock_init()
 {
@@ -24,19 +35,28 @@ void clock_init()
 
 int main(void)
 {
-	
+	int_all_mask();
 	clock_init();
 	uc_dac_init();
 	uc_led_all_init();
 	uc_lptmr_init();
 	
-	int a = 100;
-	pit_init(0, priority_1, 0);
+	pit_init(pit_0, priority_1, 1000000, PIT0_CALLBACK);
+	pit_init(pit_1, priority_1, 500000, PIT1_CALLBACK);
+	pit_enable(pit_0);
+	pit_enable(pit_1);
+	int_all_unmask();
+	
+
+	
 	while(1)
 	{
-		uc_led_toggle(led_red);
+
 
 		uc_lptmr_delay(1000);
 	}
 	return 0;
 }
+
+
+

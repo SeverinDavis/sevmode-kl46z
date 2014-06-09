@@ -8,45 +8,72 @@
 #include "uc_pit.h"
 #include "uc_led.h"
 
+static callback_t pit0_callback = 0;
+static callback_t pit1_callback = 0;
+
 void pit_enable(pit_t p_timer)
 {
-	
+	PIT_TCTRL(p_timer) |= 1;
 }
 
 void pit_disable(pit_t p_timer)
 {
-	
+	PIT_TCTRL(p_timer) &= ~(1);
 }
 
-void pit_init(pit_t p_timer, priority_t p_priority, int p_period)
+void pit_init(pit_t p_timer, priority_t p_priority, int p_us_period, callback_t p_callback)
 {
+	//PIT clock gating
 	SIM_SCGC6 |= 1<<23;
-	/*PIT_MCR &= ~(1 << 1);
+
+	//enable PIT
+	PIT_MCR = 0;
+
 	int_init(INT_PIT, p_priority);
-	PIT_TCTRL0 |=0b11;*/
-	
-	// turn on PIT
-	PIT_MCR = 0x00;
-	int_all_unmask();
+
+	pit_set_callback(p_timer, p_callback);
 	NVIC_ICPR |= 1 << ((INT_PIT - 16) % 32);
-	NVIC_ISER |= 1 << ((INT_PIT - 16) % 32);
-	int_init(INT_PIT, p_priority);
-	// Timer 1
-	PIT_LDVAL0 = 24000000; // setup timer 1 for 256000 cycles
-	PIT_TCTRL0 |=0b11;
+	        NVIC_ISER |= 1 << ((INT_PIT - 16) % 32);
+	
+	PIT_LDVAL(p_timer) = 24 * p_us_period; 
+	PIT_TCTRL(p_timer) |= 0b10;
 
 }
 
 void pit_set_callback(pit_t p_timer, callback_t p_callback)
 {
-
+	if(p_timer == pit_0)
+	{
+		pit0_callback = p_callback;
+	}
+	if(p_timer == pit_1)
+	{
+		pit1_callback = p_callback;
+	}
+		
 }
 
 
 //ISR
 void PIT_IRQHandler()
 {
-	PIT_TFLG0 = 1;
+	if(PIT_TFLG0 != 0)
+	{
+		PIT_TFLG0 = 1;
+		if(pit0_callback)
+		{
+			pit0_callback();
+		}
+	}
 	
-	uc_led_toggle(led_green);
+	if(PIT_TFLG1 != 0)
+		{
+			PIT_TFLG1 = 1;
+			if(pit1_callback)
+			{
+				pit1_callback();
+			}
+		}
+	
+
 }

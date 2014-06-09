@@ -21,5 +21,5 @@ void int_all_unmask()
 
 void int_all_mask()
 {
-	NVIC_ISER = 0xFFFFFFFF;
+	NVIC_ICER = 0xFFFFFFFF;
 }
