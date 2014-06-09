@@ -32,9 +32,7 @@ void pit_init(pit_t p_timer, priority_t p_priority, int p_us_period, callback_t 
 	int_init(INT_PIT, p_priority);
 
 	pit_set_callback(p_timer, p_callback);
-	NVIC_ICPR |= 1 << ((INT_PIT - 16) % 32);
-	        NVIC_ISER |= 1 << ((INT_PIT - 16) % 32);
-	
+
 	PIT_LDVAL(p_timer) = 24 * p_us_period; 
 	PIT_TCTRL(p_timer) |= 0b10;
 
