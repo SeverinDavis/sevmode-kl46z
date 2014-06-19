@@ -17,6 +17,7 @@
 #include "uc_pit.h"
 #include "int.h"
 #include "uc_spi.h"
+#include "uc_tpm.h"
 
 void PIT0_CALLBACK()
 {
@@ -36,6 +37,8 @@ void clock_init()
 
 int main(void)
 {
+	uc_tpm_init();
+	/*
 	int_all_mask();
 	clock_init();
 	uc_dac_init();
@@ -47,9 +50,9 @@ int main(void)
 	pit_enable(pit_0);
 	pit_enable(pit_1);
 	int_all_unmask();
-	
+	*/
 	uc_spi_init(spi_1);
-	//uc_spi_send('a');
+
 
 	
 	while(1)

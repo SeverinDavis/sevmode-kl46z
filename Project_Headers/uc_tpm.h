@@ -10,5 +10,7 @@
 
 #include "derivative.h"
 
+void uc_tpm_init();
+
 
 #endif /* UC_TPM_H_ */
