@@ -23,7 +23,7 @@ void uc_spi_init(spi_t p_spi)
 		SPI0_C1 = SPI_C1_MSTR_MASK | SPI_C1_SSOE_MASK;
 		
 		//NEEDS GPIOS FOR CLK, MOSI, AND MISO
-		//I'M TOO LAZY TO FIND THESE RIGHT NOW
+		//I'
 		//gpio_port_init(port_D, pin_5, alt_2, output);
 		//gpio_port_init(port_D, pin_6, alt_2, output);
 		//gpio_port_init(port_D, pin_7, alt_2, output);
@@ -41,7 +41,8 @@ void uc_spi_init(spi_t p_spi)
 		gpio_port_init(port_D, pin_5, alt_2, output);
 		gpio_port_init(port_D, pin_6, alt_2, output);
 		gpio_port_init(port_D, pin_7, alt_2, output);
-
+		gpio_port_init(port_D, pin_4, alt_1, output);
+		gpio_set_pin_state(port_D, pin_4, 0);
 		SPI1_C1 |= 1 << 6;
 		break;
 		
@@ -68,11 +69,13 @@ void uc_spi_send(spi_t p_spi, char p_char)
 		break;
 	
 	case spi_1:
+		gpio_set_pin_state(port_D, pin_4, 1);
 		while(!(0b100000 & SPI1_S))  
 		{} 
 		SPI1_DL = p_char;
 		while(!(0b100000 & SPI1_S))  
 		{}
+		gpio_set_pin_state(port_D, pin_4, 0);
 		break;
 	
 	default:
