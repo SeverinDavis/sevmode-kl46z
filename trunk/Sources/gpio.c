@@ -21,7 +21,7 @@ void gpio_pin_set_dir(port_t p_port, pin_t p_pin, dir_t p_dir)
 {
 	unsigned int * custom_PDDR = (unsigned int *)(FGPIOX_PDDR_BASE + (p_port * 0x40));
 	
-	*custom_PDDR &= 1 << p_pin;
+	*custom_PDDR &= ~(1 << p_pin);
 	
 	*custom_PDDR |= p_dir << p_pin;
 }

@@ -16,6 +16,7 @@
 #include "uc_dac.h"
 #include "uc_pit.h"
 #include "int.h"
+#include "uc_spi.h"
 
 void PIT0_CALLBACK()
 {
@@ -47,13 +48,23 @@ int main(void)
 	pit_enable(pit_1);
 	int_all_unmask();
 	
+	uc_spi_init(spi_1);
+	//uc_spi_send('a');
 
 	
 	while(1)
 	{
 
-
-		uc_lptmr_delay(1000);
+		uc_spi_send(spi_1, 'w');
+		uc_spi_send(spi_1, 'a');
+		uc_spi_send(spi_1, 'f');
+		uc_spi_send(spi_1, 'l');
+		uc_spi_send(spi_1, 'c');
+		uc_spi_send(spi_1, 'o');
+		uc_spi_send(spi_1, 'p');
+		uc_spi_send(spi_1, 't');
+		uc_spi_send(spi_1, 'e');
+		uc_spi_send(spi_1, 'r');
 	}
 	return 0;
 }
