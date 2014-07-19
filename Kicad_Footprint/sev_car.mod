@@ -1,4 +1,4 @@
-PCBNEW-LibModule-V1  7/12/2014 13:52:44
+PCBNEW-LibModule-V1  7/13/2014 10:44:39
 # encoding utf-8
 Units mm
 $INDEX
@@ -8,6 +8,7 @@ POWERDI5
 _RES
 __2P_CONNECTOR
 __4P_CONNECTOR
+__AO4828
 __CAP_1000uF
 __CAP_180p
 __Freedom
@@ -15,9 +16,10 @@ __LUG
 __LV8728
 __POWERDI5
 __SN74HC595
+__XBeePro
 $EndINDEX
 $MODULE CAP_1000uF
-Po 0 0 0 15 53B74784 00000000 ~~
+Po 0 0 0 15 53C2C568 00000000 ~~
 Li CAP_1000uF
 Sc 0
 AR 
@@ -28,14 +30,14 @@ T2 -5 0 1 1 0 0.15 N V 21 N "-"
 T2 5 0 1 1 0 0.15 N V 21 N "+"
 DC 0 0 4.5 4.5 0.15 21
 $PAD
-Sh "1" C 1.5 1.5 0 0 0
+Sh "2" C 1.5 1.5 0 0 0
 Dr 0.7 0 0
 At STD N 00E0FFFF
 Ne 0 ""
 Po -2.5 0
 $EndPAD
 $PAD
-Sh "2" C 1.5 1.5 0 0 0
+Sh "1" C 1.5 1.5 0 0 0
 Dr 0.7 0 0
 At STD N 00E0FFFF
 Ne 0 ""
@@ -381,6 +383,83 @@ Of 0 0 0
 Ro 0 0 0
 $EndSHAPE3D
 $EndMODULE __4P_CONNECTOR
+$MODULE __AO4828
+Po 0 0 0 15 53C1C529 00000000 ~~
+Li __AO4828
+Cd SMT capacitor, 1206
+Sc 0
+AR 
+Op 0 0 0
+T0 -2.5 -3 0.50038 0.50038 0 0.11938 N V 21 N ""
+T1 -3 0 0.50038 0.50038 900 0.11938 N I 21 N "U***"
+T2 0 0 0.75 0.75 0 0.15 N V 21 N "AO4828"
+DS -2.5 -2 2.5 -2 0.15 21
+DS -2.5 2 2.5 2 0.15 21
+DS 2.5 -2 2.5 2 0.15 21
+DS -2.5 -2 -2.5 2 0.15 21
+$PAD
+Sh "3" R 0.7 1.5 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 0.635 2.75
+$EndPAD
+$PAD
+Sh "2" R 0.7 1.5 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -0.635 2.75
+$EndPAD
+$PAD
+Sh "4" R 0.7 1.5 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 1.905 2.75
+$EndPAD
+$PAD
+Sh "1" R 0.7 1.5 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -1.905 2.75
+$EndPAD
+$PAD
+Sh "5" R 0.7 1.5 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -1.905 -2.75
+$EndPAD
+$PAD
+Sh "6" R 0.7 1.5 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -0.635 -2.75
+$EndPAD
+$PAD
+Sh "7" R 0.7 1.5 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 0.635 -2.75
+$EndPAD
+$PAD
+Sh "8" R 0.7 1.5 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 1.905 -2.75
+$EndPAD
+$SHAPE3D
+Na "smd/capacitors/c_1206.wrl"
+Sc 1 1 1
+Of 0 0 0
+Ro 0 0 0
+$EndSHAPE3D
+$EndMODULE __AO4828
 $MODULE __CAP_1000uF
 Po 0 0 0 15 53B74784 00000000 ~~
 Li __CAP_1000uF
@@ -1298,4 +1377,161 @@ Ne 0 ""
 Po -4.445 -4.7
 $EndPAD
 $EndMODULE __SN74HC595
+$MODULE __XBeePro
+Po 0 0 0 15 53C1E247 00000000 ~~
+Li __XBeePro
+Sc 0
+AR 
+Op 0 0 0
+T0 0 -15.24 1 1 0 0.15 N V 21 N ""
+T1 0 19.05 1 1 0 0.15 N V 21 N "M**"
+T2 5.08 5.08 2 2 0 0.5 N V 21 I "PRO"
+T2 0 0 5 5 0 1 N V 21 I "XBee"
+DS 3.81 -16.51 -3.81 -16.51 0.15 21
+DS 12.7 -10.16 3.81 -16.51 0.15 21
+DS -12.7 -10.16 -3.81 -16.51 0.15 21
+DS -12.7 16.51 -12.7 -10.16 0.15 21
+DS 12.7 16.51 -12.7 16.51 0.15 21
+DS 12.7 -10.16 12.7 16.51 0.15 21
+$PAD
+Sh "1" C 1.5 1.5 0 0 0
+Dr 0.7 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po -11 -9
+$EndPAD
+$PAD
+Sh "2" C 1.5 1.5 0 0 0
+Dr 0.7 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po -11 -7
+$EndPAD
+$PAD
+Sh "3" C 1.5 1.5 0 0 0
+Dr 0.7 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po -11 -5
+$EndPAD
+$PAD
+Sh "4" C 1.5 1.5 0 0 0
+Dr 0.7 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po -11 -3
+$EndPAD
+$PAD
+Sh "5" C 1.5 1.5 0 0 0
+Dr 0.7 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po -11 -1
+$EndPAD
+$PAD
+Sh "6" C 1.5 1.5 0 0 0
+Dr 0.7 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po -11 1
+$EndPAD
+$PAD
+Sh "7" C 1.5 1.5 0 0 0
+Dr 0.7 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po -11 3
+$EndPAD
+$PAD
+Sh "8" C 1.5 1.5 0 0 0
+Dr 0.7 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po -11 5
+$EndPAD
+$PAD
+Sh "9" C 1.5 1.5 0 0 0
+Dr 0.7 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po -11 7
+$EndPAD
+$PAD
+Sh "10" C 1.5 1.5 0 0 0
+Dr 0.7 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po -11 9
+$EndPAD
+$PAD
+Sh "11" C 1.5 1.5 0 0 0
+Dr 0.7 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po 11 9
+$EndPAD
+$PAD
+Sh "12" C 1.5 1.5 0 0 0
+Dr 0.7 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po 11 7
+$EndPAD
+$PAD
+Sh "13" C 1.5 1.5 0 0 0
+Dr 0.7 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po 11 5
+$EndPAD
+$PAD
+Sh "14" C 1.5 1.5 0 0 0
+Dr 0.7 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po 11 3
+$EndPAD
+$PAD
+Sh "15" C 1.5 1.5 0 0 0
+Dr 0.7 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po 11 1
+$EndPAD
+$PAD
+Sh "16" C 1.5 1.5 0 0 0
+Dr 0.7 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po 11 -1
+$EndPAD
+$PAD
+Sh "17" C 1.5 1.5 0 0 0
+Dr 0.7 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po 11 -3
+$EndPAD
+$PAD
+Sh "18" C 1.5 1.5 0 0 0
+Dr 0.7 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po 11 -5
+$EndPAD
+$PAD
+Sh "19" C 1.5 1.5 0 0 0
+Dr 0.7 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po 11 -7
+$EndPAD
+$PAD
+Sh "20" C 1.5 1.5 0 0 0
+Dr 0.7 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po 11 -9
+$EndPAD
+$EndMODULE __XBeePro
 $EndLIBRARY
