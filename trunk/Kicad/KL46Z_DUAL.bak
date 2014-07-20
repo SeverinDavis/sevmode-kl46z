@@ -29,11 +29,6 @@ LIBS:opto
 LIBS:atmel
 LIBS:contrib
 LIBS:valves
-LIBS:___power_diode
-LIBS:__batterybarlug
-LIBS:__freedom_x
-LIBS:__xbee-pro
-LIBS:CAR
 LIBS:car_v3-cache
 EELAYER 27 0
 EELAYER END
@@ -41,7 +36,7 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 11 15
 Title ""
-Date "8 jun 2014"
+Date "13 jul 2014"
 Rev ""
 Comp ""
 Comment1 ""
@@ -525,8 +520,6 @@ Text HLabel 10450 2300 2    60   UnSpc ~ 0
 X_ON
 Text HLabel 10450 2400 2    60   UnSpc ~ 0
 X_RESET_b
-Text Label 5250 4450 2    60   ~ 0
-E6
 Text Label 5250 5350 2    60   ~ 0
 DAC0_OUT
 Text HLabel 10450 2600 2    60   UnSpc ~ 0
@@ -738,8 +731,6 @@ Wire Wire Line
 Wire Wire Line
 	5250 4550 5800 4550
 Wire Wire Line
-	5250 4450 5800 4450
-Wire Wire Line
 	5250 4350 5800 4350
 Wire Wire Line
 	5250 4250 5800 4250
@@ -859,4 +850,6 @@ Wire Wire Line
 	10350 3000 10450 3000
 Wire Wire Line
 	10350 3100 10450 3100
+Wire Wire Line
+	5800 4450 5600 4450
 $EndSCHEMATC

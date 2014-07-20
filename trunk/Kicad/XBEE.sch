@@ -29,11 +29,6 @@ LIBS:opto
 LIBS:atmel
 LIBS:contrib
 LIBS:valves
-LIBS:___power_diode
-LIBS:__batterybarlug
-LIBS:__freedom_x
-LIBS:__xbee-pro
-LIBS:CAR
 LIBS:car_v3-cache
 EELAYER 27 0
 EELAYER END
@@ -41,7 +36,7 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 4 15
 Title ""
-Date "8 jun 2014"
+Date "13 jul 2014"
 Rev ""
 Comp ""
 Comment1 ""

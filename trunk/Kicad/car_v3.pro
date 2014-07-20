@@ -1,11 +1,6 @@
-update=6/7/2014 23:24:39
+update=7/13/2014 10:28:53
 version=1
 last_client=eeschema
-[cvpcb]
-version=1
-NetIExt=net
-[cvpcb/libraries]
-EquName1=devcms
 [pcbnew]
 version=1
 LastNetListRead=
@@ -26,7 +21,6 @@ DrawSegmentWidth=0.200000000000
 BoardOutlineThickness=0.100000000000
 ModuleOutlineThickness=0.150000000000
 [pcbnew/libraries]
-LibDir=
 LibName1=sockets
 LibName2=connect
 LibName3=discret
@@ -43,8 +37,15 @@ LibName13=led
 LibName14=dip_sockets
 LibName15=pga_sockets
 LibName16=valves
+LibName17=E:/SEV/DATA/Documents/Project/Kicad_Footprint/sev_car
+LibDir=
 [general]
 version=1
+[cvpcb]
+version=1
+NetIExt=net
+[cvpcb/libraries]
+EquName1=devcms
 [eeschema]
 version=1
 LibDir=
@@ -84,8 +85,3 @@ LibName27=opto
 LibName28=atmel
 LibName29=contrib
 LibName30=valves
-LibName31=C:/Users/Severin/Desktop/Project/KicadLibsAndStuff/___power_diode
-LibName32=C:/Users/Severin/Desktop/Project/KicadLibsAndStuff/__batterybarlug
-LibName33=C:/Users/Severin/Desktop/Project/KicadLibsAndStuff/__freedom_x
-LibName34=C:/Users/Severin/Desktop/Project/KicadLibsAndStuff/__xbee-pro
-LibName35=C:/Users/Severin/Desktop/Project/KicadLibsAndStuff/CAR

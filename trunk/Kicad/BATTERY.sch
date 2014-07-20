@@ -29,19 +29,14 @@ LIBS:opto
 LIBS:atmel
 LIBS:contrib
 LIBS:valves
-LIBS:___power_diode
-LIBS:__batterybarlug
-LIBS:__freedom_x
-LIBS:__xbee-pro
-LIBS:CAR
 LIBS:car_v3-cache
 EELAYER 27 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 10 15
+Sheet 9 15
 Title ""
-Date "8 jun 2014"
+Date "13 jul 2014"
 Rev ""
 Comp ""
 Comment1 ""
@@ -96,7 +91,7 @@ AR Path="/5387FE00/538800B9" Ref="D4"  Part="1"
 AR Path="/5387FE16/538800B9" Ref="D5"  Part="1" 
 AR Path="/5387FE2E/538800B9" Ref="D6"  Part="1" 
 F 0 "D6" H 5900 3650 40  0000 C CNN
-F 1 "___POWER_DIODE" H 5900 3450 40  0000 C CNN
+F 1 "POWER_DIODE" H 5900 3450 40  0000 C CNN
 F 2 "~" H 5900 3550 60  0000 C CNN
 F 3 "~" H 5900 3550 60  0000 C CNN
 	1    5900 3550
