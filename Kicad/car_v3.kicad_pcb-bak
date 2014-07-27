@@ -351,7 +351,7 @@
   )
 
   (module _RES (layer B.Cu) (tedit 53B8BF83) (tstamp 53C20DDE)
-    (at 254 173 180)
+    (at 247.5 173 180)
     (descr "SMT capacitor, 1206")
     (path /5387F9D3/53880BEC)
     (fp_text reference R6 (at 0 3.5 180) (layer B.SilkS)
@@ -526,7 +526,7 @@
   )
 
   (module _RES (layer B.Cu) (tedit 53B8BF83) (tstamp 53C20E08)
-    (at 254 181 180)
+    (at 247.5 181 180)
     (descr "SMT capacitor, 1206")
     (path /5387F9D3/53880BF8)
     (fp_text reference R8 (at 0 3.5 180) (layer B.SilkS)
@@ -551,7 +551,7 @@
   )
 
   (module _RES (layer B.Cu) (tedit 53B8BF83) (tstamp 53C20E0E)
-    (at 254 177 180)
+    (at 247.5 177 180)
     (descr "SMT capacitor, 1206")
     (path /5387F9D3/53880BF2)
     (fp_text reference R7 (at 0 3.5 180) (layer B.SilkS)
@@ -576,7 +576,7 @@
   )
 
   (module _RES (layer B.Cu) (tedit 53B8BF83) (tstamp 53C20E14)
-    (at 105.5 181)
+    (at 112 181)
     (descr "SMT capacitor, 1206")
     (path /539441D7/53880A79)
     (fp_text reference R15 (at 0 3.5) (layer B.SilkS)
@@ -601,7 +601,7 @@
   )
 
   (module _RES (layer B.Cu) (tedit 53B8BF83) (tstamp 53C20E1A)
-    (at 254 37 180)
+    (at 247.5 37 180)
     (descr "SMT capacitor, 1206")
     (path /5387F9D3/53880A85)
     (fp_text reference R5 (at 0 3.5 180) (layer B.SilkS)
@@ -626,7 +626,7 @@
   )
 
   (module _RES (layer B.Cu) (tedit 53B8BF83) (tstamp 53CAABC5)
-    (at 254 29 180)
+    (at 247.5 29 180)
     (descr "SMT capacitor, 1206")
     (path /5387F9D3/53880A79)
     (fp_text reference R3 (at 0 3.5 180) (layer B.SilkS)
@@ -651,7 +651,7 @@
   )
 
   (module _RES (layer B.Cu) (tedit 53B8BF83) (tstamp 53C20E26)
-    (at 105.5 177)
+    (at 112 177)
     (descr "SMT capacitor, 1206")
     (path /539441D7/53880A7F)
     (fp_text reference R16 (at 0 3.5) (layer B.SilkS)
@@ -726,7 +726,7 @@
   )
 
   (module _RES (layer B.Cu) (tedit 53B8BF83) (tstamp 53C20E38)
-    (at 105.5 173)
+    (at 112 173)
     (descr "SMT capacitor, 1206")
     (path /539441D7/53880A85)
     (fp_text reference R17 (at 0 3.5) (layer B.SilkS)
@@ -751,7 +751,7 @@
   )
 
   (module _RES (layer B.Cu) (tedit 53B8BF83) (tstamp 53C20E3E)
-    (at 106 29)
+    (at 112.5 29)
     (descr "SMT capacitor, 1206")
     (path /539441D7/53880BF8)
     (fp_text reference R20 (at 0 3.5) (layer B.SilkS)
@@ -776,7 +776,7 @@
   )
 
   (module _RES (layer B.Cu) (tedit 53B8BF83) (tstamp 53C20E44)
-    (at 106 33)
+    (at 112.5 33)
     (descr "SMT capacitor, 1206")
     (path /539441D7/53880BF2)
     (fp_text reference R19 (at 0 3.5) (layer B.SilkS)
@@ -801,7 +801,7 @@
   )
 
   (module _RES (layer B.Cu) (tedit 53B8BF83) (tstamp 53C20E4A)
-    (at 106 37)
+    (at 112.5 37)
     (descr "SMT capacitor, 1206")
     (path /539441D7/53880BEC)
     (fp_text reference R18 (at 0 3.5) (layer B.SilkS)
@@ -826,7 +826,7 @@
   )
 
   (module _RES (layer B.Cu) (tedit 53B8BF83) (tstamp 53C20E50)
-    (at 254 33 180)
+    (at 247.5 33 180)
     (descr "SMT capacitor, 1206")
     (path /5387F9D3/53880A7F)
     (fp_text reference R4 (at 0 3.5 180) (layer B.SilkS)
@@ -851,7 +851,7 @@
   )
 
   (module __XBeePro (layer F.Cu) (tedit 53CAFB5D) (tstamp 53C20E70)
-    (at 358.5 185.5)
+    (at 180 56.5)
     (path /5387FD7B/538988F6)
     (fp_text reference M1 (at 0 -15.24) (layer F.SilkS)
       (effects (font (size 1 1) (thickness 0.15)))
@@ -1019,7 +1019,7 @@
   )
 
   (module __SN74HC595 (layer F.Cu) (tedit 53C1A018) (tstamp 53C20EA2)
-    (at 10.5 118 270)
+    (at 186 97 270)
     (path /539441D7/53880946)
     (fp_text reference U13 (at 7 0 360) (layer F.SilkS)
       (effects (font (size 1 1) (thickness 0.15)))
@@ -1174,7 +1174,7 @@
   )
 
   (module __SN74HC595 (layer F.Cu) (tedit 53C1A018) (tstamp 53C20ED4)
-    (at 58 118 90)
+    (at 173 119 90)
     (path /5387F9D3/53880946)
     (fp_text reference U3 (at 7 0 180) (layer F.SilkS)
       (effects (font (size 1 1) (thickness 0.15)))
@@ -1407,7 +1407,7 @@
   )
 
   (module __POWERDI5 (layer F.Cu) (tedit 53B8AE40) (tstamp 53C20F0C)
-    (at 160 21.5 90)
+    (at 176 28 90)
     (descr "SMT capacitor, 1206")
     (path /5387FE00/538800B9)
     (fp_text reference D4 (at -2.5 -3 180) (layer F.SilkS)
@@ -1432,7 +1432,7 @@
   )
 
   (module __POWERDI5 (layer F.Cu) (tedit 53B8AE40) (tstamp 53CB138E)
-    (at 141 188.5 90)
+    (at 132 188.5 90)
     (descr "SMT capacitor, 1206")
     (path /5387FE16/538800B9)
     (fp_text reference D5 (at -2.5 -3 180) (layer F.SilkS)
@@ -1457,7 +1457,7 @@
   )
 
   (module __POWERDI5 (layer F.Cu) (tedit 53B8AE40) (tstamp 53C20F18)
-    (at 180 188.5 90)
+    (at 220 188.5 90)
     (descr "SMT capacitor, 1206")
     (path /5387FDE3/538800B9)
     (fp_text reference D3 (at -2.5 -3 180) (layer F.SilkS)
@@ -1482,7 +1482,7 @@
   )
 
   (module __POWERDI5 (layer F.Cu) (tedit 53B8AE40) (tstamp 53C20F1E)
-    (at 177 21.5 90)
+    (at 220 28 90)
     (descr "SMT capacitor, 1206")
     (path /5387FE2E/538800B9)
     (fp_text reference D6 (at -2.5 -3 180) (layer F.SilkS)
@@ -1507,7 +1507,7 @@
   )
 
   (module __POWERDI5 (layer F.Cu) (tedit 53B8AE40) (tstamp 53C20F24)
-    (at 143.5 21.5 90)
+    (at 132 28 90)
     (descr "SMT capacitor, 1206")
     (path /5387FDCE/538800B9)
     (fp_text reference D2 (at -2.5 -3 180) (layer F.SilkS)
@@ -1532,7 +1532,7 @@
   )
 
   (module __POWERDI5 (layer F.Cu) (tedit 53B8AE40) (tstamp 53CB1376)
-    (at 162.5 188.5 90)
+    (at 176 188.5 90)
     (descr "SMT capacitor, 1206")
     (path /5387FDA2/538800B9)
     (fp_text reference D1 (at -2.5 -3 180) (layer F.SilkS)
@@ -2025,16 +2025,16 @@
   )
 
   (module __LUG (layer F.Cu) (tedit 53C180E8) (tstamp 53C20FBB)
-    (at 118.5 169.5 45)
+    (at 125 161.5 225)
     (descr "SMT capacitor, 1206")
     (path /5393B696/538B71FB)
-    (fp_text reference L8 (at 0 -3.5 45) (layer F.SilkS)
+    (fp_text reference L8 (at 0 -3.5 225) (layer F.SilkS)
       (effects (font (size 0.50038 0.50038) (thickness 0.11938)))
     )
-    (fp_text value LUG (at 0 -3 45) (layer F.SilkS) hide
+    (fp_text value LUG (at 0 -3 225) (layer F.SilkS) hide
       (effects (font (size 0.50038 0.50038) (thickness 0.11938)))
     )
-    (pad 1 thru_hole rect (at 0 0 45) (size 5 5) (drill 1.1)
+    (pad 1 thru_hole rect (at 0 0 225) (size 5 5) (drill 1.1)
       (layers *.Cu *.Mask F.SilkS)
       (net 32 N-00000136)
     )
@@ -2088,7 +2088,7 @@
   )
 
   (module __LUG (layer F.Cu) (tedit 53C180E8) (tstamp 53C20FCA)
-    (at 173 27.5 345)
+    (at 216 34 345)
     (descr "SMT capacitor, 1206")
     (path /5387FE2E/538B729A)
     (fp_text reference L7 (at 0 -3.5 345) (layer F.SilkS)
@@ -2109,7 +2109,7 @@
   )
 
   (module __LUG (layer F.Cu) (tedit 53C180E8) (tstamp 53C20FCF)
-    (at 118.5 40.5 45)
+    (at 125 40.5 45)
     (descr "SMT capacitor, 1206")
     (path /5387F799/538B71FB)
     (fp_text reference L1 (at 0 -3.5 45) (layer F.SilkS)
@@ -2130,7 +2130,7 @@
   )
 
   (module __LUG (layer F.Cu) (tedit 53C180E8) (tstamp 53CB136F)
-    (at 158.5 183.5)
+    (at 172 183.5)
     (descr "SMT capacitor, 1206")
     (path /5387FDA2/538B729A)
     (fp_text reference L2 (at 0 -3.5) (layer F.SilkS)
@@ -2151,7 +2151,7 @@
   )
 
   (module __LUG (layer F.Cu) (tedit 53C180E8) (tstamp 53C20FD9)
-    (at 139.5 27.5 15)
+    (at 127.5 34 15)
     (descr "SMT capacitor, 1206")
     (path /5387FDCE/538B729A)
     (fp_text reference L3 (at 0 -3.5 15) (layer F.SilkS)
@@ -2172,7 +2172,7 @@
   )
 
   (module __LUG (layer F.Cu) (tedit 53C180E8) (tstamp 53C20FDE)
-    (at 176 182.5 15)
+    (at 216 182.5 15)
     (descr "SMT capacitor, 1206")
     (path /5387FDE3/538B729A)
     (fp_text reference L4 (at 0 -3.5 15) (layer F.SilkS)
@@ -2193,7 +2193,7 @@
   )
 
   (module __LUG (layer F.Cu) (tedit 53C180E8) (tstamp 53C20FE3)
-    (at 156 26.5)
+    (at 172 33)
     (descr "SMT capacitor, 1206")
     (path /5387FE00/538B729A)
     (fp_text reference L5 (at 0 -3.5) (layer F.SilkS)
@@ -2214,7 +2214,7 @@
   )
 
   (module __LUG (layer F.Cu) (tedit 53C180E8) (tstamp 53CB1387)
-    (at 137 182.5 345)
+    (at 128 182.5 345)
     (descr "SMT capacitor, 1206")
     (path /5387FE16/538B729A)
     (fp_text reference L6 (at 0 -3.5 345) (layer F.SilkS)
@@ -2235,7 +2235,7 @@
   )
 
   (module __Freedom (layer F.Cu) (tedit 53B8ABEA) (tstamp 53D529D5)
-    (at 336 88.5 90)
+    (at 179.5 131 90)
     (path /538A82BA/538B33AD)
     (fp_text reference J11 (at 0 -13.97 90) (layer F.SilkS)
       (effects (font (size 2.54 2.54) (thickness 0.15)))
@@ -2610,7 +2610,7 @@
   )
 
   (module __AO4828 (layer F.Cu) (tedit 53C1C529) (tstamp 53C21103)
-    (at -3.5 112 90)
+    (at 171 91 90)
     (descr "SMT capacitor, 1206")
     (path /539441D7/538812F1)
     (fp_text reference U16 (at -2.5 -3 90) (layer F.SilkS)
@@ -2666,7 +2666,7 @@
   )
 
   (module __AO4828 (layer F.Cu) (tedit 53C1C529) (tstamp 53CACB3C)
-    (at 72.5 112 270)
+    (at 188 113.5 270)
     (descr "SMT capacitor, 1206")
     (path /5387F9D3/538812D6)
     (fp_text reference U4 (at -2.5 -3 270) (layer F.SilkS)
@@ -2722,7 +2722,7 @@
   )
 
   (module __AO4828 (layer F.Cu) (tedit 53C1C529) (tstamp 53C21125)
-    (at 72.5 118 270)
+    (at 188 119.5 270)
     (descr "SMT capacitor, 1206")
     (path /5387F9D3/53881290)
     (fp_text reference U5 (at -2.5 -3 270) (layer F.SilkS)
@@ -2778,7 +2778,7 @@
   )
 
   (module __AO4828 (layer F.Cu) (tedit 53C1C529) (tstamp 53C21136)
-    (at -3.5 118 90)
+    (at 171 97 90)
     (descr "SMT capacitor, 1206")
     (path /539441D7/53881290)
     (fp_text reference U15 (at -2.5 -3 90) (layer F.SilkS)
@@ -2834,7 +2834,7 @@
   )
 
   (module __AO4828 (layer F.Cu) (tedit 53CAF967) (tstamp 53C21147)
-    (at -3.5 124 90)
+    (at 171 103 90)
     (descr "SMT capacitor, 1206")
     (path /539441D7/538812D6)
     (fp_text reference U14 (at -2.5 -3 90) (layer F.SilkS)
@@ -2890,7 +2890,7 @@
   )
 
   (module __AO4828 (layer F.Cu) (tedit 53C2D020) (tstamp 53C21158)
-    (at 72.5 124 270)
+    (at 188 125.5 270)
     (descr "SMT capacitor, 1206")
     (path /5387F9D3/538812F1)
     (fp_text reference U6 (at -2.5 -3 270) (layer F.SilkS)
@@ -2946,7 +2946,7 @@
   )
 
   (module __4P_CONNECTOR (layer F.Cu) (tedit 53C17576) (tstamp 53CAFC98)
-    (at 246.5 121 90)
+    (at 240.5 121.5 90)
     (descr "SMT capacitor, 1206")
     (path /5393E5B4/538A7481)
     (fp_text reference J14 (at -2.5 -3 90) (layer F.SilkS)
@@ -2983,7 +2983,7 @@
   )
 
   (module __4P_CONNECTOR (layer F.Cu) (tedit 53C17576) (tstamp 53C21170)
-    (at 113.5 177 270)
+    (at 120 177 270)
     (descr "SMT capacitor, 1206")
     (path /539441D7/53880A57)
     (fp_text reference J15 (at -2.5 -3 270) (layer F.SilkS)
@@ -3020,7 +3020,7 @@
   )
 
   (module __4P_CONNECTOR (layer F.Cu) (tedit 53C17576) (tstamp 53D534EC)
-    (at 246.5 177 90)
+    (at 240 177 90)
     (descr "SMT capacitor, 1206")
     (path /5387F9D3/53880BE6)
     (fp_text reference J3 (at -2.5 -3 90) (layer F.SilkS)
@@ -3057,7 +3057,7 @@
   )
 
   (module __4P_CONNECTOR (layer F.Cu) (tedit 53C17576) (tstamp 53CB1A67)
-    (at 246.5 33 90)
+    (at 240 33 90)
     (descr "SMT capacitor, 1206")
     (path /5387F9D3/53880A57)
     (fp_text reference J2 (at -2.5 -3 90) (layer F.SilkS)
@@ -3094,7 +3094,7 @@
   )
 
   (module __4P_CONNECTOR (layer F.Cu) (tedit 53C17576) (tstamp 53CB0D8D)
-    (at 246.5 89 90)
+    (at 240 89 90)
     (descr "SMT capacitor, 1206")
     (path /5393E24C/538A7481)
     (fp_text reference J13 (at -2.5 -3 90) (layer F.SilkS)
@@ -3131,7 +3131,7 @@
   )
 
   (module __4P_CONNECTOR (layer F.Cu) (tedit 53C17576) (tstamp 53C211A0)
-    (at 113.5 33 270)
+    (at 120 33 270)
     (descr "SMT capacitor, 1206")
     (path /539441D7/53880BE6)
     (fp_text reference J16 (at -2.5 -3 270) (layer F.SilkS)
@@ -3168,7 +3168,7 @@
   )
 
   (module __4P_CONNECTOR (layer F.Cu) (tedit 53C17576) (tstamp 53C211AC)
-    (at 113.5 89 270)
+    (at 120 89 270)
     (descr "SMT capacitor, 1206")
     (path /5387F799/538A7481)
     (fp_text reference J1 (at -2.5 -3 270) (layer F.SilkS)
@@ -3205,7 +3205,7 @@
   )
 
   (module __4P_CONNECTOR (layer F.Cu) (tedit 53C17576) (tstamp 53C211B8)
-    (at 113.5 121 270)
+    (at 120 121 270)
     (descr "SMT capacitor, 1206")
     (path /5393B696/538A7481)
     (fp_text reference J12 (at -2.5 -3 270) (layer F.SilkS)
@@ -3242,7 +3242,7 @@
   )
 
   (module __2P_CONNECTOR (layer F.Cu) (tedit 53C17721) (tstamp 53CB1381)
-    (at 166.5 186.5)
+    (at 180 180)
     (descr "SMT capacitor, 1206")
     (path /5387FDA2/53880043)
     (fp_text reference J4 (at -2.5 -3) (layer F.SilkS)
@@ -3271,7 +3271,7 @@
   )
 
   (module __2P_CONNECTOR (layer F.Cu) (tedit 53C17721) (tstamp 53C211CC)
-    (at 147.5 23.5 180)
+    (at 136 30 180)
     (descr "SMT capacitor, 1206")
     (path /5387FDCE/53880043)
     (fp_text reference J5 (at -2.5 -3 180) (layer F.SilkS)
@@ -3300,7 +3300,7 @@
   )
 
   (module __2P_CONNECTOR (layer F.Cu) (tedit 53C17721) (tstamp 53C211D6)
-    (at 184 186.5)
+    (at 224 180)
     (descr "SMT capacitor, 1206")
     (path /5387FDE3/53880043)
     (fp_text reference J6 (at -2.5 -3) (layer F.SilkS)
@@ -3329,7 +3329,7 @@
   )
 
   (module __2P_CONNECTOR (layer F.Cu) (tedit 53C17721) (tstamp 53C211E0)
-    (at 164 23.5 180)
+    (at 180 30 180)
     (descr "SMT capacitor, 1206")
     (path /5387FE00/53880043)
     (fp_text reference J7 (at -2.5 -3 180) (layer F.SilkS)
@@ -3358,7 +3358,7 @@
   )
 
   (module __2P_CONNECTOR (layer F.Cu) (tedit 53C17721) (tstamp 53CB1399)
-    (at 145 186.5)
+    (at 136 180)
     (descr "SMT capacitor, 1206")
     (path /5387FE16/53880043)
     (fp_text reference J8 (at -2.5 -3) (layer F.SilkS)
@@ -3387,7 +3387,7 @@
   )
 
   (module __2P_CONNECTOR (layer F.Cu) (tedit 53C17721) (tstamp 53C211F4)
-    (at 181 23.5 180)
+    (at 224 30 180)
     (descr "SMT capacitor, 1206")
     (path /5387FE2E/53880043)
     (fp_text reference J9 (at -2.5 -3 180) (layer F.SilkS)
