@@ -1,4 +1,4 @@
-PCBNEW-LibModule-V1  7/13/2014 10:44:39
+PCBNEW-LibModule-V1  8/8/2014 21:22:25
 # encoding utf-8
 Units mm
 $INDEX
@@ -17,6 +17,7 @@ __LV8728
 __POWERDI5
 __SN74HC595
 __XBeePro
+__m3
 $EndINDEX
 $MODULE CAP_1000uF
 Po 0 0 0 15 53C2C568 00000000 ~~
@@ -1534,4 +1535,20 @@ Ne 0 ""
 Po 11 -9
 $EndPAD
 $EndMODULE __XBeePro
+$MODULE __m3
+Po 0 0 0 15 53E5A1F5 00000000 ~~
+Li __m3
+Sc 0
+AR 
+Op 0 0 0
+T0 0 -3 1 1 0 0.15 N V 21 N "m3"
+T1 2.5 5.5 1 1 0 0.15 N V 21 N ""
+$PAD
+Sh "2" C 3.7 3.7 0 0 0
+Dr 3.6 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po 0 0
+$EndPAD
+$EndMODULE __m3
 $EndLIBRARY
