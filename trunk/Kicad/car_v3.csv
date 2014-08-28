@@ -1,0 +1,17 @@
+"Id";"Designator";"Package";"Quantity";"Designation";"Supplier and ref";
+1;"R6,R15,R3,R18";"_RES";4;"300";;;
+2;"R12,R11,R10,R9,R14,R13,R2,R1";"_RES";8;"0.27";;;
+3;"R8,R7,R5,R16,R17,R20,R19,R4";"_RES";8;"249";;;
+4;"M1";"__XBeePro";1;"XBEE";;;
+5;"U7,U13,U11,U3,U9,U1";"__SN74HC595";6;"SN74HC595";;;
+6;"D4,D5,D3,D6,D2,D1";"__POWERDI5";6;"POWER_DIODE";;;
+7;"U2,U8,U10,U12";"__LV8728";4;"LV8727";;;
+8;"L8,L9,L10,L7,L1,L2,L3,L4,L5,L6";"__LUG";10;"LUG";;;
+9;"J11";"__Freedom";1;"FRDM_KL46Z";;;
+10;"C4,C2,C6,C8";"__CAP_180p";4;"180p";;;
+11;"U16,U4,U5,U15,U14,U6";"__AO4828";6;"AO4828";;;
+12;"J14,J13,J1,J12";"__4P_CONNECTOR";4;"CONN_MOTOR";;;
+13;"J15,J3,J2,J16";"__4P_CONNECTOR";4;"CONN_LED";;;
+14;"J4,J5,J6,J7,J8,J9";"__2P_CONNECTOR";6;"CONN2";;;
+15;"C7,C3,C1,C5";"CAP_1000uF";4;"1000u";;;
+16;"m3,m3,m3,m3,m3,m3";"__m3";6;"";;;
