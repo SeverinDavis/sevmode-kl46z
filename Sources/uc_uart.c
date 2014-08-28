@@ -1,4 +1,4 @@
-#include "uc_uart.c"
+#include "uc_uart.h"
 
 void uc_uart_init()
 {
