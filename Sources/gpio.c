@@ -48,9 +48,9 @@ void gpio_port_init(port_t p_port, pin_t p_pin, alt_t p_alt, dir_t p_dir)
 
 int gpio_get_pin_state(port_t p_port, pin_t p_pin)
 {
-	unsigned int * custom_PDOR = (unsigned int *)(FGPIOX_PDOR_BASE + (p_port * 0x40));
+	unsigned int * custom_PDIR = (unsigned int *)(FGPIOX_PDIR_BASE + (p_port * 0x40));
 			
-	return (*custom_PDOR >> p_pin) & 1;
+	return (*custom_PDIR >> p_pin) & 1;
 }
 
 
