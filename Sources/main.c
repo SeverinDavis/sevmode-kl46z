@@ -36,26 +36,18 @@ void clock_init()
 	MCG_C4 = set_clock;
 }
 
+void init()
+{
+	clock_init();
+	
+	
+}
+
 int main(void)
 {
-	uc_led_all_init();
-	
-	uc_sw_init(switch_1);
+	init();
 	while(1)
-	{
-		if(uc_sw_poll_switch1())
-		{
-			uc_led_on(led_red);
-			uc_led_off(led_green);
-		}
-		else
-		{
-			uc_led_on(led_green);
-			uc_led_off(led_red);			
-			
-		}
-		
-	}
+	{}
 	return 0;
 }
 
