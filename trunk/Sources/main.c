@@ -5,10 +5,6 @@
  *      Author: Severin
  */
 
-
-
-
-
 #include "derivative.h" /* include peripheral declarations */
 #include "uc_led.h"
 #include "gpio.h"
@@ -32,6 +28,8 @@ void PIT1_CALLBACK()
 
 void clock_init()
 {
+	//set clock to blazing speed of 24Mhz. 
+	//Timers won't run at right frequency unless this is called first.
 	unsigned int set_clock= (MCG_C4 & ~0xE0) | 0xA0;
 	MCG_C4 = set_clock;
 }
