@@ -37,15 +37,20 @@ void clock_init()
 void init()
 {
 	clock_init();
-	
+	uc_spi_init(spi_0);
 	
 }
 
 int main(void)
 {
 	init();
+	
+	
+	
 	while(1)
-	{}
+	{
+		uc_spi_send(spi_0, 'w');
+	}
 	return 0;
 }
 
