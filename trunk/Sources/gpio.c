@@ -30,7 +30,6 @@ void gpio_pin_set_alt(port_t p_port, pin_t p_pin, alt_t p_alt)
 {
     unsigned int * custom_PCR = (unsigned int *)(PORTX_PCR_BASE + p_port * 0x1000 + p_pin * 0x4);
 
-    
     *custom_PCR &= ~0x700;
     
     *custom_PCR |= p_alt << 8;
