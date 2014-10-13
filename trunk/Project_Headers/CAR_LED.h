@@ -31,4 +31,8 @@ typedef enum{
 	car_led_3
 } car_led_t;
 
+void CAR_LED_init();
+void CAR_LED_update();
+void CAR_LED_set_color(car_led_t, car_led_color_t);
+
 #endif

@@ -15,6 +15,7 @@
 #include "uc_spi.h"
 #include "uc_tpm.h"
 #include "uc_sw.h"
+#include "CAR_LED.h"
 
 
 void PIT0_CALLBACK()
@@ -40,6 +41,7 @@ void init()
 	clock_init();
 	uc_spi_init(spi_0);
 	uc_led_all_init();
+	CAR_LED_init();
 }
 
 int main(void)
@@ -67,10 +69,15 @@ int main(void)
 
 			gpio_set_pin_state(port_E, pin_16, 1);
 */
-
+	CAR_LED_set_color(car_led_0, car_led_red);
+	CAR_LED_set_color(car_led_0, car_led_wht);
+	CAR_LED_set_color(car_led_0, car_led_blu);
+	CAR_LED_set_color(car_led_1, car_led_grn);
+	CAR_LED_update();
 	
 	//testing for RGB LED driver
 	//cs
+	/*
 	gpio_port_init(port_E, pin_19, alt_1, output);
 		gpio_set_pin_state(port_E, pin_19, 1);
 	//output enable
@@ -83,14 +90,14 @@ int main(void)
 	//CS
 	gpio_set_pin_state(port_E, pin_19, 0);
 	
-		uc_spi_send(spi_0, 0b10000000);
+		uc_spi_send(spi_0, 0b1110000);
 		//first three bits control j15 led.
 		uc_spi_send(spi_0, 0b11100000);
 		
 		uc_spi_send(spi_0, 0b10101010);
 	gpio_set_pin_state(port_E, pin_19, 1);
 	
-	
+	*/
 	uc_led_on(led_green);
 	
 while(1)
