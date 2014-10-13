@@ -7,8 +7,8 @@
 
 #include "CAR_LED.h"
 
-static char car_led_0_1 = 0;
-static char car_led_2_3 = 0;
+static char car_led_0_1 = 0b10000000;
+static char car_led_2_3 = 0xFF;
 
 void CAR_LED_init()
 {
@@ -42,9 +42,9 @@ void CAR_LED_update()
 
 void CAR_LED_set_color(car_led_t p_car_led, car_led_color_t p_car_led_color)
 {
-	if(car_led_t == car_led_0 | car_led_t == car_led_1)
+	if((p_car_led == car_led_0) || (p_car_led == car_led_1))
 	{
-		car_led_0_1 &= (~0b111) << (2 + (p_car_led * 3));
+		car_led_0_1 &= ~(0b111 << (2 + (p_car_led * 3)));
 		car_led_0_1 |= (p_car_led_color) << (2 + (p_car_led * 3));
 	}
 	
