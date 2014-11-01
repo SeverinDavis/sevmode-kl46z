@@ -16,6 +16,7 @@
 #include "uc_tpm.h"
 #include "uc_sw.h"
 #include "CAR_LED.h"
+#include "CAR_MOTOR.h"
 
 
 void PIT0_CALLBACK()
@@ -42,23 +43,20 @@ void init()
 	uc_spi_init(spi_0); // CAR_LED and CAR_MOTOR dependencies
 	uc_led_all_init();
 	CAR_LED_init();
+	CAR_MOTOR_manual_debug_init();
 	uc_lptmr_init();
 }
 
 int main(void)
 {
 	init();
-int i = 0;
-int j = 0;
 	
 	while(1)
 	{
-		i++;
-		j +=3;
+
 		uc_lptmr_delay(50);
-		   CAR_LED_set_color(car_led_1, (i%7)+1);
-		CAR_LED_set_color(car_led_2, (j%7)+1);	
-		CAR_LED_update();
+
+		CAR_MOTOR_update();
 	}
 
 		uc_led_on(led_green);
