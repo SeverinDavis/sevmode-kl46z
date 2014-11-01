@@ -33,8 +33,7 @@ void CAR_LED_update()
 		//first three bits control j15 led.
 		uc_spi_send(spi_0, car_led_0_1);
 		
-		//dummy send because it won't work otherwise. Something weird is going on.
-		uc_spi_send(spi_0, 0b00000000);
+
 		
 	//CS/RCLK back up, yo
 	gpio_set_pin_state(port_E, pin_19, 1);	
@@ -42,6 +41,7 @@ void CAR_LED_update()
 
 void CAR_LED_set_color(car_led_t p_car_led, car_led_color_t p_car_led_color)
 {
+	//just clears and sets the relevant bits in the words sent to the 2 led shift regs
 	if((p_car_led == car_led_0) || (p_car_led == car_led_1))
 	{
 		car_led_0_1 &= ~(0b111 << (2 + (p_car_led * 3)));
@@ -50,7 +50,7 @@ void CAR_LED_set_color(car_led_t p_car_led, car_led_color_t p_car_led_color)
 	
 	else
 	{
-		car_led_2_3 &= (~0b111) << (2 + ((p_car_led - 2) * 3));
+		car_led_2_3 &= ~(0b111 << (2 + ((p_car_led - 2) * 3)));
 		car_led_2_3 |= (p_car_led_color) << (2 + ((p_car_led - 2) * 3));
 	}
 	
