@@ -7,7 +7,19 @@
 
 #include "CAR_MOTOR.h"
 
-static char car_motor = 0xF0;
+
+
+/*MOTOR SETTING FIELDS
+ * 
+ * 
+ * |ST			|MD1	|MD2	|MD3	|OE				|RST	|unused	|unused|
+ * 1 active			check manual for MD	 1 active		0 reset
+ * 														1 normal
+ * 										
+ * 
+ */
+
+static char car_motor = 0b00000000;
 
 void CAR_MOTOR_init()
 {
@@ -83,6 +95,40 @@ void CAR_MOTOR_update()
 
 	//CS/RCLK back up
 	gpio_set_pin_state(port_E, pin_16, 1);	
+}
+
+
+void CAR_MOTOR_set_MD(CAR_MOTOR_step_size_t p_step_size)
+{
+	car_motor &= ~(7 << 4);
+	car_motor |= p_step_size << 4;
+}
+
+void CAR_MOTOR_set_chip_en(CAR_MOTOR_state p_state)
+{
+	car_motor &= ~(1 << 7);
+	car_motor |= p_state << 7;
+}
+
+void CAR_MOTOR_set_output_en(CAR_MOTOR_state p_state)
+{
+	car_motor &= ~(1 << 3);
+	car_motor |= p_state << 3;
+}
+
+void CAR_MOTOR_SET_rst(CAR_MOTOR_state p_state)
+{
+	car_motor &= ~(1 << 2);
+	car_motor |= p_state << 2;
+}
+
+void CAR_MOTOR_SET_rst_cycle()
+{
+	CAR_MOTOR_SET_rst(disable);
+	CAR_MOTOR_update();
+	CAR_MOTOR_SET_rst(enable);
+	CAR_MOTOR_update();
+
 }
 
 
