@@ -42,4 +42,5 @@ void CAR_MOTOR_set_chip_en(CAR_MOTOR_state);
 void CAR_MOTOR_set_output_en(CAR_MOTOR_state);
 void CAR_MOTOR_set_rst(CAR_MOTOR_state);
 void CAR_MOTORs_set_rst_cycle();
+void CAR_MOTOR_set_current_limiter_en(CAR_MOTOR_state);
 #endif

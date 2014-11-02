@@ -52,10 +52,14 @@ void motor_startup()
 	//motor startup sequence
 	//set a md and turn off output. enable chip.
 	//update motors
+	
 	CAR_MOTOR_set_MD(step_2);
 	CAR_MOTOR_set_output_en(disable);
 	CAR_MOTOR_set_chip_en(enable);
 	CAR_MOTOR_update();
+	
+	//start current limiting analog value
+	CAR_MOTOR_set_current_limiter_en(enable);
 	
 	//reset chip, since it just intitialized
 	//rst_cycle() auto-cycles and updates
