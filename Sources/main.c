@@ -47,16 +47,37 @@ void init()
 	uc_lptmr_init();
 }
 
+void motor_startup()
+{
+	//motor startup sequence
+	//set a md and turn off output. enable chip.
+	//update motors
+	CAR_MOTOR_set_MD(step_2);
+	CAR_MOTOR_set_output_en(disable);
+	CAR_MOTOR_set_chip_en(enable);
+	CAR_MOTOR_update();
+	
+	//reset chip, since it just intitialized
+	//rst_cycle() auto-cycles and updates
+	CAR_MOTOR_set_rst_cycle();
+	
+	//enable output
+	CAR_MOTOR_set_output_en(enable);
+	CAR_MOTOR_update();
+}
+
 int main(void)
 {
 	init();
+	
+	motor_startup();
 	
 	while(1)
 	{
 
 		uc_lptmr_delay(50);
-
-		CAR_MOTOR_update();
+		
+		//CAR_MOTOR_update();
 	}
 
 		uc_led_on(led_green);
