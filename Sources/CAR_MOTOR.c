@@ -141,4 +141,36 @@ void CAR_MOTOR_set_rst_cycle()
 
 }
 
+void CAR_MOTOR_set_current_limiter_en(CAR_MOTOR_state p_state)
+{
+	
+	if(p_state)
+	{
+		//TEMP HARDCODED!!!!!
+		//DO NOT EXCEED 1200
+		
+		/*
+		dac param	voltage (V)		output current (A)
+		0			0.000805664		0.000994647
+		200			0.161938477		0.199924045
+		400			0.323071289		0.398853443
+		600			0.484204102		0.597782841
+		800			0.645336914		0.79671224
+		1000		0.806469727		0.995641638
+		1200		0.967602539		1.194571036
+		1400		1.128735352		1.393500434
+		1600		1.289868164		1.592429832
+		 */
+
+		uc_dac_set_output(1000);	
+	}
+	
+	else
+	{
+		uc_dac_set_output(0);
+	}
+
+
+}
+
 
