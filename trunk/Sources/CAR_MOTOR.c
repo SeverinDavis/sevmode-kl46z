@@ -74,11 +74,21 @@ void CAR_MOTOR_manual_debug_init()
 	gpio_port_init(port_E, pin_2, alt_1, output);
 	gpio_port_init(port_E, pin_3, alt_1, output);//m3
 	
+	gpio_set_pin_state(port_E, pin_0, 0);
+	gpio_set_pin_state(port_E, pin_1, 0);
+	gpio_set_pin_state(port_E, pin_2, 0);
+	gpio_set_pin_state(port_E, pin_3, 0);
+	
 	//temporary GPIO motor config
 	gpio_port_init(port_D, pin_2, alt_1, output); //m0
 	gpio_port_init(port_D, pin_3, alt_1, output);//m1
 	gpio_port_init(port_D, pin_4, alt_1, output);//m2
 	gpio_port_init(port_D, pin_5, alt_1, output);//m3
+	
+	gpio_set_pin_state(port_D, pin_2, 0);
+	gpio_set_pin_state(port_D, pin_3, 0);
+	gpio_set_pin_state(port_D, pin_4, 0);
+	gpio_set_pin_state(port_D, pin_5, 0);
 }
 
 
@@ -116,17 +126,17 @@ void CAR_MOTOR_set_output_en(CAR_MOTOR_state p_state)
 	car_motor |= p_state << 3;
 }
 
-void CAR_MOTOR_SET_rst(CAR_MOTOR_state p_state)
+void CAR_MOTOR_set_rst(CAR_MOTOR_state p_state)
 {
 	car_motor &= ~(1 << 2);
 	car_motor |= p_state << 2;
 }
 
-void CAR_MOTOR_SET_rst_cycle()
+void CAR_MOTOR_set_rst_cycle()
 {
-	CAR_MOTOR_SET_rst(disable);
+	CAR_MOTOR_set_rst(disable);
 	CAR_MOTOR_update();
-	CAR_MOTOR_SET_rst(enable);
+	CAR_MOTOR_set_rst(enable);
 	CAR_MOTOR_update();
 
 }

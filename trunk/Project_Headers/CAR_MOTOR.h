@@ -40,6 +40,6 @@ void CAR_MOTOR_update();
 void CAR_MOTOR_set_MD(CAR_MOTOR_step_size_t);
 void CAR_MOTOR_set_chip_en(CAR_MOTOR_state);
 void CAR_MOTOR_set_output_en(CAR_MOTOR_state);
-void CAR_MOTOR_SET_rst(CAR_MOTOR_state);
-void CAR_MOTOR_SET_rst_cycle();
+void CAR_MOTOR_set_rst(CAR_MOTOR_state);
+void CAR_MOTORs_set_rst_cycle();
 #endif
