@@ -74,14 +74,20 @@ int main(void)
 {
 	init();
 	
-	motor_startup();
-	
+	//motor_startup();
+	int i = 0;
+	CAR_LED_set_color(car_led_0, car_led_wht);
+	CAR_LED_set_color(car_led_1, car_led_blu);
+	CAR_LED_set_color(car_led_2, car_led_blu);
+	CAR_LED_set_color(car_led_3, car_led_wht);
+	CAR_LED_update();
 	while(1)
 	{
-
-		uc_lptmr_delay(50);
+		i++;
+		CAR_LED_set_color(car_led_0, (i)%8);
+		uc_lptmr_delay(1000);
 		
-		//CAR_MOTOR_update();
+		CAR_LED_update();
 	}
 
 		uc_led_on(led_green);
