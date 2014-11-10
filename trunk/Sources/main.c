@@ -17,6 +17,7 @@
 #include "uc_sw.h"
 #include "CAR_LED.h"
 #include "CAR_MOTOR.h"
+#include "CAR_XBEE.h"
 
 
 void PIT0_CALLBACK()
@@ -73,21 +74,17 @@ void motor_startup()
 int main(void)
 {
 	init();
+
+	CAR_XBEE_init();
+	CAR_XBEE_on();
+	CAR_XBEE_sleep();
 	
-	//motor_startup();
-	int i = 0;
-	CAR_LED_set_color(car_led_0, car_led_wht);
-	CAR_LED_set_color(car_led_1, car_led_blu);
-	CAR_LED_set_color(car_led_2, car_led_blu);
-	CAR_LED_set_color(car_led_3, car_led_wht);
-	CAR_LED_update();
 	while(1)
 	{
-		i++;
-		CAR_LED_set_color(car_led_0, (i)%8);
+
 		uc_lptmr_delay(1000);
 		
-		CAR_LED_update();
+
 	}
 
 		uc_led_on(led_green);

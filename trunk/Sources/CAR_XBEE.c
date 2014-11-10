@@ -15,18 +15,28 @@ void CAR_XBEE_init()
 	
 	//on. Initialized to sleep state
 	gpio_port_init(port_E, pin_20, alt_1, output);
-	gpio_port_set_pin_state(port_E, pin_20, 0);
+	gpio_set_pin_state(port_E, pin_20, 0);
 	
 	//reset cycle
 	gpio_port_init(port_E, pin_21, alt_1, output);
-	CAR_XBEE_reset();
+	CAR_XBEE_reset_cycle();
 }
 
 
 
-void CAR_XBEE_reset()
+void CAR_XBEE_reset_cycle()
 {
-	gpio_port_set_pin_state(port_E, pin_21, 1);
-	gpio_port_set_pin_state(port_E, pin_21, 0);
-	gpio_port_set_pin_state(port_E, pin_21, 1);
+	gpio_set_pin_state(port_E, pin_21, 1);
+	gpio_set_pin_state(port_E, pin_21, 0);
+	gpio_set_pin_state(port_E, pin_21, 1);
+}
+
+void CAR_XBEE_on()
+{
+	gpio_set_pin_state(port_E, pin_20, 1);
+}
+
+void CAR_XBEE_sleep()
+{
+	gpio_set_pin_state(port_E, pin_20, 1);
 }

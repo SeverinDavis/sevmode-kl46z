@@ -12,5 +12,7 @@ void uc_uart_init()
 	//clock setup stuff
     MCG_C1 |= 0b11 << 1;
     MCG_C2 |= 1;
+    
+    SIM_SOPT2 |= SIM_SOPT2_UART0SRC(3);
 	
 }
