@@ -13,7 +13,9 @@
 #include "uc_uart.h"
 
 void CAR_XBEE_init();
-void CAR_XBEE_reset();
+void CAR_XBEE_reset_cycle();
+void CAR_XBEE_on();
+void CAR_XBEE_sleep();
 
 
 
