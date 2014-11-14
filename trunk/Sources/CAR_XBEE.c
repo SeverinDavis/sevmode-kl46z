@@ -20,6 +20,8 @@ void CAR_XBEE_init()
 	//reset cycle
 	gpio_port_init(port_E, pin_21, alt_1, output);
 	CAR_XBEE_reset_cycle();
+	
+	uc_uart_init();
 }
 
 

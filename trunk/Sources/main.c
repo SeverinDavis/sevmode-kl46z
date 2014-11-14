@@ -27,7 +27,7 @@ void PIT0_CALLBACK()
 
 void PIT1_CALLBACK()
 {
-	uc_led_toggle(led_red);
+	//uc_led_toggle(led_red);
 }
 
 void clock_init()
@@ -40,12 +40,15 @@ void clock_init()
 
 void init()
 {
+	int_all_mask();
 	clock_init();
 	uc_spi_init(spi_0); // CAR_LED and CAR_MOTOR dependencies
 	uc_led_all_init();
 	CAR_LED_init();
 	CAR_MOTOR_manual_debug_init();
+	 pit_init(pit_0, priority_1, 1000000, PIT1_CALLBACK);
 	uc_lptmr_init();
+	int_all_unmask();
 }
 
 void motor_startup()
@@ -73,21 +76,23 @@ void motor_startup()
 
 int main(void)
 {
+	
 	init();
 
+	//pit_enable(pit_0);
 	CAR_XBEE_init();
+
 	CAR_XBEE_on();
-	CAR_XBEE_sleep();
+
 	
 	while(1)
 	{
-
+		//uc_led_toggle(led_red);
 		uc_lptmr_delay(1000);
-		
 
 	}
 
-		uc_led_on(led_green);
+		
 
 while(1)
 {}
