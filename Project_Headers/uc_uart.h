@@ -9,6 +9,7 @@
 #define UC_UART_H_
 
 #include "derivative.h"
+#include "int.h"
 
 void uc_uart_init();
 
