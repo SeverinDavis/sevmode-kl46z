@@ -10,7 +10,8 @@ void uc_uart_init()
     
 	SIM_SCGC4 |= 1 << 10;
 	
-	//baud rate. afaik 24000000/9600 = 2500
+	//baud rate. MCGIRCLK=2000000, OSR default = 15.
+	//MCGIRCLK/((OSR+1) (13)) = 9600
 	UART0_BDL = (unsigned char) 13;
 	//clear relevant bits in BDH
 	UART0_BDH &= 0xE0;
@@ -43,6 +44,8 @@ void UART0_IRQHandler()
 	{
 		//dummy read to clear interrupt status. data lost.
 		unsigned char dummy_read = UART0_D;
+		
+		//testing stuff for uart.
 		if(dummy_read == 'A')
 		{
 			uc_led_on(led_red);
