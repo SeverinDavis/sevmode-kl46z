@@ -1,22 +1,11 @@
-﻿Build started 9/1/2014 18:58:02.
-     1>Project "E:\SEV\DATA\Documents\Project\control\control\control.vcxproj" on node 2 (build target(s)).
-     1>InitializeBuildStatus:
-         Creating "Debug\control.unsuccessfulbuild" because "AlwaysCreate" was specified.
-       ClCompile:
-         e:\SEV\PROGRAMS\VisualStudio\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt main.cpp
-         main.cpp
-       Link:
-         e:\SEV\PROGRAMS\VisualStudio\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"E:\SEV\DATA\Documents\Project\control\Debug\control.exe" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib xinput.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Debug\control.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"E:\SEV\DATA\Documents\Project\control\Debug\control.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:\SEV\DATA\Documents\Project\control\Debug\control.lib" /MACHINE:X86 Debug\main.obj
+﻿Build started 11/19/2014 00:15:26.
+     1>Project "E:\SEV\DATA\Documents\Project\control\control\control.vcxproj" on node 2 (Build target(s)).
+     1>Link:
+         E:\SEV\PROGRAMS\Visual Studio\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"E:\SEV\DATA\Documents\Project\control\Debug\control.exe" /INCREMENTAL /NOLOGO xinput9_1_0.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib xinput.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:\SEV\DATA\Documents\Project\control\Debug\control.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:\SEV\DATA\Documents\Project\control\Debug\control.lib" /MACHINE:X86 Debug\main.obj
          Debug\Serial.obj
-         LINK : E:\SEV\DATA\Documents\Project\control\Debug\control.exe not found or not built by the last incremental link; performing full link
          control.vcxproj -> E:\SEV\DATA\Documents\Project\control\Debug\control.exe
-       Manifest:
-         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:"E:\SEV\DATA\Documents\Project\control\Debug\control.exe;#1" /manifest Debug\control.exe.intermediate.manifest
-       FinalizeBuildStatus:
-         Deleting file "Debug\control.unsuccessfulbuild".
-         Touching "Debug\control.lastbuildstate".
-     1>Done Building Project "E:\SEV\DATA\Documents\Project\control\control\control.vcxproj" (build target(s)).
+     1>Done Building Project "E:\SEV\DATA\Documents\Project\control\control\control.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:00.74
+Time Elapsed 00:00:00.60
