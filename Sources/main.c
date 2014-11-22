@@ -27,12 +27,12 @@ void PIT0_CALLBACK()
 
 void PIT1_CALLBACK()
 {
-	//uc_led_toggle(led_red);
+	uc_led_toggle(led_red);
 }
 
 void clock_init()
 {
-	//set clock to blazing speed of 24Mhz. 
+	//set clock to blazing speed of 48Mhz. 
 	//Timers won't run at right frequency unless this is called first.
 	unsigned int set_clock= (MCG_C4 & ~0xE0) | 0xA0;
 	MCG_C4 = set_clock;
@@ -46,8 +46,9 @@ void init()
 	uc_led_all_init();
 	CAR_LED_init();
 	CAR_MOTOR_manual_debug_init();
-	 pit_init(pit_0, priority_1, 1000000, PIT1_CALLBACK);
 	uc_lptmr_init();
+	uc_tpm_init();
+	uc_tpm_set_callback(tpm_chan_2, PIT1_CALLBACK);
 	int_all_unmask();
 }
 
@@ -79,10 +80,7 @@ int main(void)
 	
 	init();
 
-	//pit_enable(pit_0);
-	CAR_XBEE_init();
 
-	CAR_XBEE_on();
 
 	
 	while(1)

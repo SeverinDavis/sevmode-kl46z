@@ -33,27 +33,25 @@ void uc_uart_init()
     SIM_SOPT2 |= SIM_SOPT2_UART0SRC(3);
 }
 
+void uc_uart_set_callback(callback_t p_callback)
+{
+	uart0_callback = p_callback;
+}
+
+unsigned char uc_uart_get_data()
+{
+	return UART0_D;
+}
+
 void UART0_IRQHandler()
 {
-	//uc_led_on(led_red);
 	if(uart0_callback)
 	{
 		uart0_callback();	
 	}
 	else
 	{
-		//dummy read to clear interrupt status. data lost.
-		unsigned char dummy_read = UART0_D;
-		
-		//testing stuff for uart.
-		if(dummy_read == 'A')
-		{
-			uc_led_on(led_red);
-		}
-		if(dummy_read =='B')
-		{
-			uc_led_off(led_red);
-			
-		}
+		//data lost
+		uc_uart_get_data();
 	}
 }
