@@ -15,6 +15,17 @@
 #include "gpio.h"
 
 
+typedef enum{
+	CAR_MOTOR_dir_f,
+	CAR_MOTOR_dir_b
+}CAR_MOTOR_dir_t;
+
+typedef enum{
+	motor_0,
+	motor_1,
+	motor_2,
+	motor_3
+}CAR_MOTOR_motor_t;
 
 //bit order md1, md2, md3
 typedef enum{
@@ -43,4 +54,8 @@ void CAR_MOTOR_set_output_en(CAR_MOTOR_state);
 void CAR_MOTOR_set_rst(CAR_MOTOR_state);
 void CAR_MOTOR_set_rst_cycle();
 void CAR_MOTOR_set_current_limiter_en(CAR_MOTOR_state);
+void CAR_MOTOR_CALLBACK_0();
+void CAR_MOTOR_CALLBACK_1();
+void CAR_MOTOR_CALLBACK_2();
+void CAR_MOTOR_CALLBACK_3();
 #endif

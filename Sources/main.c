@@ -30,6 +30,8 @@ void PIT1_CALLBACK()
 	uc_led_toggle(led_red);
 }
 
+
+
 void clock_init()
 {
 	//set clock to blazing speed of 48Mhz. 
@@ -48,7 +50,10 @@ void init()
 	CAR_MOTOR_manual_debug_init();
 	uc_lptmr_init();
 	uc_tpm_init();
-	uc_tpm_set_callback(tpm_chan_2, PIT1_CALLBACK);
+	uc_tpm_set_callback(tpm_chan_2, CAR_MOTOR_CALLBACK_0);
+	uc_tpm_set_callback(tpm_chan_3, CAR_MOTOR_CALLBACK_1);
+	uc_tpm_set_callback(tpm_chan_4, CAR_MOTOR_CALLBACK_2);
+	uc_tpm_set_callback(tpm_chan_5, CAR_MOTOR_CALLBACK_3);
 	int_all_unmask();
 }
 
