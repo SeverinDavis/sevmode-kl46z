@@ -21,6 +21,11 @@
 
 static char car_motor = 0b00000000;
 
+static volatile CAR_MOTOR_dir_t direction[4] ={0,0,0,0};
+static int current_period[4] ={0,0,0,0};
+static volatile int target_period[4] ={0,0,0,0};
+
+
 void CAR_MOTOR_init()
 {
 	//set up current-limiting digital - analog converter. still needs separate call to set specific voltage
@@ -169,8 +174,35 @@ void CAR_MOTOR_set_current_limiter_en(CAR_MOTOR_state p_state)
 	{
 		uc_dac_set_output(0);
 	}
+}
 
+void CAR_MOTOR_CALLBACK_0()
+{
+	
 
+}
+
+void CAR_MOTOR_CALLBACK_1()
+{
+	
+
+}
+
+void CAR_MOTOR_CALLBACK_2()
+{
+	
+
+}
+
+void CAR_MOTOR_CALLBACK_3()
+{
+	
+
+}
+
+void CAR_MOTOR_set_direction(CAR_MOTOR_motor_t p_motor, CAR_MOTOR_dir_t p_dir)
+{
+	direction[p_motor] = p_dir;
 }
 
 

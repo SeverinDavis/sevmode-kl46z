@@ -6,13 +6,13 @@
  */
 
 #include "uc_tpm.h"
-#include "uc_led.h"
 
 
 #define TPM_MOD_VAL 0xFFFE
 #define TPM_MOD_VAL_OFF 0xFFFF
 
 static callback_t tpm_callback[6] ={0,0,0,0,0,0};
+static int locked_counter = 0;
 
 void uc_tpm_init()
 {
@@ -63,8 +63,16 @@ void uc_tpm_set_callback(tpm_chan_t p_tpm_chan, callback_t p_callback)
 	tpm_callback[p_tpm_chan] = p_callback;
 }
 
+void uc_tpm_set_compare_val(tpm_chan_t p_tpm_chan, int p_value)
+{
+	TPM0_CnV(p_tpm_chan) = ((locked_counter+p_value)%TPM_MOD_VAL);
+}
+
+
 void TPM0_IRQHandler()
 {
+	//grab counter value to lock counter value when interrupt occurred
+	locked_counter = TPM0_CNT;
 	int n = 2;
 	// loop through all used tpm channels
 	for(n = 2; n < 6; n++)
@@ -72,15 +80,13 @@ void TPM0_IRQHandler()
 		if((TPM0_CnSC(n) & TPM_CnSC_CHF_MASK) == TPM_CnSC_CHF_MASK)
 		{
 			TPM0_CnSC(n) |= TPM_CnSC_CHF_MASK;
-			TPM0_CnV(n) = ((TPM0_CnV(n)+n)%TPM_MOD_VAL);
+			uc_tpm_set_compare_val(n, n);
 			//check if callback is set
 			if(tpm_callback[n])
 			{
 				tpm_callback[n]();
 			}
 		}
-		//reload
-		//TPM0_CnV(0) = (TPM0_CnV(0)+2);
 		
 
 

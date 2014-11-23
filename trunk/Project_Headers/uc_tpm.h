@@ -16,13 +16,14 @@ typedef enum{
 	tpm_chan_0,
 	tpm_chan_1,
 	tpm_chan_2,
-	ttpm_chan_3,
+	tpm_chan_3,
 	tpm_chan_4,
 	tpm_chan_5
 } tpm_chan_t;
 
 void uc_tpm_init();
 void uc_tpm_set_callback(tpm_chan_t, callback_t);
+void uc_tpm_set_compare_val(tpm_chan_t, int);
 
 
 #endif /* UC_TPM_H_ */
