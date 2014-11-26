@@ -25,6 +25,8 @@ static volatile CAR_MOTOR_dir_t direction[4] ={0,0,0,0};
 static int current_period[4] ={0,0,0,0};
 static volatile int target_period[4] ={0,0,0,0};
 
+static int accel_counter[4] = {0,0,0,0};
+
 
 void CAR_MOTOR_init()
 {
@@ -167,7 +169,7 @@ void CAR_MOTOR_set_current_limiter_en(CAR_MOTOR_state p_state)
 		1600		1.289868164		1.592429832
 		 */
 
-		uc_dac_set_output(1000);	
+		uc_dac_set_output(500);	
 	}
 	
 	else
@@ -178,6 +180,7 @@ void CAR_MOTOR_set_current_limiter_en(CAR_MOTOR_state p_state)
 
 void CAR_MOTOR_CALLBACK_0()
 {
+
 	
 
 }
@@ -203,6 +206,12 @@ void CAR_MOTOR_CALLBACK_3()
 void CAR_MOTOR_set_direction(CAR_MOTOR_motor_t p_motor, CAR_MOTOR_dir_t p_dir)
 {
 	direction[p_motor] = p_dir;
+}
+
+void CAR_MOTOR_set_target(CAR_MOTOR_motor_t p_motor, int p_target)
+{
+	target_period[p_motor]=p_target;
+	accel_counter[p_motor] = 0;
 }
 
 

@@ -28,6 +28,8 @@ void uc_sw_init(switch_t p_switch)
 }
 
 
+
+
 int uc_sw_poll_switch1()
 {
 	return gpio_get_pin_state(port_C, pin_3);

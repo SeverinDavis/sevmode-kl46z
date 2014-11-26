@@ -69,6 +69,18 @@ typedef enum{
 	pin_31,
 } pin_t;
 
+typedef enum{
+	trig_disable 		= 0b0000,
+	trig_DMA_posedge	= 0b0001,
+	trig_DMA_negedge	= 0b0010,
+	trig_DMA_edge		= 0b0011,
+	trig_int_lo			= 0b1000,
+	trig_int_posedge	= 0b1001,
+	trig_int_negedge	= 0b1010,
+	trig_int_edge		= 0b1011,
+	trig_int_hi			= 0b1100
+} trig_t;
+
 
 void gpio_pin_set_dir(port_t, pin_t, dir_t);
 void gpio_pin_set_alt(port_t, pin_t, alt_t);
