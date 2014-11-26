@@ -49,7 +49,7 @@ void init()
 	CAR_LED_init();
 	CAR_MOTOR_manual_debug_init();
 	uc_lptmr_init();
-	uc_tpm_init();
+	//uc_tpm_init();
 	uc_tpm_set_callback(tpm_chan_2, CAR_MOTOR_CALLBACK_0);
 	uc_tpm_set_callback(tpm_chan_3, CAR_MOTOR_CALLBACK_1);
 	uc_tpm_set_callback(tpm_chan_4, CAR_MOTOR_CALLBACK_2);
@@ -85,13 +85,26 @@ int main(void)
 	
 	init();
 
-
+	motor_startup();
 
 	
 	while(1)
 	{
+		
+		int i = 0;
+		for(i = 0; i < 1000; i++)
+		{
+			uc_lptmr_delay(1);
+			gpio_set_pin_state(port_D, pin_2, 0);
+			//uc_led_toggle(led_red);
+			uc_lptmr_delay(1);
+			gpio_set_pin_state(port_D, pin_2, 1);
+		}
+		uc_lptmr_delay(50);
+		gpio_set_pin_state(port_D, pin_2, 0);
 		//uc_led_toggle(led_red);
-		uc_lptmr_delay(1000);
+		uc_lptmr_delay(50);
+		gpio_set_pin_state(port_D, pin_2, 1);
 
 	}
 
