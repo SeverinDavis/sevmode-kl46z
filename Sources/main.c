@@ -18,8 +18,9 @@
 #include "CAR_LED.h"
 #include "CAR_MOTOR.h"
 #include "CAR_XBEE.h"
+#include "custom.h"
 
-//static volatile bool idle = true;
+volatile bool_t idle = true;
 
 
 void PIT0_CALLBACK()
@@ -34,7 +35,15 @@ void PIT1_CALLBACK()
 
 void SW1_CALLBACK()
 {
-	uc_led_toggle(led_red);
+	//toggle idle mode
+	if(idle == true)
+	{
+		idle = false;
+	}
+	else if(idle == false)
+	{
+		idle = true;
+	}
 }
 
 void SW3_CALLBACK()
@@ -67,13 +76,13 @@ void init()
 	uc_led_all_init();
 	
 	//init car leds
-	//CAR_LED_init();
+	CAR_LED_init();
 	
 	//switches configured for interrupts
 	uc_sw_init_int(switch_1, SW1_CALLBACK);
 	uc_sw_init_int(switch_3, SW3_CALLBACK);
 	//
-	//CAR_MOTOR_manual_debug_init();
+	CAR_MOTOR_manual_debug_init();
 	uc_lptmr_init();
 	//uc_tpm_init();
 	//uc_tpm_set_callback(tpm_chan_2, CAR_MOTOR_CALLBACK_0);
@@ -83,19 +92,50 @@ void init()
 	int_all_unmask();
 }
 
+void idle_mode()
+{
+	while(idle == true)
+	{
+		uc_lptmr_delay(50);
+		uc_led_toggle(led_green);
+	}
+	uc_led_off(led_green);
 
+}
+
+void run_mode()
+{
+	while(idle == false)
+	{
+		CAR_MOTOR_motor_startup();	
+	}
+}
 
 int main(void)
 {
 	
+	//initialize hardware
 	init();
 
 
 	
 	while(1)
-	{}
+	{
+		if(idle == true)
+		{
+			
+			idle_mode();
+		}
+			
+		if(idle == false)
+		{
+			run_mode();
+		}
+	}
 	return 0;
 }
+
+
 
 
 
