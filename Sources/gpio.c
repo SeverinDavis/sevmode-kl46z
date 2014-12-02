@@ -6,7 +6,8 @@
  */
 
 #include "gpio.h"
-#include "int.h"
+#include "uc_led.h"
+
 
 #define PORTX_PCR_BASE 			0x40049000
 
@@ -81,10 +82,18 @@ void gpio_toggle_pin_state(port_t p_port, pin_t p_pin)
 	*custom_PTOR = 1 << p_pin;	
 }
 
-void gpio_enable_interrupt(port_t p_port, pint_t p_pin, trig_t p_trig)
+void gpio_enable_interrupt(port_t p_port, pin_t p_pin, trig_t p_trig, callback_t p_callback)
 {
 	   unsigned int * custom_PCR = (unsigned int *)(PORTX_PCR_BASE + p_port * 0x1000 + p_pin * 0x4);
 	   
+	   if(p_port == port_C)
+	   {
+		   gpio_c_callback[p_pin] = p_callback; 
+	   }
+	   else if(p_port == port_D)
+	   {
+		   gpio_d_callback[p_pin] = p_callback;
+	   }
 	   //enable pin interrupt with trigger
 	   *custom_PCR &= ~PORT_PCR_IRQC_MASK;
 	   *custom_PCR |= PORT_PCR_IRQC(p_trig);
@@ -102,6 +111,8 @@ void PORTCD_IRQHandler()
 	{
 		if((PORTC_PCR(i) & PORT_PCR_ISF_MASK) == PORT_PCR_ISF_MASK)
 		{
+			//clear interrupt
+			PORTC_PCR(i) |= PORT_PCR_ISF_MASK;
 			if(gpio_c_callback[i])
 			{
 				gpio_c_callback[i]();
@@ -114,6 +125,7 @@ void PORTCD_IRQHandler()
 		{
 			if((PORTD_PCR(i) & PORT_PCR_ISF_MASK) == PORT_PCR_ISF_MASK)
 			{
+				PORTD_PCR(i) |= PORT_PCR_ISF_MASK;
 				if(gpio_d_callback[i])
 				{
 					gpio_d_callback[i]();

@@ -9,6 +9,7 @@
 #define GPIO_H_
 
 #include "derivative.h"
+#include "int.h"
 
 typedef enum{
 	input,
@@ -89,5 +90,6 @@ void gpio_port_init(port_t, pin_t, alt_t, dir_t);
 int gpio_get_pin_state(port_t, pin_t);
 void gpio_set_pin_state(port_t, pin_t, int);
 void gpio_toggle_pin_state(port_t, pin_t);
+void gpio_enable_interrupt(port_t p_port, pin_t p_pin, trig_t p_trig, callback_t p_callback);
 
 #endif /* GPIO_H_ */
