@@ -27,6 +27,28 @@ void uc_sw_init(switch_t p_switch)
 	}
 }
 
+void uc_sw_init_int(switch_t p_switch, callback_t p_callback)
+{
+	if(p_switch == switch_1)
+	{
+		//setup GPIO for relevant pin
+		gpio_port_init(port_C, pin_3, alt_1, input);
+		
+		//enable pullup res
+		PORTC_PCR3 |= 1 << 1;
+		gpio_enable_interrupt(port_C, pin_3, trig_int_negedge, p_callback);
+	}
+	
+	if(p_switch == switch_3)
+	{
+		gpio_port_init(port_C, pin_12, alt_1, input);
+		PORTC_PCR12 |= 1 << 1;
+		
+		gpio_enable_interrupt(port_C, pin_12, trig_int_negedge, p_callback);
+	}
+	
+	
+}
 
 
 

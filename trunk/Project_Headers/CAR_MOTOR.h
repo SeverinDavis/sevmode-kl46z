@@ -58,4 +58,5 @@ void CAR_MOTOR_CALLBACK_0();
 void CAR_MOTOR_CALLBACK_1();
 void CAR_MOTOR_CALLBACK_2();
 void CAR_MOTOR_CALLBACK_3();
+void CAR_MOTOR_motor_startup();
 #endif
