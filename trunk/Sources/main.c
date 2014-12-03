@@ -70,7 +70,7 @@ void init()
 	clock_init();
 	
 	//setup spi
-	//uc_spi_init(spi_0); // CAR_LED and CAR_MOTOR dependencies
+	uc_spi_init(spi_0); // CAR_LED and CAR_MOTOR dependencies
 	
 	//init board leds
 	uc_led_all_init();
@@ -105,10 +105,17 @@ void idle_mode()
 
 void run_mode()
 {
+	CAR_MOTOR_motor_startup();	
 	while(idle == false)
 	{
-		CAR_MOTOR_motor_startup();	
-	}
+		uc_lptmr_delay(1);
+		gpio_set_pin_state(port_D, pin_3, 0);
+		//uc_led_toggle(led_red);
+		uc_lptmr_delay(1);
+		gpio_set_pin_state(port_D, pin_3, 1);
+	}               
+	CAR_MOTOR_set_output_en(disable);
+	CAR_MOTOR_update();
 }
 
 int main(void)
