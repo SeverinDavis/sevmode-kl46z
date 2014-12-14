@@ -94,28 +94,35 @@ void init()
 
 void idle_mode()
 {
+	CAR_LED_set_color(car_led_2,car_led_blu);
+	CAR_LED_update();
 	while(idle == true)
 	{
-		uc_lptmr_delay(50);
-		uc_led_toggle(led_green);
+		
 	}
-	uc_led_off(led_green);
+	CAR_LED_set_color(car_led_2,car_led_off);
+	CAR_LED_update();
 
 }
 
 void run_mode()
 {
+	CAR_LED_set_color(car_led_2,car_led_red);
+	CAR_LED_update();
 	CAR_MOTOR_motor_startup();	
 	while(idle == false)
 	{
-		uc_lptmr_delay(1);
-		gpio_set_pin_state(port_D, pin_3, 0);
+		//uc_lptmr_delay(1);
+		//gpio_set_pin_state(port_D, pin_3, 0);
 		//uc_led_toggle(led_red);
-		uc_lptmr_delay(1);
-		gpio_set_pin_state(port_D, pin_3, 1);
+		//uc_lptmr_delay(1);
+		//gpio_set_pin_state(port_D, pin_3, 1);
 	}               
 	CAR_MOTOR_set_output_en(disable);
 	CAR_MOTOR_update();
+	
+	CAR_LED_set_color(car_led_2,car_led_off);
+	CAR_LED_update();
 }
 
 int main(void)

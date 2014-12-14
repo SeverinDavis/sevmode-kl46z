@@ -21,6 +21,11 @@
 static callback_t gpio_c_callback[32] ={0};
 static callback_t gpio_d_callback[32] ={0};
 
+
+
+/*
+ * sets pin direction
+ */
 void gpio_pin_set_dir(port_t p_port, pin_t p_pin, dir_t p_dir)
 {
 	unsigned int * custom_PDDR = (unsigned int *)(FGPIOX_PDDR_BASE + (p_port * 0x40));
@@ -30,6 +35,11 @@ void gpio_pin_set_dir(port_t p_port, pin_t p_pin, dir_t p_dir)
 	*custom_PDDR |= p_dir << p_pin;
 }
 
+
+
+/*
+ *  sets pin function (check reference manual for pin specific functions)
+ */
 void gpio_pin_set_alt(port_t p_port, pin_t p_pin, alt_t p_alt)
 {
     unsigned int * custom_PCR = (unsigned int *)(PORTX_PCR_BASE + p_port * 0x1000 + p_pin * 0x4);
@@ -39,6 +49,11 @@ void gpio_pin_set_alt(port_t p_port, pin_t p_pin, alt_t p_alt)
     *custom_PCR |= p_alt << 8;
 }
 
+
+
+/*
+ * initializes a port/pin
+ */
 void gpio_port_init(port_t p_port, pin_t p_pin, alt_t p_alt, dir_t p_dir)
 {
 	SIM_SCGC5 |= 1 << (p_port + 9); // enable clock to port
@@ -49,6 +64,11 @@ void gpio_port_init(port_t p_port, pin_t p_pin, alt_t p_alt, dir_t p_dir)
 	
 }
 
+
+
+/*
+ * returns the state of a pin
+ */
 int gpio_get_pin_state(port_t p_port, pin_t p_pin)
 {
 	unsigned int * custom_PDIR = (unsigned int *)(FGPIOX_PDIR_BASE + (p_port * 0x40));
@@ -57,6 +77,10 @@ int gpio_get_pin_state(port_t p_port, pin_t p_pin)
 }
 
 
+
+/*
+ * sets the state of a gpio pin
+ */
 void gpio_set_pin_state(port_t p_port, pin_t p_pin, int p_state)
 {
 	if(p_state)
@@ -75,6 +99,11 @@ void gpio_set_pin_state(port_t p_port, pin_t p_pin, int p_state)
 	}
 }
 
+
+
+/*
+ * toggles the state of a gpio pin
+ */
 void gpio_toggle_pin_state(port_t p_port, pin_t p_pin)
 {
 	unsigned int * custom_PTOR = (unsigned int *)(FGPIOX_PTOR_BASE + (p_port * 0x40));
@@ -82,6 +111,11 @@ void gpio_toggle_pin_state(port_t p_port, pin_t p_pin)
 	*custom_PTOR = 1 << p_pin;	
 }
 
+
+
+/*
+ *  enables an interrupt on a pin. needs edge trigger and callback function specified
+ */
 void gpio_enable_interrupt(port_t p_port, pin_t p_pin, trig_t p_trig, callback_t p_callback)
 {
 	   unsigned int * custom_PCR = (unsigned int *)(PORTX_PCR_BASE + p_port * 0x1000 + p_pin * 0x4);
@@ -102,6 +136,11 @@ void gpio_enable_interrupt(port_t p_port, pin_t p_pin, trig_t p_trig, callback_t
 	   int_init(INT_PORTC_PORTD, priority_1);
 }
 
+
+
+/*
+ * interrupt handler for all pins on ports C and D
+ */
 void PORTCD_IRQHandler()
 {
 	int i = 0;
