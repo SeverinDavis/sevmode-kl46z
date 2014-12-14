@@ -5,8 +5,15 @@
  *      Author: Severin
  */
 
+
+
 #include "int.h"
 
+
+
+/*
+ * set the priority for a specified interrupt
+ */
 void int_init(IRQInterruptIndex p_vector, priority_t p_priority)
 {
 	int IRQ = p_vector - 16;
@@ -14,11 +21,21 @@ void int_init(IRQInterruptIndex p_vector, priority_t p_priority)
 	NVIC_IP(IRQ / 4) |= (p_priority << ((8 * (IRQ % 4)) + 6));
 }
 
+
+
+/*
+ * unmasks all interrupts
+ */
 void int_all_unmask()
 {
 	NVIC_ISER = 0xFFFFFFFF;
 }
 
+
+
+/*
+ * masks all interrupts
+ */
 void int_all_mask()
 {
 	NVIC_ICER = 0xFFFFFFFF;

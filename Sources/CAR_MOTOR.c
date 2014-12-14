@@ -5,6 +5,8 @@
  *      Author: Severin
  */
 
+
+
 #include "CAR_MOTOR.h"
 
 
@@ -19,6 +21,9 @@
  * 
  */
 
+
+
+//A bunch of globals to save states
 static char car_motor = 0b00000000;
 
 static volatile CAR_MOTOR_dir_t direction[4] ={0,0,0,0};
@@ -28,6 +33,11 @@ static volatile int target_period[4] ={0,0,0,0};
 static int accel_counter[4] = {0,0,0,0};
 
 
+
+/*
+ * Initializes pins to control shift registers and configures "direction" pins as GPIO
+ * SPI needs to be initialized separately
+ */
 void CAR_MOTOR_init()
 {
 	//set up current-limiting digital - analog converter. still needs separate call to set specific voltage
@@ -57,6 +67,10 @@ void CAR_MOTOR_init()
 }
 
 
+
+/*
+ * car debug function initializes PWM pins as GPIO for manual stepping.
+ */
 void CAR_MOTOR_manual_debug_init()
 {
 	//set up current-limiting digital - analog converter. still needs separate call to set specific voltage
@@ -99,6 +113,10 @@ void CAR_MOTOR_manual_debug_init()
 }
 
 
+
+/*
+ *  updates shift register outputs to whatever was set in global setting variable
+ */
 void CAR_MOTOR_update()
 {
 	//CS/RCLK low
@@ -115,30 +133,54 @@ void CAR_MOTOR_update()
 }
 
 
+
+/*
+ * sets MD on the LV8727
+ */
 void CAR_MOTOR_set_MD(CAR_MOTOR_step_size_t p_step_size)
 {
 	car_motor &= ~(7 << 4);
 	car_motor |= p_step_size << 4;
 }
 
+
+
+/*
+ * enables/disables the LV8727
+ */
 void CAR_MOTOR_set_chip_en(CAR_MOTOR_state p_state)
 {
 	car_motor &= ~(1 << 7);
 	car_motor |= p_state << 7;
 }
 
+
+
+/*
+ * enables/disables LV8727 output
+ */
 void CAR_MOTOR_set_output_en(CAR_MOTOR_state p_state)
 {
 	car_motor &= ~(1 << 3);
 	car_motor |= p_state << 3;
 }
 
+
+
+/*
+ * sets the reset on the LV8727
+ */
 void CAR_MOTOR_set_rst(CAR_MOTOR_state p_state)
 {
 	car_motor &= ~(1 << 2);
 	car_motor |= p_state << 2;
 }
 
+
+
+/*
+ * performs a reset cycle on LV8727 automatically
+ */
 void CAR_MOTOR_set_rst_cycle()
 {
 	CAR_MOTOR_set_rst(disable);
@@ -148,6 +190,11 @@ void CAR_MOTOR_set_rst_cycle()
 
 }
 
+
+
+/*
+ * enables enables current limiter pin for LV8727 current limiting
+ */
 void CAR_MOTOR_set_current_limiter_en(CAR_MOTOR_state p_state)
 {
 	
@@ -169,6 +216,7 @@ void CAR_MOTOR_set_current_limiter_en(CAR_MOTOR_state p_state)
 		1600		1.289868164		1.592429832
 		 */
 
+		//needs tuning
 		uc_dac_set_output(500);	
 	}
 	
@@ -178,42 +226,75 @@ void CAR_MOTOR_set_current_limiter_en(CAR_MOTOR_state p_state)
 	}
 }
 
+
+
+/*
+ * Should be called by TPM and performs motor 0 stepping
+ */
 void CAR_MOTOR_CALLBACK_0()
 {
 
-	
-
 }
 
+
+
+/*
+ * Should be called by TPM and performs motor 1 stepping
+ */
 void CAR_MOTOR_CALLBACK_1()
 {
 	
 
 }
 
+
+
+/*
+ * Should be called by TPM and performs motor 2 stepping
+ */
 void CAR_MOTOR_CALLBACK_2()
 {
 	
 
 }
 
+
+
+/*
+ * Should be called by TPM and performs motor 3 stepping
+ */
 void CAR_MOTOR_CALLBACK_3()
 {
 	
 
 }
 
+
+
+/*
+ * sets the direction for a specific motor
+ */
 void CAR_MOTOR_set_direction(CAR_MOTOR_motor_t p_motor, CAR_MOTOR_dir_t p_dir)
 {
 	direction[p_motor] = p_dir;
 }
 
+
+
+/*
+ * sets new target period
+ */
 void CAR_MOTOR_set_target(CAR_MOTOR_motor_t p_motor, int p_target)
 {
 	target_period[p_motor]=p_target;
 	accel_counter[p_motor] = 0;
 }
 
+
+
+/*
+ * starts up LV8727s safely.
+ */
 void CAR_MOTOR_motor_startup()
 {
 	//motor startup sequence
