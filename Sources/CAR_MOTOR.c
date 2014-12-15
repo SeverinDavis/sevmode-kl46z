@@ -276,7 +276,14 @@ void CAR_MOTOR_CALLBACK_3()
  */
 void CAR_MOTOR_set_direction(CAR_MOTOR_motor_t p_motor, CAR_MOTOR_dir_t p_dir)
 {
-	direction[p_motor] = p_dir;
+	if(p_motor == motor_0 || p_motor == motor_2)
+	{
+		gpio_set_pin_state(port_E, p_motor, !p_dir);
+	}
+	else
+	{
+		gpio_set_pin_state(port_E, p_motor, p_dir);
+	}
 }
 
 
@@ -314,8 +321,8 @@ void CAR_MOTOR_motor_startup()
 	CAR_MOTOR_set_rst_cycle();
 	
 	//enable output
-	CAR_MOTOR_set_output_en(enable);
-	CAR_MOTOR_update();
+	//CAR_MOTOR_set_output_en(enable);
+	//CAR_MOTOR_update();
 }
 
 
