@@ -1,3 +1,13 @@
+
+
+/*
+vibrate code example
+XINPUT_VIBRATION vibrate;
+vibrate.wLeftMotorSpeed = 23000;
+vibrate.wRightMotorSpeed = 0;
+XInputSetState(0, &vibrate);
+*/
+
 #include <Windows.h>
 #include <xinput.h>
 #include <stdio.h>
@@ -9,7 +19,7 @@
 
 #define BAUDRATE 9600
 
-//#define XBOX
+#define XBOX_DEBUG
 
 using namespace std;
 void prompt_serial(CSerial * port_pntr);
@@ -19,38 +29,28 @@ void sleep(unsigned int mseconds);
 
 void main()
 {
-	
-
 	CSerial port;
 	prompt_serial(&port);
 	
 	XINPUT_STATE state;
-#ifndef XBOX
-	prompt_controller(&state);
-#endif
-	run(&state, &port);
 
-		XINPUT_VIBRATION vibrate;
-						vibrate.wLeftMotorSpeed = 23000;
-				vibrate.wRightMotorSpeed = 0;
+	prompt_controller(&state);
+
+	run(&state, &port);
 
 	for(;;)
 	{
+		
 		XInputGetState(0, &state);
 
+#ifdef XBOX_DEBUG
 		if(state.Gamepad.wButtons & 0x0001)
 			{
 				cout << "UP is pressed" << endl;
-				vibrate.wLeftMotorSpeed = 23000;
-				vibrate.wRightMotorSpeed = 0;
-				XInputSetState(0, &vibrate);
 			}
 		if(state.Gamepad.wButtons & 0x0002)
 			{
 				cout << "DOWN is pressed" << endl;
-				vibrate.wLeftMotorSpeed = 0;
-				vibrate.wRightMotorSpeed = 0;
-				XInputSetState(0, &vibrate);
 			}
 		if(state.Gamepad.wButtons & 0x0004)
 			{
@@ -86,19 +86,11 @@ void main()
 			}
 		if(state.Gamepad.wButtons & 0x1000)
 			{
-
 				cout << "A is pressed" << endl;
-				vibrate.wLeftMotorSpeed = vibrate.wLeftMotorSpeed + 1000;
-				vibrate.wRightMotorSpeed = 0;
-				XInputSetState(0, &vibrate);
 			}
 		if(state.Gamepad.wButtons & 0x2000)
 			{
 				cout << "B is pressed" << endl;
-				vibrate.wLeftMotorSpeed = 0;
-				vibrate.wRightMotorSpeed = vibrate.wRightMotorSpeed + 1000;
-				XInputSetState(0, &vibrate);
-
 			}
 		if(state.Gamepad.wButtons & 0x4000)
 			{
@@ -108,7 +100,6 @@ void main()
 			{
 				cout << "Y is pressed" << endl;
 			}
-
 		if(state.Gamepad.bLeftTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD )
 			{
 				cout << "LT is pressed" << endl;
@@ -133,10 +124,43 @@ void main()
 			{
 				cout << "Right Thumbstick Y Position is at" << state.Gamepad.sThumbRY << endl;
 			}
+#endif
+
+		char mssg[1];
+		if (state.Gamepad.sThumbLY == -32768) // down
+		{
+			mssg[0] = 'b';
+
+		}
+
+		else if(state.Gamepad.sThumbLY == 32767) // up
+		{
+			mssg[0] = 'f';
+
+		}
+
+		else if(state.Gamepad.sThumbLX == 32767) // right
+		{
+			mssg[0] = 'r';
+
+		}
+
+		else if(state.Gamepad.sThumbLX == -32767) // left
+		{
+			mssg[0] = 'l';
+	
+		}
+
+		else
+		{
+			mssg[0] = 'n';
+
+		}
+
+		(&port)->SendData(mssg, 1);
 
 
-
-		sleep(10);
+		sleep(250);
 	
 	}
 
@@ -145,11 +169,13 @@ void main()
 
 void run(XINPUT_STATE * state, CSerial * port_pntr)
 {
+	/*
 	char mssg[6] = "Hello";
 	mssg[0] = 'B';
 	mssg[5] = 'C';
 	cout << port_pntr->SendData(mssg, 6);
-	system("pause");
+	*/
+	//system("pause");
 }
 
 void sleep(unsigned int mseconds) 
