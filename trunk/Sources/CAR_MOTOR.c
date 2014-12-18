@@ -21,16 +21,16 @@
  * 
  */
 
-
+#define ACLRT 100
 
 //A bunch of globals to save states
 static char car_motor = 0b00000000;
 
-static volatile CAR_MOTOR_dir_t direction[4] ={0,0,0,0};
+static volatile CAR_MOTOR_dir_t target_direction[4] ={0,0,0,0};
+static volatile CAR_MOTOR_dir_t current_direction[4] ={0,0,0,0};
 static int current_period[4] ={0,0,0,0};
 static volatile int target_period[4] ={0,0,0,0};
 
-static int accel_counter[4] = {0,0,0,0};
 
 
 
@@ -233,7 +233,38 @@ void CAR_MOTOR_set_current_limiter_en(CAR_MOTOR_state p_state)
  */
 void CAR_MOTOR_CALLBACK_0()
 {
-
+	int final_period = 0;
+	if(current_period[0])
+	{
+		
+		
+		int current_v = (-1000000/current_period[0]);
+		int first = sqrt((current_v *current_v) + (4*ACLRT));
+		if(current_direction[0] != target_direction[0] || target_period[0] > current_period[0]) // if motor is going wrong direction or if it target velocity is lower than current velocity, then neg acceleration
+		{
+			 final_period = (current_v + first) / (2*ACLRT);
+		}
+		else if (target_period[0] < current_period[0]) // if target velocity is is greater than current velocity, the pos acceleration
+		{
+			final_period = (current_v - first) / (2*ACLRT);
+		}
+		
+		if(final_period < target_period[0]) //acceleration done, target period reached/overshot
+		{
+			final_period = target_period[0];
+		}
+	}
+	else
+	{
+		final_period = 0;
+	}
+	
+	
+	
+	
+		
+	
+	
 }
 
 
@@ -294,7 +325,7 @@ void CAR_MOTOR_set_direction(CAR_MOTOR_motor_t p_motor, CAR_MOTOR_dir_t p_dir)
 void CAR_MOTOR_set_target(CAR_MOTOR_motor_t p_motor, int p_target)
 {
 	target_period[p_motor]=p_target;
-	accel_counter[p_motor] = 0;
+
 }
 
 

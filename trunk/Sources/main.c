@@ -92,8 +92,8 @@ void init()
 	
 	CAR_XBEE_init();
 	
-	//uc_tpm_init();
-	//uc_tpm_set_callback(tpm_chan_2, CAR_MOTOR_CALLBACK_0);
+	uc_tpm_init();
+	uc_tpm_set_callback(tpm_chan_2, CAR_MOTOR_CALLBACK_0);
 	//uc_tpm_set_callback(tpm_chan_3, CAR_MOTOR_CALLBACK_1);
 	//uc_tpm_set_callback(tpm_chan_4, CAR_MOTOR_CALLBACK_2);
 	//uc_tpm_set_callback(tpm_chan_5, CAR_MOTOR_CALLBACK_3);
@@ -104,11 +104,24 @@ void init()
 
 void idle_mode()
 {
-	CAR_LED_set_color(car_led_2,car_led_blu);
+	int i = 0;
+	CAR_LED_set_color(car_led_2,car_led_wht);
+	CAR_LED_set_color(car_led_3,car_led_wht);
+	CAR_LED_set_color(car_led_0,car_led_red);
+	CAR_LED_set_color(car_led_1,car_led_red);
 	CAR_LED_update();
 	while(idle == true)
 	{
+	
+		CAR_LED_set_color(i,car_led_red);
+		CAR_LED_set_color((i+1)%4,car_led_grn);
+		CAR_LED_set_color((i+2)%4,car_led_red);
+		CAR_LED_set_color((i+3)%4,car_led_grn);
 		
+		CAR_LED_update();
+		uc_lptmr_delay(300);
+		
+		i=(i+1)%4;
 	}
 	CAR_LED_set_color(car_led_2,car_led_off);
 	CAR_LED_update();
@@ -117,69 +130,7 @@ void idle_mode()
 
 void run_mode()
 {
-	CAR_XBEE_on();
-	CAR_LED_set_color(car_led_2,car_led_red);
-	CAR_LED_update();
-	//CAR_MOTOR_motor_startup();
-	CAR_MOTOR_set_output_en(enable);
-	CAR_MOTOR_set_direction(motor_0, CAR_MOTOR_dir_f);
-	CAR_MOTOR_set_direction(motor_1, CAR_MOTOR_dir_f);
-	CAR_MOTOR_set_direction(motor_2, CAR_MOTOR_dir_f);
-	CAR_MOTOR_set_direction(motor_3, CAR_MOTOR_dir_f);
-	CAR_MOTOR_update();
-	while(idle == false)
-	{
-		if(move_mode == 'f' ||move_mode == 'b'||move_mode == 'r'||move_mode == 'l')
-		{
-			if(move_mode == 'f')
-			{
-					CAR_MOTOR_set_direction(motor_0, CAR_MOTOR_dir_f);
-					CAR_MOTOR_set_direction(motor_1, CAR_MOTOR_dir_f);
-					CAR_MOTOR_set_direction(motor_2, CAR_MOTOR_dir_f);
-					CAR_MOTOR_set_direction(motor_3, CAR_MOTOR_dir_f);
-			}
-			if(move_mode == 'b')
-			{
-				CAR_MOTOR_set_direction(motor_0, CAR_MOTOR_dir_b);
-				CAR_MOTOR_set_direction(motor_1, CAR_MOTOR_dir_b);
-				CAR_MOTOR_set_direction(motor_2, CAR_MOTOR_dir_b);
-				CAR_MOTOR_set_direction(motor_3, CAR_MOTOR_dir_b);
-			}
-			if(move_mode == 'r')
-			{
-				CAR_MOTOR_set_direction(motor_0, CAR_MOTOR_dir_f);
-				CAR_MOTOR_set_direction(motor_1, CAR_MOTOR_dir_b);
-				CAR_MOTOR_set_direction(motor_2, CAR_MOTOR_dir_f);
-				CAR_MOTOR_set_direction(motor_3, CAR_MOTOR_dir_b);
-			}
-			if(move_mode == 'l')
-			{
-				CAR_MOTOR_set_direction(motor_0, CAR_MOTOR_dir_b);
-				CAR_MOTOR_set_direction(motor_1, CAR_MOTOR_dir_f);
-				CAR_MOTOR_set_direction(motor_2, CAR_MOTOR_dir_b);
-				CAR_MOTOR_set_direction(motor_3, CAR_MOTOR_dir_f);
-			}
-			
-			//uc_lptmr_delay(1);
-			gpio_set_pin_state(port_D, pin_4, 0);
-			gpio_set_pin_state(port_D, pin_5, 0);
-			gpio_set_pin_state(port_D, pin_2, 0);
-			gpio_set_pin_state(port_D, pin_3, 0);
-			uc_led_toggle(led_red);
-			uc_lptmr_delay(1);
-			gpio_set_pin_state(port_D, pin_4, 1);
-			gpio_set_pin_state(port_D, pin_5, 1);
-			gpio_set_pin_state(port_D, pin_2, 1);
-			gpio_set_pin_state(port_D, pin_3, 1);
-		}
-			
 
-	}               
-	CAR_MOTOR_set_output_en(disable);
-	CAR_MOTOR_update();
-	
-	CAR_LED_set_color(car_led_2,car_led_off);
-	CAR_LED_update();
 }
 
 int main(void)
