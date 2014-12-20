@@ -62,4 +62,5 @@ void CAR_MOTOR_CALLBACK_2();
 void CAR_MOTOR_CALLBACK_3();
 void CAR_MOTOR_motor_startup();
 void CAR_MOTOR_set_direction(CAR_MOTOR_motor_t, CAR_MOTOR_dir_t);
+void CAR_MOTOR_set_target(CAR_MOTOR_motor_t, int);
 #endif

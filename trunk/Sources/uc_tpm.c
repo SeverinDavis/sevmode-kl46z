@@ -7,7 +7,6 @@
 
 #include "uc_tpm.h"
 
-
 #define TPM_MOD_VAL 0xFFFE
 #define TPM_MOD_VAL_OFF 0xFFFF
 
@@ -43,7 +42,7 @@ void uc_tpm_init()
 		int_init(INT_TPM0, priority_1);
 		
 		int n;
-		for(n = 2; n < 6; n++)
+		for(n = 2; n < 3; n++)
 		{
 			//configd for output compare
 			TPM0_CnSC(n) = TPM_CnSC_MSB_MASK | TPM_CnSC_MSA_MASK | TPM_CnSC_ELSA_MASK;
@@ -67,7 +66,7 @@ void uc_tpm_set_compare_val(tpm_chan_t p_tpm_chan, int p_value)
 {
 	if(p_value == 0)
 	{
-		
+		TPM0_CnV(p_tpm_chan) = TPM_MOD_VAL_OFF;
 	}
 	TPM0_CnV(p_tpm_chan) = ((locked_counter[p_tpm_chan]+p_value)%TPM_MOD_VAL);
 }
@@ -79,17 +78,20 @@ void TPM0_IRQHandler()
 	int uber_locked_counter = TPM0_CNT;
 	int n = 2;
 	// loop through all used tpm channels
-	for(n = 2; n < 6; n++)
+	for(n = 2; n < 3; n++)
 		//check if interrupt occurred in that channel 
 		if((TPM0_CnSC(n) & TPM_CnSC_CHF_MASK) == TPM_CnSC_CHF_MASK)
 		{
 			TPM0_CnSC(n) |= TPM_CnSC_CHF_MASK;
 			locked_counter[n] = uber_locked_counter;
+			
 
 			if(tpm_callback[n])
 			{
 				tpm_callback[n]();
 			}
+			
+			//uc_tpm_set_compare_val(tpm_chan_2, 100);
 		}
 		
 

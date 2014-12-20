@@ -8,6 +8,7 @@
 
 
 #include "CAR_MOTOR.h"
+#include "uc_led.h"
 
 
 
@@ -21,15 +22,15 @@
  * 
  */
 
-#define ACLRT 100
+#define ACLRT 38
 
 //A bunch of globals to save states
 static char car_motor = 0b00000000;
 
 static volatile CAR_MOTOR_dir_t target_direction[4] ={0,0,0,0};
 static volatile CAR_MOTOR_dir_t current_direction[4] ={0,0,0,0};
-static int current_period[4] ={0,0,0,0};
-static volatile int target_period[4] ={0,0,0,0};
+static long current_period[4] ={10000,0,0,0};
+static volatile long target_period[4] ={10000,0,0,0};
 
 
 
@@ -233,33 +234,45 @@ void CAR_MOTOR_set_current_limiter_en(CAR_MOTOR_state p_state)
  */
 void CAR_MOTOR_CALLBACK_0()
 {
-	int final_period = 0;
-	if(current_period[0])
+	
+	long final_period = 0;
+
+	//if target reached
+	if(current_period[0] == target_period[0])
 	{
+		final_period = current_period[0];
 		
-		
-		int current_v = (-1000000/current_period[0]);
-		int first = sqrt((current_v *current_v) + (4*ACLRT));
-		if(current_direction[0] != target_direction[0] || target_period[0] > current_period[0]) // if motor is going wrong direction or if it target velocity is lower than current velocity, then neg acceleration
+	}
+	
+	else
+	{
+		int MACLRT = ACLRT;
+		if(current_period[0] < target_period[0])
 		{
-			 final_period = (current_v + first) / (2*ACLRT);
-		}
-		else if (target_period[0] < current_period[0]) // if target velocity is is greater than current velocity, the pos acceleration
-		{
-			final_period = (current_v - first) / (2*ACLRT);
+			MACLRT = -1* ACLRT;
 		}
 		
-		if(final_period < target_period[0]) //acceleration done, target period reached/overshot
+		long current_v = (-1000000/current_period[0]);
+		long first = sqrt((current_v *current_v) + ((4*1000000*MACLRT)/1000));
+
+		final_period = ((current_v + first)*1000) / (2*MACLRT);
+		
+		if(current_period[0] < target_period[0] && final_period > target_period[0])
 		{
 			final_period = target_period[0];
 		}
-	}
-	else
-	{
-		final_period = 0;
+		else if(current_period[0] > target_period[0] && final_period < target_period[0])
+		{
+			final_period = target_period[0];
+		}
+
+
 	}
 	
+	current_period[0] = final_period;
 	
+	
+	uc_tpm_set_compare_val(tpm_chan_2, final_period);
 	
 	
 		

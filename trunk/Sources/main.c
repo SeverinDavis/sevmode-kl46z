@@ -36,14 +36,16 @@ void PIT1_CALLBACK()
 void SW1_CALLBACK()
 {
 	//toggle idle mode
-	if(idle == true)
-	{
+	if(idle == true){
+		CAR_MOTOR_set_target(motor_0, 10);
 		idle = false;
 	}
-	else if(idle == false)
+	else
 	{
+		CAR_MOTOR_set_target(motor_0, 10000);
 		idle = true;
 	}
+	
 }
 
 void SW3_CALLBACK()
@@ -104,33 +106,17 @@ void init()
 
 void idle_mode()
 {
-	int i = 0;
-	CAR_LED_set_color(car_led_2,car_led_wht);
-	CAR_LED_set_color(car_led_3,car_led_wht);
-	CAR_LED_set_color(car_led_0,car_led_red);
-	CAR_LED_set_color(car_led_1,car_led_red);
-	CAR_LED_update();
+	//CAR_MOTOR_set_target(motor_0, 10);
 	while(idle == true)
-	{
-	
-		CAR_LED_set_color(i,car_led_red);
-		CAR_LED_set_color((i+1)%4,car_led_grn);
-		CAR_LED_set_color((i+2)%4,car_led_red);
-		CAR_LED_set_color((i+3)%4,car_led_grn);
-		
-		CAR_LED_update();
-		uc_lptmr_delay(300);
-		
-		i=(i+1)%4;
-	}
-	CAR_LED_set_color(car_led_2,car_led_off);
-	CAR_LED_update();
+	{}
 
 }
 
 void run_mode()
 {
-
+	CAR_MOTOR_set_target(motor_0, 100);
+	while(idle == false)
+		{}
 }
 
 int main(void)
@@ -139,8 +125,51 @@ int main(void)
 	//initialize hardware
 	init();
 
+	int target_period = 100;
+	int current_period = 10000;
+	int ACLRT = 2;
+	while(1)
+	{
+		
+		int final_period = 0;
+
+		//if target reached
+		if(current_period == target_period)
+		{
+			final_period = current_period;
+			
+		}
+		
+		else
+		{
+			int MACLRT = ACLRT;
+			if(current_period < target_period)
+			{
+				MACLRT = -1* ACLRT;
+			}
+			
+			long current_v = (-1000000/current_period);
+			unsigned long first = sqrt((current_v *current_v) + (4*1000000*MACLRT));
+
+			final_period = (current_v + first) / (2*MACLRT);
+			
+			if(current_period < target_period && final_period > target_period)
+			{
+				final_period = target_period;
+			}
+			else if(current_period > target_period && final_period < target_period)
+			{
+				final_period = target_period;
+			}
+
+
+		}
+		
+		current_period = final_period;
+	}
 
 	
+	/*
 	while(1)
 	{
 		if(idle == true)
@@ -154,6 +183,7 @@ int main(void)
 			run_mode();
 		}
 	}
+	*/
 	return 0;
 }
 
