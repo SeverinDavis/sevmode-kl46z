@@ -22,18 +22,50 @@
  * 
  */
 
-#define ACLRT 38
+#define ACLRT 33
 
 //A bunch of globals to save states
 static char car_motor = 0b00000000;
 
 static volatile CAR_MOTOR_dir_t target_direction[4] ={0,0,0,0};
 static volatile CAR_MOTOR_dir_t current_direction[4] ={0,0,0,0};
-static long current_period[4] ={10000,0,0,0};
-static volatile long target_period[4] ={10000,0,0,0};
+static unsigned int current_period[4] ={30000,0,0,0};
+static volatile unsigned int target_period[4] ={30000,0,0,0};
 
+//acceleration table
+/*
+65535	574.8127001
+32767	572.286256
+16383	567.2667428
+8191	557.3611758
+4095	538.0830159
+2047	501.6431061
+1023	436.9772255
+511		336.9501875
+255		218.4828964
+127		121.3861211
+63		62.26720821
+31		30.91113864
+15		14.98988865
+*/
 
+static const unsigned int a_table[13] = {575, 572, 567, 557, 538, 502, 437, 337, 218, 121, 62, 31, 15};
 
+//deceleration table
+/*
+574	49602
+572	31006
+568	17680
+560	9459
+544	4848
+512	2398
+448	1126
+320	462
+64	65
+2	2
+*/
+
+static const unsigned int d_table[10] = {49602, 31006, 17680, 9459, 4848, 2398, 1126, 462, 65, 2};
 
 /*
  * Initializes pins to control shift registers and configures "direction" pins as GPIO
@@ -218,7 +250,7 @@ void CAR_MOTOR_set_current_limiter_en(CAR_MOTOR_state p_state)
 		 */
 
 		//needs tuning
-		uc_dac_set_output(500);	
+		uc_dac_set_output(1190);	
 	}
 	
 	else
@@ -234,7 +266,65 @@ void CAR_MOTOR_set_current_limiter_en(CAR_MOTOR_state p_state)
  */
 void CAR_MOTOR_CALLBACK_0()
 {
+	unsigned int final_period = 0;
 	
+	//target reached, no action
+	if(current_period[0] == target_period[0])
+	{
+		final_period = target_period[0];
+	}
+	
+	//opposite direction or current period is lower than target period. decelerate
+	else if(current_direction[0] != target_direction[0] || current_period[0] < target_period[0])
+	{
+		
+	}
+	
+	//current period is greater than target period. accelerate
+	else
+	{
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//bunch of crap im probably not going to use anymore.
+	/*
 	long final_period = 0;
 
 	//if target reached
@@ -270,9 +360,9 @@ void CAR_MOTOR_CALLBACK_0()
 	}
 	
 	current_period[0] = final_period;
+	*/
 	
-	
-	uc_tpm_set_compare_val(tpm_chan_2, final_period);
+	//uc_tpm_set_compare_val(tpm_chan_2, final_period);
 	
 	
 		

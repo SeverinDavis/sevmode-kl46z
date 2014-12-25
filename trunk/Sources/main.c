@@ -22,6 +22,9 @@
 
 volatile bool_t idle = true;
 volatile char move_mode = 'n';
+int switch_3_push = 0;
+int switch_3_speed = 25;
+
 
 void PIT0_CALLBACK()
 {
@@ -37,12 +40,11 @@ void SW1_CALLBACK()
 {
 	//toggle idle mode
 	if(idle == true){
-		CAR_MOTOR_set_target(motor_0, 10);
+
 		idle = false;
 	}
 	else
 	{
-		CAR_MOTOR_set_target(motor_0, 10000);
 		idle = true;
 	}
 	
@@ -50,7 +52,16 @@ void SW1_CALLBACK()
 
 void SW3_CALLBACK()
 {
-	uc_led_toggle(led_green);
+	if(switch_3_push == 0)
+	{
+		switch_3_push = 1;
+		CAR_MOTOR_set_target(motor_0, switch_3_speed);}
+	else
+	{
+		switch_3_speed --;
+		CAR_MOTOR_set_target(motor_0, switch_3_speed);
+	}
+	
 }
 
 void XBEE_CALLBACK()
@@ -84,6 +95,11 @@ void init()
 	
 	//init car leds
 	CAR_LED_init();
+	CAR_LED_set_color(car_led_0, car_led_off);
+	CAR_LED_set_color(car_led_1, car_led_off);
+	CAR_LED_set_color(car_led_2, car_led_off);
+	CAR_LED_set_color(car_led_3, car_led_off);
+	CAR_LED_update();
 	
 	//switches configured for interrupts
 	uc_sw_init_int(switch_1, SW1_CALLBACK);
@@ -106,17 +122,21 @@ void init()
 
 void idle_mode()
 {
-	//CAR_MOTOR_set_target(motor_0, 10);
+	CAR_MOTOR_set_output_en(disable);
+	CAR_MOTOR_update();
+
 	while(idle == true)
 	{}
-
+	
 }
 
 void run_mode()
 {
-	CAR_MOTOR_set_target(motor_0, 100);
+	CAR_MOTOR_set_output_en(enable);
+	CAR_MOTOR_update();
+	
 	while(idle == false)
-		{}
+	{}
 }
 
 int main(void)
@@ -124,52 +144,11 @@ int main(void)
 	
 	//initialize hardware
 	init();
-
-	int target_period = 100;
-	int current_period = 10000;
-	int ACLRT = 2;
-	while(1)
-	{
-		
-		int final_period = 0;
-
-		//if target reached
-		if(current_period == target_period)
-		{
-			final_period = current_period;
-			
-		}
-		
-		else
-		{
-			int MACLRT = ACLRT;
-			if(current_period < target_period)
-			{
-				MACLRT = -1* ACLRT;
-			}
-			
-			long current_v = (-1000000/current_period);
-			unsigned long first = sqrt((current_v *current_v) + (4*1000000*MACLRT));
-
-			final_period = (current_v + first) / (2*MACLRT);
-			
-			if(current_period < target_period && final_period > target_period)
-			{
-				final_period = target_period;
-			}
-			else if(current_period > target_period && final_period < target_period)
-			{
-				final_period = target_period;
-			}
-
-
-		}
-		
-		current_period = final_period;
-	}
+	
+	uc_led_on(led_red);
 
 	
-	/*
+	
 	while(1)
 	{
 		if(idle == true)
@@ -183,7 +162,7 @@ int main(void)
 			run_mode();
 		}
 	}
-	*/
+	
 	return 0;
 }
 
