@@ -22,7 +22,8 @@
  * 
  */
 
-#define ACLRT 33
+#define A_TABLE_SZ 13
+#define D_TABLE_SZ 10
 
 //A bunch of globals to save states
 static char car_motor = 0b00000000;
@@ -31,6 +32,9 @@ static volatile CAR_MOTOR_dir_t target_direction[4] ={0,0,0,0};
 static volatile CAR_MOTOR_dir_t current_direction[4] ={0,0,0,0};
 static unsigned int current_period[4] ={30000,0,0,0};
 static volatile unsigned int target_period[4] ={30000,0,0,0};
+
+unsigned int get_a_period(unsigned int, unsigned int);
+unsigned int get_d_period(unsigned int, unsigned int);
 
 //acceleration table
 /*
@@ -49,7 +53,9 @@ static volatile unsigned int target_period[4] ={30000,0,0,0};
 15		14.98988865
 */
 
-static const unsigned int a_table[13] = {575, 572, 567, 557, 538, 502, 437, 337, 218, 121, 62, 31, 15};
+
+static const unsigned int a_bound[A_TABLE_SZ] = {15, 	31, 	63, 	127, 	255, 	511, 	1023, 	2047, 	4095, 	8191, 	16383, 	32767, 	65535};
+static const unsigned int a_table[A_TABLE_SZ] = {575, 	31, 	62, 	121, 	218, 	337, 	437, 	502, 	538, 	557, 	567, 	572, 	575};
 
 //deceleration table
 /*
@@ -65,7 +71,8 @@ static const unsigned int a_table[13] = {575, 572, 567, 557, 538, 502, 437, 337,
 2	2
 */
 
-static const unsigned int d_table[10] = {49602, 31006, 17680, 9459, 4848, 2398, 1126, 462, 65, 2};
+static const unsigned int d_bound[D_TABLE_SZ] = {574, 	572, 	568, 	560, 	544, 	512, 	448, 	320, 	64, 	2};
+static const unsigned int d_table[D_TABLE_SZ] = {49602, 31006, 	17680, 	9459, 	4848, 	2398, 	1126, 	462, 	65, 	2};
 
 /*
  * Initializes pins to control shift registers and configures "direction" pins as GPIO
@@ -259,7 +266,27 @@ void CAR_MOTOR_set_current_limiter_en(CAR_MOTOR_state p_state)
 	}
 }
 
+unsigned int get_a_period(unsigned int c_period, unsigned int t_period)
+{
+	int i = 1;
+	//loop through entire table. exit early if case matched and value was set.
+	while(i <= A_TABLE_SZ)
+	{
+		if(c_period < a_bound[i])
+		{
+			unsigned int base_period = a_table[i-1];
+			return base_period + ((a_table[i] - a_table[i-1])*c_period)/(a_bound[i] - a_bound[i-1]);
+		}
+		i++;
+	}
+	return a_table[A_TABLE_SZ-1];
+}
 
+
+unsigned int get_d_period(unsigned int c_period, unsigned int t_period)
+{
+	
+}
 
 /*
  * Should be called by TPM and performs motor 0 stepping
@@ -268,101 +295,70 @@ void CAR_MOTOR_CALLBACK_0()
 {
 	unsigned int final_period = 0;
 	
+	//local copies. don't want the uart interrupt changing these while we're using them.
+	unsigned int c_period = current_period[0];
+	unsigned int t_period = target_period[0];
+	
 	//target reached, no action
-	if(current_period[0] == target_period[0])
+	if(c_period == t_period)
 	{
-		final_period = target_period[0];
+		final_period = t_period;
 	}
 	
 	//opposite direction or current period is lower than target period. decelerate
-	else if(current_direction[0] != target_direction[0] || current_period[0] < target_period[0])
+	else if(current_direction[0] != target_direction[0] || c_period < t_period)
 	{
+		//period value is close enough to completely stopped that we reverse direction and begin acceleration
+		if(current_direction[0] != target_direction[0] && c_period >= d_bound[D_TABLE_SZ-1])
+		{
+			//reverse direction
+			if(current_direction[0] == 1)
+			{
+				current_direction[0] = 0;
+				CAR_MOTOR_set_direction(motor_0, current_direction[0]);
+			}
+			else
+			{
+				current_direction[0] = 1;
+				CAR_MOTOR_set_direction(motor_0, current_direction[0]);
+			}
+			//get accel period
+			final_period = get_a_period(c_period, t_period);
+			//check if target reached already from acceleration
+			if(final_period < t_period)
+			{
+				final_period = t_period;
+			}
+		}
+		//standard deceleration
+		else
+		{
+			final_period = get_d_period(c_period, t_period);
+			//deceleration overshot target, reduce to match target
+			if(current_direction[0] == target_direction[0] && final_period > target_period[0])
+			{
+				final_period = target_period[0];
+			}
+			
+		}
 		
 	}
 	
 	//current period is greater than target period. accelerate
 	else
 	{
-		
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	//bunch of crap im probably not going to use anymore.
-	/*
-	long final_period = 0;
-
-	//if target reached
-	if(current_period[0] == target_period[0])
-	{
-		final_period = current_period[0];
-		
-	}
-	
-	else
-	{
-		int MACLRT = ACLRT;
-		if(current_period[0] < target_period[0])
-		{
-			MACLRT = -1* ACLRT;
-		}
-		
-		long current_v = (-1000000/current_period[0]);
-		long first = sqrt((current_v *current_v) + ((4*1000000*MACLRT)/1000));
-
-		final_period = ((current_v + first)*1000) / (2*MACLRT);
-		
-		if(current_period[0] < target_period[0] && final_period > target_period[0])
+		final_period = get_a_period(c_period, t_period);
+		//acceleration overshot target, increase to match target
+		if(final_period < target_period[0])
 		{
 			final_period = target_period[0];
+			
 		}
-		else if(current_period[0] > target_period[0] && final_period < target_period[0])
-		{
-			final_period = target_period[0];
-		}
-
-
 	}
 	
 	current_period[0] = final_period;
-	*/
 	
-	//uc_tpm_set_compare_val(tpm_chan_2, final_period);
+	uc_tpm_set_compare_val(tpm_chan_2, final_period);
 	
 	
 		

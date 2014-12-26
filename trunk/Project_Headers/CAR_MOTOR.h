@@ -14,8 +14,6 @@
 #include "uc_dac.h"
 #include "gpio.h"
 
-#include "math.h"
-
 
 typedef enum{
 	CAR_MOTOR_dir_f,
