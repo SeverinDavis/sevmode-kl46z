@@ -22,8 +22,10 @@
  * 
  */
 
-#define A_TABLE_SZ 13
-#define D_TABLE_SZ 10
+#define A_TABLE_SZ 	13
+#define D_TABLE_SZ 	10
+#define A_D_CNT_MAX	30
+
 
 //A bunch of globals to save states
 static char car_motor = 0b00000000;
@@ -32,6 +34,9 @@ static volatile CAR_MOTOR_dir_t target_direction[4] ={0,0,0,0};
 static volatile CAR_MOTOR_dir_t current_direction[4] ={0,0,0,0};
 static unsigned int current_period[4] ={30000,0,0,0};
 static volatile unsigned int target_period[4] ={30000,0,0,0};
+
+static int a_d_cnt[4] = {0, 0, 0, 0};
+
 
 unsigned int get_a_period(unsigned int, unsigned int);
 unsigned int get_d_period(unsigned int, unsigned int);
@@ -55,7 +60,7 @@ unsigned int get_d_period(unsigned int, unsigned int);
 
 
 static const unsigned int a_bound[A_TABLE_SZ] = {15, 	31, 	63, 	127, 	255, 	511, 	1023, 	2047, 	4095, 	8191, 	16383, 	32767, 	65535};
-static const unsigned int a_table[A_TABLE_SZ] = {575, 	31, 	62, 	121, 	218, 	337, 	437, 	502, 	538, 	557, 	567, 	572, 	575};
+static const unsigned int a_table[A_TABLE_SZ] = {15, 	31, 	62, 	121, 	218, 	337, 	437, 	502, 	538, 	557, 	567, 	572, 	575};
 
 //deceleration table
 /*
@@ -257,7 +262,7 @@ void CAR_MOTOR_set_current_limiter_en(CAR_MOTOR_state p_state)
 		 */
 
 		//needs tuning
-		uc_dac_set_output(1190);	
+		uc_dac_set_output(500);	
 	}
 	
 	else
@@ -275,7 +280,10 @@ unsigned int get_a_period(unsigned int c_period, unsigned int t_period)
 		if(c_period < a_bound[i])
 		{
 			unsigned int base_period = a_table[i-1];
-			return base_period + ((a_table[i] - a_table[i-1])*c_period)/(a_bound[i] - a_bound[i-1]);
+			unsigned int period_adjust = c_period - a_bound[i-1];
+			unsigned int numerator = period_adjust*(a_table[i] - a_table[i-1]);
+			unsigned int offset = numerator/(a_bound[i] - a_bound[i-1]);
+			return base_period + offset;
 		}
 		i++;
 	}
@@ -296,10 +304,77 @@ void CAR_MOTOR_CALLBACK_0()
 	unsigned int final_period = 0;
 	
 	//local copies. don't want the uart interrupt changing these while we're using them.
+	//not sure if it matters, but it's safe.
 	unsigned int c_period = current_period[0];
 	unsigned int t_period = target_period[0];
+	CAR_MOTOR_dir_t c_direction= current_direction[0];
+	CAR_MOTOR_dir_t t_direction= target_direction[0];
 	
-	//target reached, no action
+	//if same direction, simple a or d
+	if(c_direction == t_direction)
+	{
+		//too fast, decelerate
+		if(c_period < t_period)
+		{
+			//get decel value
+			final_period = get_d_period(c_period, t_period);
+			
+			//check if target overshot and correct
+			if(final_period > t_period)
+			{
+				final_period = t_period;
+			}
+		}
+		
+		//too slow, accelerate
+		else if(c_period > t_period)
+		{
+			final_period = get_a_period(c_period, t_period);
+						
+			//check if target overshot and correct
+			if(final_period < t_period)
+			{
+				final_period = t_period;
+			}
+			
+		}
+			
+		//target speed reached, continue
+		else
+		{
+			final_period = t_period;
+		}
+		
+	}
+	
+	//decelerate until direction flip
+	else
+	{
+		if(current_period > a_table[A_TABLE_SZ - 1])
+		{
+			final_period = get_a_period(c_period, t_period);
+			
+			//check if target overshot and correct
+			if(final_period < t_period)
+			{
+				final_period = t_period;
+			}
+		}
+		else
+		{
+			final_period = get_d_value(c_period, t_period);
+		}
+		
+	}
+	
+		
+	current_period[0] = final_period;
+	
+	uc_tpm_set_compare_val(tpm_chan_2, final_period);		
+		
+		
+	//first revision, crap code.
+		/*
 	if(c_period == t_period)
 	{
 		final_period = t_period;
@@ -355,10 +430,9 @@ void CAR_MOTOR_CALLBACK_0()
 			
 		}
 	}
+	*/
 	
-	current_period[0] = final_period;
-	
-	uc_tpm_set_compare_val(tpm_chan_2, final_period);
+
 	
 	
 		
