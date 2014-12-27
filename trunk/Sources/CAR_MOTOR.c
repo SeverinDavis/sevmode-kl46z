@@ -24,7 +24,7 @@
 
 #define A_TABLE_SZ 	13
 #define D_TABLE_SZ 	10
-#define A_D_CNT_MAX	30
+#define A_D_CNT_MAX	10
 
 
 //A bunch of globals to save states
@@ -76,8 +76,8 @@ static const unsigned int a_table[A_TABLE_SZ] = {15, 	31, 	62, 	121, 	218, 	337,
 2	2
 */
 
-static const unsigned int d_bound[D_TABLE_SZ] = {574, 	572, 	568, 	560, 	544, 	512, 	448, 	320, 	64, 	2};
-static const unsigned int d_table[D_TABLE_SZ] = {49602, 31006, 	17680, 	9459, 	4848, 	2398, 	1126, 	462, 	65, 	2};
+static const unsigned int d_bound[D_TABLE_SZ] = {2, 	64, 	320, 	448, 	512, 	544, 	560, 	568, 	572, 	574};
+static const unsigned int d_table[D_TABLE_SZ] = {2, 	65, 	462, 	1126, 	2398, 	4848, 	9459, 	17680, 	31006, 	49602};
 
 /*
  * Initializes pins to control shift registers and configures "direction" pins as GPIO
@@ -293,7 +293,21 @@ unsigned int get_a_period(unsigned int c_period, unsigned int t_period)
 
 unsigned int get_d_period(unsigned int c_period, unsigned int t_period)
 {
-	
+	int i = 1;
+		//loop through entire table. exit early if case matched and value was set.
+	while(i <= D_TABLE_SZ)
+	{
+		if(c_period < d_bound[i])
+		{
+			unsigned int base_period = d_table[i-1];
+			unsigned int period_adjust = c_period - d_bound[i-1];
+			unsigned int numerator = period_adjust*(d_table[i] - d_table[i-1]);
+			unsigned int offset = numerator/(d_bound[i] - d_bound[i-1]);
+			return base_period + offset;
+		}
+		i++;
+	}
+	return t_period;
 }
 
 /*
@@ -319,6 +333,27 @@ void CAR_MOTOR_CALLBACK_0()
 			//get decel value
 			final_period = get_d_period(c_period, t_period);
 			
+			//if no progress is made, begin acceleration counter manual increment.
+			if(final_period == c_period)
+			{
+				//end of acceleration counter reached, manually increment and reset counter for next iteration
+				if(a_d_cnt[0] == A_D_CNT_MAX)
+				{
+					final_period++;
+					a_d_cnt[0] = 0;
+				}
+				//increment counter
+				else
+				{
+					a_d_cnt[0]++;
+				}
+			}
+			//reset counter just in case.
+			else
+			{
+				a_d_cnt[0] = 0;
+			}
+			
 			//check if target overshot and correct
 			if(final_period > t_period)
 			{
@@ -330,12 +365,35 @@ void CAR_MOTOR_CALLBACK_0()
 		else if(c_period > t_period)
 		{
 			final_period = get_a_period(c_period, t_period);
-						
+			
+			//if no progress is made, begin acceleration counter manual increment.
+			if(final_period == c_period)
+			{
+				//end of acceleration counter reached, manually increment and reset counter for next iteration
+				if(a_d_cnt[0] == A_D_CNT_MAX)
+				{
+					final_period--;
+					a_d_cnt[0] = 0;
+				}
+				//increment counter
+				else
+				{
+					a_d_cnt[0]++;
+				}
+			}
+			//reset counter just in case.
+			else
+			{
+				a_d_cnt[0] = 0;
+			}
+			
+			
 			//check if target overshot and correct
 			if(final_period < t_period)
 			{
 				final_period = t_period;
 			}
+			
 			
 		}
 			
@@ -350,7 +408,7 @@ void CAR_MOTOR_CALLBACK_0()
 	//decelerate until direction flip
 	else
 	{
-		if(current_period > a_table[A_TABLE_SZ - 1])
+		if(c_period > 356)
 		{
 			final_period = get_a_period(c_period, t_period);
 			
@@ -362,82 +420,17 @@ void CAR_MOTOR_CALLBACK_0()
 		}
 		else
 		{
-			final_period = get_d_value(c_period, t_period);
+			final_period = get_d_period(c_period, t_period);
 		}
 		
 	}
 	
+
 		
 	current_period[0] = final_period;
 	
 	uc_tpm_set_compare_val(tpm_chan_2, final_period);		
-		
-		
-	//first revision, crap code.
-		/*
-	if(c_period == t_period)
-	{
-		final_period = t_period;
-	}
-	
-	//opposite direction or current period is lower than target period. decelerate
-	else if(current_direction[0] != target_direction[0] || c_period < t_period)
-	{
-		//period value is close enough to completely stopped that we reverse direction and begin acceleration
-		if(current_direction[0] != target_direction[0] && c_period >= d_bound[D_TABLE_SZ-1])
-		{
-			//reverse direction
-			if(current_direction[0] == 1)
-			{
-				current_direction[0] = 0;
-				CAR_MOTOR_set_direction(motor_0, current_direction[0]);
-			}
-			else
-			{
-				current_direction[0] = 1;
-				CAR_MOTOR_set_direction(motor_0, current_direction[0]);
-			}
-			//get accel period
-			final_period = get_a_period(c_period, t_period);
-			//check if target reached already from acceleration
-			if(final_period < t_period)
-			{
-				final_period = t_period;
-			}
-		}
-		//standard deceleration
-		else
-		{
-			final_period = get_d_period(c_period, t_period);
-			//deceleration overshot target, reduce to match target
-			if(current_direction[0] == target_direction[0] && final_period > target_period[0])
-			{
-				final_period = target_period[0];
-			}
 			
-		}
-		
-	}
-	
-	//current period is greater than target period. accelerate
-	else
-	{
-		final_period = get_a_period(c_period, t_period);
-		//acceleration overshot target, increase to match target
-		if(final_period < target_period[0])
-		{
-			final_period = target_period[0];
-			
-		}
-	}
-	*/
-	
-
-	
-	
-		
-	
-	
 }
 
 

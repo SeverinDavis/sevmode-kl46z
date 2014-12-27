@@ -23,7 +23,8 @@
 volatile bool_t idle = true;
 volatile char move_mode = 'n';
 int switch_3_push = 0;
-int switch_3_speed = 25;
+unsigned int switch_3_speed_hi = 50;
+unsigned int switch_3_speed_lo = 150;
 
 
 void PIT0_CALLBACK()
@@ -55,11 +56,11 @@ void SW3_CALLBACK()
 	if(switch_3_push == 0)
 	{
 		switch_3_push = 1;
-		CAR_MOTOR_set_target(motor_0, switch_3_speed);}
+		CAR_MOTOR_set_target(motor_0, switch_3_speed_hi);}
 	else
 	{
-		switch_3_speed --;
-		CAR_MOTOR_set_target(motor_0, switch_3_speed);
+		switch_3_push = 0;
+		CAR_MOTOR_set_target(motor_0, switch_3_speed_lo);
 	}
 	
 }
@@ -141,26 +142,19 @@ void run_mode()
 
 void accel_test()
 {
-	unsigned int test_num = get_a_period(65535, 10);
-	test_num = get_a_period(65534, 10);
-	test_num = get_a_period(32768, 10);
-	test_num = get_a_period(32767, 10);
-	test_num = get_a_period(32766, 10);
-	test_num = get_a_period(511, 10);
-	test_num = get_a_period(509, 10);
-	test_num = get_a_period(128, 10);
-	test_num = get_a_period(127, 10);
-	test_num = get_a_period(126, 10);
-	test_num = get_a_period(70, 10);
-	test_num = get_a_period(64, 10);
-	test_num = get_a_period(63, 10);
-	test_num = get_a_period(62, 10);
-	test_num = get_a_period(40, 10);
-	test_num = get_a_period(32, 10);
-	test_num = get_a_period(31, 10);
-	test_num = get_a_period(30, 10);
-	test_num = get_a_period(18, 10);
-	get_a_period(18, test_num);
+	unsigned int test_num = get_d_period(65535, 65535);
+	test_num = get_d_period(10, 65535);
+	test_num = get_d_period(63, 65535);
+	test_num = get_d_period(64, 65535);
+	test_num = get_d_period(65, 65535);
+	test_num = get_d_period(320, 65535);
+	test_num = get_d_period(571, 65535);
+	test_num = get_d_period(572, 65535);
+	test_num = get_d_period(573, 65535);
+	test_num = get_d_period(574, 65535);
+	test_num = get_d_period(575, 65535);
+	test_num = get_d_period(513, 65535);
+
 
 }
 
