@@ -139,6 +139,31 @@ void run_mode()
 	{}
 }
 
+void accel_test()
+{
+	unsigned int test_num = get_a_period(65535, 10);
+	test_num = get_a_period(65534, 10);
+	test_num = get_a_period(32768, 10);
+	test_num = get_a_period(32767, 10);
+	test_num = get_a_period(32766, 10);
+	test_num = get_a_period(511, 10);
+	test_num = get_a_period(509, 10);
+	test_num = get_a_period(128, 10);
+	test_num = get_a_period(127, 10);
+	test_num = get_a_period(126, 10);
+	test_num = get_a_period(70, 10);
+	test_num = get_a_period(64, 10);
+	test_num = get_a_period(63, 10);
+	test_num = get_a_period(62, 10);
+	test_num = get_a_period(40, 10);
+	test_num = get_a_period(32, 10);
+	test_num = get_a_period(31, 10);
+	test_num = get_a_period(30, 10);
+	test_num = get_a_period(18, 10);
+	get_a_period(18, test_num);
+
+}
+
 int main(void)
 {
 	
@@ -147,8 +172,8 @@ int main(void)
 	
 	uc_led_on(led_red);
 
-	
-	
+
+	accel_test();
 	while(1)
 	{
 		if(idle == true)
