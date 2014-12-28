@@ -8,7 +8,7 @@
 
 
 #include "CAR_MOTOR.h"
-#include "uc_led.h"
+
 
 
 
@@ -25,6 +25,7 @@
 #define A_TABLE_SZ 	13
 #define D_TABLE_SZ 	10
 #define A_D_CNT_MAX	10
+#define FLIP_ZERO	3000
 
 
 //A bunch of globals to save states
@@ -32,14 +33,15 @@ static char car_motor = 0b00000000;
 
 static volatile CAR_MOTOR_dir_t target_direction[4] ={0,0,0,0};
 static volatile CAR_MOTOR_dir_t current_direction[4] ={0,0,0,0};
-static unsigned int current_period[4] ={30000,0,0,0};
-static volatile unsigned int target_period[4] ={30000,0,0,0};
+static volatile unsigned int current_period[4] ={100,0,0,0};
+static volatile unsigned int target_period[4] ={100,0,0,0};
 
 static int a_d_cnt[4] = {0, 0, 0, 0};
 
 
 unsigned int get_a_period(unsigned int, unsigned int);
 unsigned int get_d_period(unsigned int, unsigned int);
+void CAR_MOTOR_set_direction(CAR_MOTOR_motor_t, CAR_MOTOR_dir_t);
 
 //acceleration table
 /*
@@ -408,19 +410,35 @@ void CAR_MOTOR_CALLBACK_0()
 	//decelerate until direction flip
 	else
 	{
-		if(c_period > 356)
+
+		//current period is already so low that we accelerate right away
+		if(c_period >= FLIP_ZERO)
 		{
+			//flip direction
+			current_direction[0] = t_direction;
+			CAR_MOTOR_set_direction(motor_0, t_direction);
+
+			//get acceleration because we're speeding up now
 			final_period = get_a_period(c_period, t_period);
 			
-			//check if target overshot and correct
+			//check if target overshot and correct for overshoot
 			if(final_period < t_period)
 			{
 				final_period = t_period;
 			}
 		}
+		//haven't slowed down enough yet
 		else
 		{
-			final_period = get_d_period(c_period, t_period);
+			//if we overshoot "0" speed via deceleration, set at "0" speed = 2000 period
+			final_period = get_d_period(c_period, 65535);
+			if(final_period > FLIP_ZERO)
+			{
+				final_period = FLIP_ZERO;
+				//flip direction
+				current_direction[0] = t_direction;
+				CAR_MOTOR_set_direction(motor_0, t_direction);
+			}
 		}
 		
 	}
@@ -488,10 +506,15 @@ void CAR_MOTOR_set_direction(CAR_MOTOR_motor_t p_motor, CAR_MOTOR_dir_t p_dir)
 /*
  * sets new target period
  */
-void CAR_MOTOR_set_target(CAR_MOTOR_motor_t p_motor, int p_target)
+void CAR_MOTOR_set_t_period(CAR_MOTOR_motor_t p_motor, unsigned int p_target)
 {
 	target_period[p_motor]=p_target;
 
+}
+
+void CAR_MOTOR_set_t_direction(CAR_MOTOR_motor_t p_motor, CAR_MOTOR_dir_t p_dir)
+{
+	target_direction[p_motor]=p_dir;
 }
 
 
