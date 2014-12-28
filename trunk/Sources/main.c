@@ -56,12 +56,13 @@ void SW3_CALLBACK()
 	if(switch_3_push == 0)
 	{
 		switch_3_push = 1;
-		CAR_MOTOR_set_target(motor_0, switch_3_speed_hi);}
-	else
-	{
-		switch_3_push = 0;
-		CAR_MOTOR_set_target(motor_0, switch_3_speed_lo);
+		CAR_MOTOR_set_t_direction(motor_0, 1);
 	}
+	else if(switch_3_push == 1)
+		{
+			switch_3_push = 0;
+			CAR_MOTOR_set_t_direction(motor_0, 0);
+		}
 	
 }
 
@@ -164,7 +165,7 @@ int main(void)
 	//initialize hardware
 	init();
 	
-	uc_led_on(led_red);
+
 
 
 	accel_test();
