@@ -14,168 +14,88 @@ XInputSetState(0, &vibrate);
 #include <time.h> 
 #include <string>
 #include <iostream>
+#include <math.h>
 
 #include "Serial.h"
 
 #define BAUDRATE 9600
 
-#define XBOX_DEBUG
+//#define XBOX_DEBUG
+#define VAL_PRINT
+
+#define PI 3.14159265
 
 using namespace std;
 void prompt_serial(CSerial * port_pntr);
 void prompt_controller(XINPUT_STATE * state);
-void run(XINPUT_STATE * state, CSerial * port_pntr);
+void poll(XINPUT_STATE * state, CSerial * port_pntr);
 void sleep(unsigned int mseconds); 
+void xbox_debug_msg(XINPUT_STATE * p_state);
 
 void main()
 {
 	CSerial port;
 	prompt_serial(&port);
-	
+
 	XINPUT_STATE state;
 
 	prompt_controller(&state);
 
-	run(&state, &port);
-
-	for(;;)
+	while (1)
 	{
 		
-		XInputGetState(0, &state);
-
-#ifdef XBOX_DEBUG
-		if(state.Gamepad.wButtons & 0x0001)
-			{
-				cout << "UP is pressed" << endl;
-			}
-		if(state.Gamepad.wButtons & 0x0002)
-			{
-				cout << "DOWN is pressed" << endl;
-			}
-		if(state.Gamepad.wButtons & 0x0004)
-			{
-				cout << "LEFT is pressed" << endl;
-			}
-		if(state.Gamepad.wButtons & 0x0008)
-			{
-				cout << "RIGHT is pressed" << endl;
-			}
-		if(state.Gamepad.wButtons & 0x0010)
-			{
-				cout << "START is pressed" << endl;
-			}
-		if(state.Gamepad.wButtons & 0x0020)
-			{
-				cout << "BACK is pressed" << endl;
-			}
-		if(state.Gamepad.wButtons & 0x0040)
-			{
-				cout << "LTHMB is pressed" << endl;
-			}
-		if(state.Gamepad.wButtons & 0x0080)
-			{
-				cout << "RTHMB is pressed" << endl;
-			}
-		if(state.Gamepad.wButtons & 0x0100)
-			{
-				cout << "LSHLDR is pressed" << endl;
-			}
-		if(state.Gamepad.wButtons & 0x0200)
-			{
-				cout << "RSHLDR is pressed" << endl;
-			}
-		if(state.Gamepad.wButtons & 0x1000)
-			{
-				cout << "A is pressed" << endl;
-			}
-		if(state.Gamepad.wButtons & 0x2000)
-			{
-				cout << "B is pressed" << endl;
-			}
-		if(state.Gamepad.wButtons & 0x4000)
-			{
-				cout << "X is pressed" << endl;
-			}
-		if(state.Gamepad.wButtons & 0x8000)
-			{
-				cout << "Y is pressed" << endl;
-			}
-		if(state.Gamepad.bLeftTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD )
-			{
-				cout << "LT is pressed" << endl;
-			}
-		if(state.Gamepad.bRightTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD )
-			{
-				cout << "RT is pressed" << endl;
-			}
-		if(abs(state.Gamepad.sThumbLX) > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE)
-			{
-				cout << "Left Thumbstick X Position is at" << state.Gamepad.sThumbLX << endl;
-			}
-		if(abs(state.Gamepad.sThumbLY) > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE)
-			{
-				cout << "Left Thumbstick Y Position is at" << state.Gamepad.sThumbLY << endl;
-			}
-		if(abs(state.Gamepad.sThumbRX) > XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE)
-			{
-				cout << "Right Thumbstick X Position is at" << state.Gamepad.sThumbRX << endl;
-			}
-		if(abs(state.Gamepad.sThumbRY) > XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE)
-			{
-				cout << "Right Thumbstick Y Position is at" << state.Gamepad.sThumbRY << endl;
-			}
-#endif
-
-		char mssg[1];
-		if (state.Gamepad.sThumbLY == -32768) // down
-		{
-			mssg[0] = 'b';
-
-		}
-
-		else if(state.Gamepad.sThumbLY == 32767) // up
-		{
-			mssg[0] = 'f';
-
-		}
-
-		else if(state.Gamepad.sThumbLX == 32767) // right
-		{
-			mssg[0] = 'r';
-
-		}
-
-		else if(state.Gamepad.sThumbLX == -32767) // left
-		{
-			mssg[0] = 'l';
-	
-		}
-
-		else
-		{
-			mssg[0] = 'n';
-
-		}
-
-		(&port)->SendData(mssg, 1);
-
-
-		sleep(250);
-	
+		poll(&state, &port);
+		sleep(50);
 	}
 
-	return;
+
 }
 
-void run(XINPUT_STATE * state, CSerial * port_pntr)
+void poll(XINPUT_STATE * state, CSerial * port_pntr)
 {
-	/*
-	char mssg[6] = "Hello";
-	mssg[0] = 'B';
-	mssg[5] = 'C';
-	cout << port_pntr->SendData(mssg, 6);
-	*/
-	//system("pause");
+	int x = 0;
+	int y = 0;
+
+	double theta = 0;
+	double mag = 0;
+	prompt_controller(state);
+
+	#ifdef XBOX_DEBUG
+		xbox_debug_msg(state);
+	#endif
+
+
+	
+	x = (state->Gamepad.sThumbLX);
+	y = (state->Gamepad.sThumbLY);
+	if (!((x == 0) && (y == 0)))
+	{
+		theta = atan2((double)y, (double)x);
+	}
+
+	double y_sqrd = ((double)y)*((double)y);
+	double x_sqrd = ((double)x)*((double)x);
+
+	mag = sqrt(x_sqrd + y_sqrd);
+	if (mag < XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE)
+	{
+		mag = 0;
+		theta = 0;
+	}
+
+	
+	if (y < 0)
+	{
+		theta = theta + (2*PI);
+	}
+	theta = (theta * 180) / PI;
+
+#ifdef VAL_PRINT
+	cout << "Theta is: " << theta << endl;
+	cout << "Mag is:" << mag << endl << endl;
+#endif
+
+	
 }
 
 void sleep(unsigned int mseconds) 
@@ -187,18 +107,23 @@ void sleep(unsigned int mseconds)
 
 void prompt_controller(XINPUT_STATE * state)
 {
-
+	int flag = 0;
 	//loops while no response from controller
 
 	while( XInputGetState( 0, state ) != ERROR_SUCCESS )
 	{
-        cout << "Controller not connected" << endl << endl;
-		system("pause");
+		if (flag == 0)
+		{
+			cout << "Controller not connected" << endl << endl;
+			flag = 1;
+		}
 	}
 
-	//rechecks controller response
-	if(XInputGetState( 0, state ) == ERROR_SUCCESS)
-	cout << "Controller connected" << endl;
+	if (flag == 1)
+	{
+		cout << "Controller connected" << endl;
+	}
+	
 }
 
 void prompt_serial(CSerial * port_pntr)
@@ -236,5 +161,89 @@ void prompt_serial(CSerial * port_pntr)
 	if(port_pntr->Open(port_num, BAUDRATE))
 	{
 		cout << "Connected to COM" << port_num << " with " << BAUDRATE << " baud" << endl << endl;
+	}
+}
+
+void xbox_debug_msg(XINPUT_STATE * p_state)
+{
+	if (p_state->Gamepad.wButtons & 0x0001)
+	{
+		cout << "UP is pressed" << endl;
+	}
+	if (p_state->Gamepad.wButtons & 0x0002)
+	{
+		cout << "DOWN is pressed" << endl;
+	}
+	if (p_state->Gamepad.wButtons & 0x0004)
+	{
+		cout << "LEFT is pressed" << endl;
+	}
+	if (p_state->Gamepad.wButtons & 0x0008)
+	{
+		cout << "RIGHT is pressed" << endl;
+	}
+	if (p_state->Gamepad.wButtons & 0x0010)
+	{
+		cout << "START is pressed" << endl;
+	}
+	if (p_state->Gamepad.wButtons & 0x0020)
+	{
+		cout << "BACK is pressed" << endl;
+	}
+	if (p_state->Gamepad.wButtons & 0x0040)
+	{
+		cout << "LTHMB is pressed" << endl;
+	}
+	if (p_state->Gamepad.wButtons & 0x0080)
+	{
+		cout << "RTHMB is pressed" << endl;
+	}
+	if (p_state->Gamepad.wButtons & 0x0100)
+	{
+		cout << "LSHLDR is pressed" << endl;
+	}
+	if (p_state->Gamepad.wButtons & 0x0200)
+	{
+		cout << "RSHLDR is pressed" << endl;
+	}
+	if (p_state->Gamepad.wButtons & 0x1000)
+	{
+		cout << "A is pressed" << endl;
+	}
+	if (p_state->Gamepad.wButtons & 0x2000)
+	{
+		cout << "B is pressed" << endl;
+	}
+	if (p_state->Gamepad.wButtons & 0x4000)
+	{
+		cout << "X is pressed" << endl;
+	}
+	if (p_state->Gamepad.wButtons & 0x8000)
+	{
+		cout << "Y is pressed" << endl;
+	}
+	if (p_state->Gamepad.bLeftTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD)
+	{
+		cout << "LT is pressed" << endl;
+	}
+	if (p_state->Gamepad.bRightTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD)
+	{
+		cout << "RT is pressed" << endl;
+	}
+	if (abs(p_state->Gamepad.sThumbLX) > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE)
+	{
+		cout << "Left Thumbstick X Position is at" << p_state->Gamepad.sThumbLX << endl;
+	}
+	if (abs(p_state->Gamepad.sThumbLY) > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE)
+	{
+		cout << "Left Thumbstick Y Position is at" << p_state->Gamepad.sThumbLY << endl;
+	}
+	if (abs(p_state->Gamepad.sThumbRX) > XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE)
+	{
+		cout << "Right Thumbstick X Position is at" << p_state->Gamepad.sThumbRX << endl;
+	}
+	if (abs(p_state->Gamepad.sThumbRY) > XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE)
+	{
+		cout << "Right Thumbstick Y Position is at" << p_state->Gamepad.sThumbRY << endl;
 	}
 }
