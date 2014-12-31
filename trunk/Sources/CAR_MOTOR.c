@@ -25,7 +25,7 @@
 #define A_TABLE_SZ 	13
 #define D_TABLE_SZ 	10
 #define A_D_CNT_MAX	10
-#define FLIP_ZERO	3000
+#define FLIP_ZERO	2200
 
 
 //A bunch of globals to save states
@@ -33,8 +33,8 @@ static char car_motor = 0b00000000;
 
 static volatile CAR_MOTOR_dir_t target_direction[4] ={0,0,0,0};
 static volatile CAR_MOTOR_dir_t current_direction[4] ={0,0,0,0};
-static volatile unsigned int current_period[4] ={100,0,0,0};
-static volatile unsigned int target_period[4] ={100,0,0,0};
+static volatile unsigned int current_period[4] ={30000,30000,30000,30000};
+static volatile unsigned int target_period[4] ={30000,30000,30000,30000};
 
 static int a_d_cnt[4] = {0, 0, 0, 0};
 
@@ -42,6 +42,7 @@ static int a_d_cnt[4] = {0, 0, 0, 0};
 unsigned int get_a_period(unsigned int, unsigned int);
 unsigned int get_d_period(unsigned int, unsigned int);
 void CAR_MOTOR_set_direction(CAR_MOTOR_motor_t, CAR_MOTOR_dir_t);
+unsigned int CAR_MOTOR_compute_period(CAR_MOTOR_motor_t , CAR_MOTOR_dir_t c_direction, CAR_MOTOR_dir_t t_direction, unsigned int c_period, unsigned int t_period);
 
 //acceleration table
 /*
@@ -108,6 +109,11 @@ void CAR_MOTOR_init()
 	gpio_port_init(port_E, pin_1, alt_1, output);
 	gpio_port_init(port_E, pin_2, alt_1, output);
 	gpio_port_init(port_E, pin_3, alt_1, output);
+	
+	CAR_MOTOR_set_direction(motor_0, target_direction[motor_0]);
+	CAR_MOTOR_set_direction(motor_1, target_direction[motor_1]);
+	CAR_MOTOR_set_direction(motor_2, target_direction[motor_2]);
+	CAR_MOTOR_set_direction(motor_3, target_direction[motor_3]);
 	
 	//MOTORS NEED TO BE CONFIGURED FOR PWM/TPM FUNCTION HERE. LEFT OUT UNTIL EVERYTHING ELSE WORKING****************************************************************************************Asterisk line for attention
 	
@@ -317,7 +323,7 @@ unsigned int get_d_period(unsigned int c_period, unsigned int t_period)
  */
 void CAR_MOTOR_CALLBACK_0()
 {
-	unsigned int final_period = 0;
+	
 	
 	//local copies. don't want the uart interrupt changing these while we're using them.
 	//not sure if it matters, but it's safe.
@@ -326,124 +332,8 @@ void CAR_MOTOR_CALLBACK_0()
 	CAR_MOTOR_dir_t c_direction= current_direction[0];
 	CAR_MOTOR_dir_t t_direction= target_direction[0];
 	
-	//if same direction, simple a or d
-	if(c_direction == t_direction)
-	{
-		//too fast, decelerate
-		if(c_period < t_period)
-		{
-			//get decel value
-			final_period = get_d_period(c_period, t_period);
-			
-			//if no progress is made, begin acceleration counter manual increment.
-			if(final_period == c_period)
-			{
-				//end of acceleration counter reached, manually increment and reset counter for next iteration
-				if(a_d_cnt[0] == A_D_CNT_MAX)
-				{
-					final_period++;
-					a_d_cnt[0] = 0;
-				}
-				//increment counter
-				else
-				{
-					a_d_cnt[0]++;
-				}
-			}
-			//reset counter just in case.
-			else
-			{
-				a_d_cnt[0] = 0;
-			}
-			
-			//check if target overshot and correct
-			if(final_period > t_period)
-			{
-				final_period = t_period;
-			}
-		}
-		
-		//too slow, accelerate
-		else if(c_period > t_period)
-		{
-			final_period = get_a_period(c_period, t_period);
-			
-			//if no progress is made, begin acceleration counter manual increment.
-			if(final_period == c_period)
-			{
-				//end of acceleration counter reached, manually increment and reset counter for next iteration
-				if(a_d_cnt[0] == A_D_CNT_MAX)
-				{
-					final_period--;
-					a_d_cnt[0] = 0;
-				}
-				//increment counter
-				else
-				{
-					a_d_cnt[0]++;
-				}
-			}
-			//reset counter just in case.
-			else
-			{
-				a_d_cnt[0] = 0;
-			}
-			
-			
-			//check if target overshot and correct
-			if(final_period < t_period)
-			{
-				final_period = t_period;
-			}
-			
-			
-		}
-			
-		//target speed reached, continue
-		else
-		{
-			final_period = t_period;
-		}
-		
-	}
 	
-	//decelerate until direction flip
-	else
-	{
-
-		//current period is already so low that we accelerate right away
-		if(c_period >= FLIP_ZERO)
-		{
-			//flip direction
-			current_direction[0] = t_direction;
-			CAR_MOTOR_set_direction(motor_0, t_direction);
-
-			//get acceleration because we're speeding up now
-			final_period = get_a_period(c_period, t_period);
-			
-			//check if target overshot and correct for overshoot
-			if(final_period < t_period)
-			{
-				final_period = t_period;
-			}
-		}
-		//haven't slowed down enough yet
-		else
-		{
-			//if we overshoot "0" speed via deceleration, set at "0" speed = 2000 period
-			final_period = get_d_period(c_period, 65535);
-			if(final_period > FLIP_ZERO)
-			{
-				final_period = FLIP_ZERO;
-				//flip direction
-				current_direction[0] = t_direction;
-				CAR_MOTOR_set_direction(motor_0, t_direction);
-			}
-		}
-		
-	}
-	
-
+	unsigned int final_period = CAR_MOTOR_compute_period(motor_0 , c_direction, t_direction, c_period, t_period);
 		
 	current_period[0] = final_period;
 	
@@ -543,6 +433,152 @@ void CAR_MOTOR_motor_startup()
 	//enable output
 	//CAR_MOTOR_set_output_en(enable);
 	//CAR_MOTOR_update();
+}
+
+
+unsigned int CAR_MOTOR_compute_period(CAR_MOTOR_motor_t p_motor, CAR_MOTOR_dir_t c_direction, CAR_MOTOR_dir_t t_direction, unsigned int c_period, unsigned int t_period)
+{
+	unsigned int final_period = 0;
+	//if same direction, simple a or d
+	if(c_direction == t_direction)
+	{
+		//too fast, decelerate
+		if(c_period < t_period)
+		{
+			//get decel value
+			final_period = get_d_period(c_period, t_period);
+			
+			//if no progress is made, begin acceleration counter manual increment.
+			if(final_period == c_period)
+			{
+				//end of acceleration counter reached, manually increment and reset counter for next iteration
+				if(a_d_cnt[p_motor] == A_D_CNT_MAX)
+				{
+					final_period++;
+					a_d_cnt[p_motor] = 0;
+				}
+				//increment counter
+				else
+				{
+					a_d_cnt[p_motor]++;
+				}
+			}
+			//reset counter just in case.
+			else
+			{
+				a_d_cnt[p_motor] = 0;
+			}
+			
+			//check if target overshot and correct
+			if(final_period > t_period)
+			{
+				final_period = t_period;
+			}
+		}
+		
+		//too slow, accelerate
+		else if(c_period > t_period)
+		{
+			final_period = get_a_period(c_period, t_period);
+			
+			//if no progress is made, begin acceleration counter manual increment.
+			if(final_period == c_period)
+			{
+				//end of acceleration counter reached, manually increment and reset counter for next iteration
+				if(a_d_cnt[p_motor] == A_D_CNT_MAX)
+				{
+					final_period--;
+					a_d_cnt[p_motor] = 0;
+				}
+				//increment counter
+				else
+				{
+					a_d_cnt[p_motor]++;
+				}
+			}
+			//reset counter just in case.
+			else
+			{
+				a_d_cnt[p_motor] = 0;
+			}
+			
+			
+			//check if target overshot and correct
+			if(final_period < t_period)
+			{
+				final_period = t_period;
+			}
+			
+			
+		}
+			
+		//target speed reached, continue
+		else
+		{
+			final_period = t_period;
+		}
+		
+	}
+	
+	//decelerate until direction flip
+	else
+	{
+
+		//current period is already so low that we accelerate right away
+		if(c_period >= FLIP_ZERO)
+		{
+			//flip direction
+			current_direction[p_motor] = t_direction;
+			CAR_MOTOR_set_direction(p_motor, t_direction);
+
+			//get acceleration because we're speeding up now
+			final_period = get_a_period(c_period, t_period);
+			
+			//check if target overshot and correct for overshoot
+			if(final_period < t_period)
+			{
+				final_period = t_period;
+			}
+		}
+		//haven't slowed down enough yet
+		else
+		{
+			//if we overshoot "0" speed via deceleration, set at "0" speed = 2000 period
+			final_period = get_d_period(c_period, 65535);
+			
+			if(final_period == c_period)
+			{
+							//end of acceleration counter reached, manually increment and reset counter for next iteration
+				if(a_d_cnt[p_motor] == A_D_CNT_MAX)
+				{
+					final_period++;
+					a_d_cnt[p_motor] = 0;
+				}
+				//increment counter
+				else
+				{
+					a_d_cnt[p_motor]++;
+				}
+			}
+			//reset counter just in case.
+			else
+			{
+				a_d_cnt[p_motor] = 0;
+			}
+			
+			if(final_period > FLIP_ZERO)
+			{
+				final_period = FLIP_ZERO;
+				//flip direction
+				current_direction[p_motor] = t_direction;
+				CAR_MOTOR_set_direction(p_motor, t_direction);
+			}
+		}
+		
+	}	
+	
+	return final_period;
+
 }
 
 

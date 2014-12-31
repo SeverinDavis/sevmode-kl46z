@@ -82,18 +82,39 @@ void poll(XINPUT_STATE * state, CSerial * port_pntr)
 		mag = 0;
 		theta = 0;
 	}
+	else
+	{
+		if (mag > 32767)
+		{
+			mag = 32767;
+		}
+	
+		if (y < 0)
+		{
+			theta = theta + (2*PI);
+		}
+
+		theta = (theta * 180) / PI;
+		mag = (mag - XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE) / (32767 - XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE);
+	}
+
+
 
 	
-	if (y < 0)
-	{
-		theta = theta + (2*PI);
-	}
-	theta = (theta * 180) / PI;
 
 #ifdef VAL_PRINT
 	cout << "Theta is: " << theta << endl;
 	cout << "Mag is:" << mag << endl << endl;
 #endif
+
+	double PI_div_4 = PI / 4;
+	double sin_term = sin(theta + (PI_div_4));
+	double cos_term = cos(theta + (PI_div_4));
+
+
+	
+
+
 
 	
 }
