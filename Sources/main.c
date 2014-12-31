@@ -20,21 +20,35 @@
 #include "CAR_XBEE.h"
 #include "custom.h"
 
+#define PCKT_NUM 9
+
 volatile bool_t idle = true;
 volatile char move_mode = 'n';
 int switch_3_push = 0;
 unsigned int switch_3_speed_hi = 50;
 unsigned int switch_3_speed_lo = 150;
+int xbee_pckt_cnt = 0;
+char raw_pckts[PCKT_NUM] = {0,0,0,0,0,0,0,0,0}; 
+
+int deadman = 0;
 
 
+//has to run at lower rate than xbee callback
 void PIT0_CALLBACK()
 {
-	uc_led_toggle(led_green);
+	if(deadman == 0)
+	{
+		//add shutdown code
+	}
+	else
+	{
+		deadman = 0;
+	}
 }
 
 void PIT1_CALLBACK()
 {
-	uc_led_toggle(led_red);
+
 }
 
 void SW1_CALLBACK()
@@ -49,26 +63,58 @@ void SW1_CALLBACK()
 		idle = true;
 	}
 	
+	
+	//shutdown pit
+	//xbee sleep
+	//motor disable
+	//set car status light
 }
 
 void SW3_CALLBACK()
 {
+	
 	if(switch_3_push == 0)
 	{
 		switch_3_push = 1;
 		CAR_MOTOR_set_t_direction(motor_0, 1);
+		CAR_MOTOR_set_t_period(motor_0, 25);
+		CAR_MOTOR_set_t_direction(motor_1, 1);
+				CAR_MOTOR_set_t_period(motor_1, 25);
+				CAR_MOTOR_set_t_direction(motor_2, 1);
+						CAR_MOTOR_set_t_period(motor_2, 25);
+						CAR_MOTOR_set_t_direction(motor_3, 1);
+								CAR_MOTOR_set_t_period(motor_3, 25);
+
 	}
 	else if(switch_3_push == 1)
 		{
 			switch_3_push = 0;
 			CAR_MOTOR_set_t_direction(motor_0, 0);
+			CAR_MOTOR_set_t_direction(motor_1, 0);
+			CAR_MOTOR_set_t_direction(motor_2, 0);
+			CAR_MOTOR_set_t_direction(motor_3, 0);
 		}
 	
 }
 
 void XBEE_CALLBACK()
 {
-	char rcv_mode = uc_uart_get_data();
+	deadman = 1;
+	
+	raw_pckts[xbee_pckt_cnt] = uc_uart_get_data();
+	
+	if(xbee_pckt_cnt == 8)
+	{
+		
+	}
+	
+	xbee_pckt_cnt = (xbee_pckt_cnt + 1)%PCKT_NUM;
+	 
+	if(xbee_pckt_cnt == 0)
+	{
+		 //update actual from raw packet array
+		 
+	}
 }
 
 
@@ -114,9 +160,9 @@ void init()
 	
 	uc_tpm_init();
 	uc_tpm_set_callback(tpm_chan_2, CAR_MOTOR_CALLBACK_0);
-	//uc_tpm_set_callback(tpm_chan_3, CAR_MOTOR_CALLBACK_1);
-	//uc_tpm_set_callback(tpm_chan_4, CAR_MOTOR_CALLBACK_2);
-	//uc_tpm_set_callback(tpm_chan_5, CAR_MOTOR_CALLBACK_3);
+	uc_tpm_set_callback(tpm_chan_3, CAR_MOTOR_CALLBACK_1);
+	uc_tpm_set_callback(tpm_chan_4, CAR_MOTOR_CALLBACK_2);
+	uc_tpm_set_callback(tpm_chan_5, CAR_MOTOR_CALLBACK_3);
 	int_all_unmask();
 	
 	CAR_MOTOR_motor_startup();	
@@ -143,19 +189,6 @@ void run_mode()
 
 void accel_test()
 {
-	unsigned int test_num = get_d_period(65535, 65535);
-	test_num = get_d_period(10, 65535);
-	test_num = get_d_period(63, 65535);
-	test_num = get_d_period(64, 65535);
-	test_num = get_d_period(65, 65535);
-	test_num = get_d_period(320, 65535);
-	test_num = get_d_period(571, 65535);
-	test_num = get_d_period(572, 65535);
-	test_num = get_d_period(573, 65535);
-	test_num = get_d_period(574, 65535);
-	test_num = get_d_period(575, 65535);
-	test_num = get_d_period(513, 65535);
-
 
 }
 
@@ -168,7 +201,7 @@ int main(void)
 
 
 
-	accel_test();
+	//accel_test();
 	while(1)
 	{
 		if(idle == true)
