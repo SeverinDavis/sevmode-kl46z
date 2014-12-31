@@ -42,7 +42,7 @@ void uc_tpm_init()
 		int_init(INT_TPM0, priority_1);
 		
 		int n;
-		for(n = 2; n < 3; n++)
+		for(n = 2; n < 6; n++)
 		{
 			//configd for output compare
 			TPM0_CnSC(n) = TPM_CnSC_MSB_MASK | TPM_CnSC_MSA_MASK | TPM_CnSC_ELSA_MASK;
@@ -78,7 +78,7 @@ void TPM0_IRQHandler()
 	int uber_locked_counter = TPM0_CNT;
 	int n = 2;
 	// loop through all used tpm channels
-	for(n = 2; n < 3; n++)
+	for(n = 2; n < 6; n++)
 		//check if interrupt occurred in that channel 
 		if((TPM0_CnSC(n) & TPM_CnSC_CHF_MASK) == TPM_CnSC_CHF_MASK)
 		{

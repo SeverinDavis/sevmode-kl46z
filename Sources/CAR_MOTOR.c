@@ -332,7 +332,6 @@ void CAR_MOTOR_CALLBACK_0()
 	CAR_MOTOR_dir_t c_direction= current_direction[0];
 	CAR_MOTOR_dir_t t_direction= target_direction[0];
 	
-	
 	unsigned int final_period = CAR_MOTOR_compute_period(motor_0 , c_direction, t_direction, c_period, t_period);
 		
 	current_period[0] = final_period;
@@ -348,7 +347,16 @@ void CAR_MOTOR_CALLBACK_0()
  */
 void CAR_MOTOR_CALLBACK_1()
 {
-	
+	unsigned int c_period = current_period[1];
+		unsigned int t_period = target_period[1];
+		CAR_MOTOR_dir_t c_direction= current_direction[1];
+		CAR_MOTOR_dir_t t_direction= target_direction[1];
+		
+		unsigned int final_period = CAR_MOTOR_compute_period(motor_1 , c_direction, t_direction, c_period, t_period);
+			
+		current_period[1] = final_period;
+		
+		uc_tpm_set_compare_val(tpm_chan_3, final_period);
 
 }
 
@@ -359,7 +367,16 @@ void CAR_MOTOR_CALLBACK_1()
  */
 void CAR_MOTOR_CALLBACK_2()
 {
-	
+	unsigned int c_period = current_period[2];
+			unsigned int t_period = target_period[2];
+			CAR_MOTOR_dir_t c_direction= current_direction[2];
+			CAR_MOTOR_dir_t t_direction= target_direction[2];
+			
+			unsigned int final_period = CAR_MOTOR_compute_period(motor_2 , c_direction, t_direction, c_period, t_period);
+				
+			current_period[2] = final_period;
+			
+			uc_tpm_set_compare_val(tpm_chan_4, final_period);
 
 }
 
@@ -370,7 +387,16 @@ void CAR_MOTOR_CALLBACK_2()
  */
 void CAR_MOTOR_CALLBACK_3()
 {
-	
+	unsigned int c_period = current_period[3];
+			unsigned int t_period = target_period[3];
+			CAR_MOTOR_dir_t c_direction= current_direction[3];
+			CAR_MOTOR_dir_t t_direction= target_direction[3];
+			
+			unsigned int final_period = CAR_MOTOR_compute_period(motor_3 , c_direction, t_direction, c_period, t_period);
+				
+			current_period[3] = final_period;
+			
+			uc_tpm_set_compare_val(tpm_chan_5, final_period);
 
 }
 
