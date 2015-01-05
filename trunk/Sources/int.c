@@ -40,3 +40,17 @@ void int_all_mask()
 {
 	NVIC_ICER = 0xFFFFFFFF;
 }
+
+
+void int_mask(IRQInterruptIndex p_vector)
+{
+	int IRQ = p_vector - 16;
+	NVIC_ICER = (1 << IRQ);
+}
+
+
+void int_unmask(IRQInterruptIndex p_vector)
+{
+	int IRQ = p_vector - 16;
+	NVIC_ISER = (1 << IRQ);
+}

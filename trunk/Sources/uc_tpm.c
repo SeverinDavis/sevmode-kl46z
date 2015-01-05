@@ -11,7 +11,6 @@
 #define TPM_MOD_VAL_OFF 0xFFFF
 
 static callback_t tpm_callback[6] ={0,0,0,0,0,0};
-static int locked_counter[4] = {0,0,0,0};
 
 void uc_tpm_init()
 {
@@ -64,18 +63,34 @@ void uc_tpm_set_callback(tpm_chan_t p_tpm_chan, callback_t p_callback)
 
 void uc_tpm_set_compare_val(tpm_chan_t p_tpm_chan, int p_value)
 {
-	if(p_value == 0)
+	
+
+	
+	//set compare value to "OFF" state
+	if(p_value == TPM_MOD_VAL_OFF)
 	{
 		TPM0_CnV(p_tpm_chan) = TPM_MOD_VAL_OFF;
 	}
-	TPM0_CnV(p_tpm_chan) = ((locked_counter[p_tpm_chan]+p_value)%TPM_MOD_VAL);
+	else
+	{
+		//if counter is currently in OFF state, wakeup channel
+		if(TPM0_CnV(p_tpm_chan) == TPM_MOD_VAL_OFF)
+		{
+			TPM0_CnV(p_tpm_chan) = ((TPM0_CNT+5)%TPM_MOD_VAL);
+		}
+		else
+		{
+			TPM0_CnV(p_tpm_chan) = ((TPM0_CnV(p_tpm_chan)+p_value)%TPM_MOD_VAL);
+		}
+		
+	}
+
 }
 
 
 void TPM0_IRQHandler()
 {
 	//grab counter value to lock counter value when interrupt occurred
-	int uber_locked_counter = TPM0_CNT;
 	int n = 2;
 	// loop through all used tpm channels
 	for(n = 2; n < 6; n++)
@@ -83,17 +98,23 @@ void TPM0_IRQHandler()
 		if((TPM0_CnSC(n) & TPM_CnSC_CHF_MASK) == TPM_CnSC_CHF_MASK)
 		{
 			TPM0_CnSC(n) |= TPM_CnSC_CHF_MASK;
-			locked_counter[n] = uber_locked_counter;
-			
 
+			//callback time!
 			if(tpm_callback[n])
 			{
 				tpm_callback[n]();
 			}
-			
-			//uc_tpm_set_compare_val(tpm_chan_2, 100);
 		}
-		
-
-
 }
+
+
+void uc_tpm_mask_int()
+{
+	int_mask(INT_TPM0);
+}
+
+void uc_tpm_unmask_int()
+{
+	int_unmask(INT_TPM0);
+}
+

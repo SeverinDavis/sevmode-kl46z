@@ -24,6 +24,7 @@ typedef enum{
 void uc_tpm_init();
 void uc_tpm_set_callback(tpm_chan_t, callback_t);
 void uc_tpm_set_compare_val(tpm_chan_t, int);
-
+void uc_tpm_unmask_int();
+void uc_tpm_mask_int();
 
 #endif /* UC_TPM_H_ */
