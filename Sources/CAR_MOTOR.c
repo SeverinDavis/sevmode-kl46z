@@ -27,14 +27,15 @@
 #define A_D_CNT_MAX	10
 #define FLIP_ZERO	2200
 
+#define VEL_OFF 0xFFFF
 
 //A bunch of globals to save states
 static char car_motor = 0b00000000;
 
 static volatile CAR_MOTOR_dir_t target_direction[4] ={0,0,0,0};
 static volatile CAR_MOTOR_dir_t current_direction[4] ={0,0,0,0};
-static volatile unsigned int current_period[4] ={30000,30000,30000,30000};
-static volatile unsigned int target_period[4] ={30000,30000,30000,30000};
+static volatile unsigned int current_period[4] ={VEL_OFF,VEL_OFF,VEL_OFF,VEL_OFF};
+static volatile unsigned int target_period[4] ={VEL_OFF,VEL_OFF,VEL_OFF,VEL_OFF};
 
 static int a_d_cnt[4] = {0, 0, 0, 0};
 
@@ -116,7 +117,7 @@ void CAR_MOTOR_init()
 	CAR_MOTOR_set_direction(motor_3, target_direction[motor_3]);
 	
 	//MOTORS NEED TO BE CONFIGURED FOR PWM/TPM FUNCTION HERE. LEFT OUT UNTIL EVERYTHING ELSE WORKING****************************************************************************************Asterisk line for attention
-	
+
 }
 
 

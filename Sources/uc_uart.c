@@ -55,3 +55,13 @@ void UART0_IRQHandler()
 		uc_uart_get_data();
 	}
 }
+
+void uc_uart_mask_int()
+{
+	int_mask(INT_UART0);
+}
+
+void uc_uart_unmask_int()
+{
+	int_unmask(INT_UART0);
+}

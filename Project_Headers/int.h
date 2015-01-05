@@ -28,5 +28,8 @@ void int_all_unmask();
 
 void int_all_mask();
 
+void int_unmask(IRQInterruptIndex);
+void int_mask(IRQInterruptIndex);
+
 
 #endif /* INT_H_ */
