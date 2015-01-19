@@ -63,3 +63,5 @@ void CAR_XBEE_sleep()
 {
 	gpio_set_pin_state(port_E, pin_20, 0);
 }
+
+

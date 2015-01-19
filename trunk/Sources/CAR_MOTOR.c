@@ -8,7 +8,7 @@
 
 
 #include "CAR_MOTOR.h"
-
+#include "uc_led.h"
 
 
 
@@ -34,8 +34,9 @@ static char car_motor = 0b00000000;
 
 static volatile CAR_MOTOR_dir_t target_direction[4] ={0,0,0,0};
 static volatile CAR_MOTOR_dir_t current_direction[4] ={0,0,0,0};
-static volatile unsigned int current_period[4] ={VEL_OFF,VEL_OFF,VEL_OFF,VEL_OFF};
-static volatile unsigned int target_period[4] ={VEL_OFF,VEL_OFF,VEL_OFF,VEL_OFF};
+static volatile unsigned int current_period[4] ={30000,VEL_OFF,VEL_OFF,VEL_OFF};
+static volatile unsigned int target_period[4] ={30000,VEL_OFF,VEL_OFF,VEL_OFF};
+
 
 static int a_d_cnt[4] = {0, 0, 0, 0};
 
@@ -111,59 +112,19 @@ void CAR_MOTOR_init()
 	gpio_port_init(port_E, pin_2, alt_1, output);
 	gpio_port_init(port_E, pin_3, alt_1, output);
 	
+	uc_tpm_init();
+	uc_tpm_set_callback(tpm_chan_2, CAR_MOTOR_CALLBACK_0);
+	uc_tpm_set_callback(tpm_chan_3, CAR_MOTOR_CALLBACK_1);
+	uc_tpm_set_callback(tpm_chan_4, CAR_MOTOR_CALLBACK_2);
+	uc_tpm_set_callback(tpm_chan_5, CAR_MOTOR_CALLBACK_3);
+
+	
 	CAR_MOTOR_set_direction(motor_0, target_direction[motor_0]);
 	CAR_MOTOR_set_direction(motor_1, target_direction[motor_1]);
 	CAR_MOTOR_set_direction(motor_2, target_direction[motor_2]);
 	CAR_MOTOR_set_direction(motor_3, target_direction[motor_3]);
 	
-	//MOTORS NEED TO BE CONFIGURED FOR PWM/TPM FUNCTION HERE. LEFT OUT UNTIL EVERYTHING ELSE WORKING****************************************************************************************Asterisk line for attention
 
-}
-
-
-
-/*
- * car debug function initializes PWM pins as GPIO for manual stepping.
- */
-void CAR_MOTOR_manual_debug_init()
-{
-	//set up current-limiting digital - analog converter. still needs separate call to set specific voltage
-	uc_dac_init();
-	
-	//CS/RCLK
-	gpio_port_init(port_E, pin_16, alt_1, output);
-	gpio_set_pin_state(port_E, pin_16, 1);
-	
-	//output enable
-	gpio_port_init(port_B, pin_1, alt_1, output);
-	gpio_set_pin_state(port_B, pin_1, 0);
-		
-	//clear and reset
-	gpio_port_init(port_B, pin_0, alt_1, output);
-	gpio_set_pin_state(port_B, pin_0, 0);
-	gpio_set_pin_state(port_B, pin_0, 1);
-	
-	//direction
-	gpio_port_init(port_E, pin_0, alt_1, output); //m0
-	gpio_port_init(port_E, pin_1, alt_1, output);
-	gpio_port_init(port_E, pin_2, alt_1, output);
-	gpio_port_init(port_E, pin_3, alt_1, output);//m3
-	
-	gpio_set_pin_state(port_E, pin_0, 0);
-	gpio_set_pin_state(port_E, pin_1, 0);
-	gpio_set_pin_state(port_E, pin_2, 0);
-	gpio_set_pin_state(port_E, pin_3, 0);
-	
-	//temporary GPIO motor config
-	gpio_port_init(port_D, pin_2, alt_1, output); //m0
-	gpio_port_init(port_D, pin_3, alt_1, output);//m1
-	gpio_port_init(port_D, pin_4, alt_1, output);//m2
-	gpio_port_init(port_D, pin_5, alt_1, output);//m3
-	
-	gpio_set_pin_state(port_D, pin_2, 0);
-	gpio_set_pin_state(port_D, pin_3, 0);
-	gpio_set_pin_state(port_D, pin_4, 0);
-	gpio_set_pin_state(port_D, pin_5, 0);
 }
 
 
@@ -334,7 +295,7 @@ void CAR_MOTOR_CALLBACK_0()
 	CAR_MOTOR_dir_t t_direction= target_direction[0];
 	
 	unsigned int final_period = CAR_MOTOR_compute_period(motor_0 , c_direction, t_direction, c_period, t_period);
-		
+	
 	current_period[0] = final_period;
 	
 	uc_tpm_set_compare_val(tpm_chan_2, final_period);		
@@ -354,7 +315,7 @@ void CAR_MOTOR_CALLBACK_1()
 		CAR_MOTOR_dir_t t_direction= target_direction[1];
 		
 		unsigned int final_period = CAR_MOTOR_compute_period(motor_1 , c_direction, t_direction, c_period, t_period);
-			
+		
 		current_period[1] = final_period;
 		
 		uc_tpm_set_compare_val(tpm_chan_3, final_period);
@@ -394,7 +355,7 @@ void CAR_MOTOR_CALLBACK_3()
 			CAR_MOTOR_dir_t t_direction= target_direction[3];
 			
 			unsigned int final_period = CAR_MOTOR_compute_period(motor_3 , c_direction, t_direction, c_period, t_period);
-				
+			
 			current_period[3] = final_period;
 			
 			uc_tpm_set_compare_val(tpm_chan_5, final_period);
@@ -608,4 +569,49 @@ unsigned int CAR_MOTOR_compute_period(CAR_MOTOR_motor_t p_motor, CAR_MOTOR_dir_t
 
 }
 
+
+void CAR_MOTOR_shutdown()
+{
+	//stop all motors
+	CAR_MOTOR_set_t_period(motor_0, VEL_OFF);
+	CAR_MOTOR_set_t_period(motor_1, VEL_OFF);
+	CAR_MOTOR_set_t_period(motor_2, VEL_OFF);
+	CAR_MOTOR_set_t_period(motor_3, VEL_OFF);
+	CAR_MOTOR_set_t_direction(motor_0, CAR_MOTOR_dir_b);
+	CAR_MOTOR_set_t_direction(motor_1, CAR_MOTOR_dir_b);
+	CAR_MOTOR_set_t_direction(motor_2, CAR_MOTOR_dir_b);
+	CAR_MOTOR_set_t_direction(motor_3, CAR_MOTOR_dir_b);
+	
+	//spin until all motors are stopped
+	int stop_flag = 0;
+	do{
+		int i = 0;
+		for(i = 0; i < 4; i++)
+		{
+			if(current_direction[i] != VEL_OFF)
+			{
+				stop_flag = 1;
+			}
+		}
+	}while(stop_flag == 1);
+}
+
+
+void CAR_MOTOR_wakeup(CAR_MOTOR_motor_t p_motor, unsigned int n_period)
+{
+	//if motor is stopped
+	if(current_period[p_motor] == VEL_OFF)
+	{
+		//trigger asap
+		if(target_period[p_motor] != VEL_OFF)
+		{
+			//uc_led_on(led_red);
+			//the 5 doesnt matter. if state is stopped, the second param isn't considered
+			uc_tpm_set_compare_val(p_motor + 2, 5);
+			//update current period to last period in table.
+			current_period[p_motor] = a_table[A_TABLE_SZ - 1];	
+		}
+	}
+	
+}
 

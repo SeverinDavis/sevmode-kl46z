@@ -32,6 +32,12 @@ void CAR_LED_init()
 	gpio_port_init(port_B, pin_2, alt_1, output);
 	gpio_set_pin_state(port_B, pin_2, 0);
 	gpio_set_pin_state(port_B, pin_2, 1);
+	
+	CAR_LED_set_color(car_led_0, car_led_off);
+	CAR_LED_set_color(car_led_1, car_led_off);
+	CAR_LED_set_color(car_led_2, car_led_off);
+	CAR_LED_set_color(car_led_3, car_led_off);
+	CAR_LED_update();
 }
 
 

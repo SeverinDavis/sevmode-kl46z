@@ -6,9 +6,12 @@
  */
 
 #include "uc_tpm.h"
+#include "uc_led.h"
 
 #define TPM_MOD_VAL 0xFFFE
 #define TPM_MOD_VAL_OFF 0xFFFF
+
+#define MIN_TIME 50
 
 static callback_t tpm_callback[6] ={0,0,0,0,0,0};
 
@@ -65,10 +68,11 @@ void uc_tpm_set_compare_val(tpm_chan_t p_tpm_chan, int p_value)
 {
 	
 
-	
+
 	//set compare value to "OFF" state
 	if(p_value == TPM_MOD_VAL_OFF)
 	{
+		
 		TPM0_CnV(p_tpm_chan) = TPM_MOD_VAL_OFF;
 	}
 	else
@@ -118,3 +122,67 @@ void uc_tpm_unmask_int()
 	int_unmask(INT_TPM0);
 }
 
+int uc_tpm_enough_time(tpm_chan_t p_tpm_chan)
+{
+	unsigned int counter = TPM0_CNT;
+	unsigned int c_val = TPM0_CnV(p_tpm_chan);
+	
+	if(c_val < counter)
+	{
+		if(((counter - 65534) + c_val) > MIN_TIME)
+		{
+			return 1;
+		}
+	}
+	
+	else if(counter < c_val)
+	{
+		if((c_val - counter) > MIN_TIME)
+		{
+			return 1;
+		}
+	}
+	
+	return 0;
+	
+}
+
+void uc_tpm_try_to_preempt(tpm_chan_t p_tpm_chan, unsigned int old_period, unsigned int new_period)
+{
+	unsigned int current_CnV = TPM0_CnV(p_tpm_chan);
+	unsigned int old_CnV = 0;
+	
+
+	//we're passing 0 on this
+	if(current_CnV < old_period)
+	{
+		old_period = old_period - current_CnV;
+		old_CnV = TPM_MOD_VAL - old_period;
+	}
+	//0 not passed 
+	else
+	{
+		old_CnV = current_CnV - old_period;
+	}
+	
+	unsigned int new_CnV = (old_CnV + new_period)%TPM_MOD_VAL;
+	
+	unsigned int comparison_CnV = adjust_for_comparison(old_CnV, new_CnV);
+	unsigned int counter = TPM0_CNT;
+	unsigned int comparison_CNT = adjust_for_comparison(old_CnV, counter);
+
+	if(comparison_CnV > comparison_CNT + 5)
+	{
+		
+	}
+}
+
+unsigned int adjust_for_comparison(unsigned int adjust, unsigned int value)
+{
+	if(adjust > value)
+	{
+		unsigned int temp_val = adjust - value;
+		return (TPM_MOD_VAL - temp_val);
+	}
+	return (value - adjust);
+}

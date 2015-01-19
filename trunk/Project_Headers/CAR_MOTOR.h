@@ -14,6 +14,13 @@
 #include "uc_dac.h"
 #include "gpio.h"
 
+typedef enum{
+	STATE_CNST,
+	STATE_ACCL,
+	STATE_DCEL,
+	STATE_STOP,
+	
+}CAR_MOTOR_state_t;
 
 typedef enum{
 	CAR_MOTOR_dir_f,
@@ -59,6 +66,8 @@ void CAR_MOTOR_CALLBACK_1();
 void CAR_MOTOR_CALLBACK_2();
 void CAR_MOTOR_CALLBACK_3();
 void CAR_MOTOR_motor_startup();
+void CAR_MOTOR_shutdown();
+void CAR_MOTOR_wakeup(CAR_MOTOR_motor_t, unsigned int n_period);
 
 void CAR_MOTOR_set_t_period(CAR_MOTOR_motor_t, unsigned int);
 void CAR_MOTOR_set_t_direction(CAR_MOTOR_motor_t, CAR_MOTOR_dir_t);
