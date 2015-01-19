@@ -19,6 +19,7 @@
 #include "CAR_MOTOR.h"
 #include "CAR_XBEE.h"
 #include "custom.h"
+#include "uc_uart.h"
 
 #define PCKT_NUM 9
 
@@ -33,13 +34,29 @@ char raw_pckts[PCKT_NUM] = {0,0,0,0,0,0,0,0,0};
 int deadman = 0;
 
 
+
 //has to run at lower rate than xbee callback
 void PIT0_CALLBACK()
 {
+	//xbee interrupt didn't occur to set deadman
 	if(deadman == 0)
 	{
-		//add shutdown code
+		//shutdown XBee
+		uc_uart_mask_int();
+		CAR_XBEE_sleep();
+		
+		//set status LEDs
+		CAR_LED_set_color(car_led_0, car_led_ylo);
+		CAR_LED_set_color(car_led_1, car_led_ylo);
+		CAR_LED_set_color(car_led_2, car_led_ylo);
+		CAR_LED_set_color(car_led_3, car_led_ylo);
+		CAR_LED_update();
+		//shutdown motor
+		CAR_MOTOR_shutdown();
+		CAR_MOTOR_set_output_en(disable);
+		CAR_MOTOR_update();
 	}
+	//xbee interrupt occurred. reset deadman
 	else
 	{
 		deadman = 0;
@@ -72,6 +89,7 @@ void SW1_CALLBACK()
 
 void SW3_CALLBACK()
 {
+	uc_led_on(led_red);
 	
 	if(switch_3_push == 0)
 	{
@@ -85,10 +103,7 @@ void SW3_CALLBACK()
 		CAR_MOTOR_set_t_period(motor_2, 50);
 		CAR_MOTOR_set_t_direction(motor_3, 1);
 		CAR_MOTOR_set_t_period(motor_3, 50);
-		CAR_MOTOR_CALLBACK_0();
-		CAR_MOTOR_CALLBACK_1();
-		CAR_MOTOR_CALLBACK_2();
-		CAR_MOTOR_CALLBACK_3();
+		CAR_MOTOR_wakeup(motor_0, 0);
 
 	}
 	else if(switch_3_push == 1)
@@ -130,6 +145,7 @@ void XBEE_CALLBACK()
 										
 		//access control, because TPM uses these. 
 		//we can't modify them while TPM is using them.
+		
 		uc_tpm_mask_int();
 		 //update actuals
 		CAR_MOTOR_set_t_period(motor_0, period0);
@@ -141,6 +157,8 @@ void XBEE_CALLBACK()
 		CAR_MOTOR_set_t_direction(motor_2, direction2);
 		CAR_MOTOR_set_t_direction(motor_3, direction3);
 		uc_tpm_unmask_int(); 
+		
+
 	}
 	
 	//increment and loop around
@@ -174,26 +192,18 @@ void init()
 	
 	//init car leds
 	CAR_LED_init();
-	CAR_LED_set_color(car_led_0, car_led_off);
-	CAR_LED_set_color(car_led_1, car_led_off);
-	CAR_LED_set_color(car_led_2, car_led_off);
-	CAR_LED_set_color(car_led_3, car_led_off);
-	CAR_LED_update();
 	
 	//switches configured for interrupts
 	uc_sw_init_int(switch_1, SW1_CALLBACK);
 	uc_sw_init_int(switch_3, SW3_CALLBACK);
+	
+
 	//
 	CAR_MOTOR_init();
 	uc_lptmr_init();
 	
 	CAR_XBEE_init();
 	
-	uc_tpm_init();
-	uc_tpm_set_callback(tpm_chan_2, CAR_MOTOR_CALLBACK_0);
-	uc_tpm_set_callback(tpm_chan_3, CAR_MOTOR_CALLBACK_1);
-	uc_tpm_set_callback(tpm_chan_4, CAR_MOTOR_CALLBACK_2);
-	uc_tpm_set_callback(tpm_chan_5, CAR_MOTOR_CALLBACK_3);
 	int_all_unmask();
 	
 	CAR_MOTOR_motor_startup();	
@@ -229,8 +239,6 @@ int main(void)
 	//initialize hardware
 	init();
 	
-
-
 
 	//accel_test();
 	while(1)

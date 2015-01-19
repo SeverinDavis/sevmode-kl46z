@@ -14,6 +14,7 @@
 void uc_uart_init();
 unsigned char uc_uart_get_data();
 void uc_uart_set_callback(callback_t);
-
+void uc_uart_mask_int();
+void uc_uart_unmask_int();
 
 #endif /* UC_UART_H_ */
