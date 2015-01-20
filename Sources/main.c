@@ -89,21 +89,24 @@ void SW1_CALLBACK()
 
 void SW3_CALLBACK()
 {
-	uc_led_on(led_red);
+
 	
 	if(switch_3_push == 0)
 	{
 		//uc_tpm_mask_int();
 		switch_3_push = 1;
 		CAR_MOTOR_set_t_direction(motor_0, 1);
-		CAR_MOTOR_set_t_period(motor_0, 50);
+		CAR_MOTOR_set_t_period(motor_0, 20);
 		CAR_MOTOR_set_t_direction(motor_1, 1);
-		CAR_MOTOR_set_t_period(motor_1, 50);
+		CAR_MOTOR_set_t_period(motor_1, 20);
 		CAR_MOTOR_set_t_direction(motor_2, 1);
-		CAR_MOTOR_set_t_period(motor_2, 50);
+		CAR_MOTOR_set_t_period(motor_2, 20);
 		CAR_MOTOR_set_t_direction(motor_3, 1);
-		CAR_MOTOR_set_t_period(motor_3, 50);
-		CAR_MOTOR_wakeup(motor_0, 0);
+		CAR_MOTOR_set_t_period(motor_3, 20);
+		CAR_MOTOR_CALLBACK_0();
+		CAR_MOTOR_CALLBACK_1();
+		CAR_MOTOR_CALLBACK_2();
+		CAR_MOTOR_CALLBACK_3();
 
 	}
 	else if(switch_3_push == 1)
@@ -143,7 +146,7 @@ void XBEE_CALLBACK()
 		int direction2 = (raw_pckts[0] >> 2) & 1;
 		int direction3 = (raw_pckts[0] >> 3) & 1;
 										
-		//access control, because TPM uses these. 
+		//access control/, because TPM uses these. 
 		//we can't modify them while TPM is using them.
 		
 		uc_tpm_mask_int();
@@ -156,6 +159,8 @@ void XBEE_CALLBACK()
 		CAR_MOTOR_set_t_direction(motor_1, direction1);
 		CAR_MOTOR_set_t_direction(motor_2, direction2);
 		CAR_MOTOR_set_t_direction(motor_3, direction3);
+		//set update flags in tpm
+		CAR_MOTOR_set_flags();
 		uc_tpm_unmask_int(); 
 		
 
@@ -228,17 +233,13 @@ void run_mode()
 	{}
 }
 
-void accel_test()
-{
-
-}
 
 int main(void)
 {
 	
 	//initialize hardware
 	init();
-	
+	gpio_port_init(port_E, pin_22, alt_1, output);
 
 	//accel_test();
 	while(1)

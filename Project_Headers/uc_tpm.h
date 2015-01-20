@@ -28,5 +28,6 @@ void uc_tpm_unmask_int();
 void uc_tpm_mask_int();
 int uc_tpm_enough_time(tpm_chan_t p_tpm_chan);
 unsigned int adjust_for_comparison(unsigned int, unsigned int);
+unsigned int uc_tpm_time_left(tpm_chan_t);
 
 #endif /* UC_TPM_H_ */

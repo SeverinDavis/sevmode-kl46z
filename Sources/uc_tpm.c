@@ -44,7 +44,7 @@ void uc_tpm_init()
 		int_init(INT_TPM0, priority_1);
 		
 		int n;
-		for(n = 2; n < 6; n++)
+		for(n = 1; n < 6; n++)
 		{
 			//configd for output compare
 			TPM0_CnSC(n) = TPM_CnSC_MSB_MASK | TPM_CnSC_MSA_MASK | TPM_CnSC_ELSA_MASK;
@@ -94,10 +94,11 @@ void uc_tpm_set_compare_val(tpm_chan_t p_tpm_chan, int p_value)
 
 void TPM0_IRQHandler()
 {
+	gpio_set_pin_state(port_E, pin_22, 0);
 	//grab counter value to lock counter value when interrupt occurred
-	int n = 2;
+	int n;
 	// loop through all used tpm channels
-	for(n = 2; n < 6; n++)
+	for(n = 5; n > 0; n--)
 		//check if interrupt occurred in that channel 
 		if((TPM0_CnSC(n) & TPM_CnSC_CHF_MASK) == TPM_CnSC_CHF_MASK)
 		{
@@ -109,6 +110,8 @@ void TPM0_IRQHandler()
 				tpm_callback[n]();
 			}
 		}
+	
+	gpio_set_pin_state(port_E, pin_22, 1);
 }
 
 
@@ -185,4 +188,23 @@ unsigned int adjust_for_comparison(unsigned int adjust, unsigned int value)
 		return (TPM_MOD_VAL - temp_val);
 	}
 	return (value - adjust);
+}
+
+unsigned int uc_tpm_time_left(tpm_chan_t p_tpm_chan)
+{
+	//get counter and written value
+	unsigned int counter = TPM0_CNT;
+	unsigned int c_val = TPM0_CnV(p_tpm_chan);
+		
+	if(c_val >= counter)
+	{
+		return c_val-counter;
+	}
+		
+	else 
+	{
+		unsigned int temp = TPM_MOD_VAL - counter;
+		temp ++;
+		return c_val + temp;
+	}
 }

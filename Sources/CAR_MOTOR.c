@@ -36,6 +36,8 @@ static volatile CAR_MOTOR_dir_t target_direction[4] ={0,0,0,0};
 static volatile CAR_MOTOR_dir_t current_direction[4] ={0,0,0,0};
 static volatile unsigned int current_period[4] ={30000,VEL_OFF,VEL_OFF,VEL_OFF};
 static volatile unsigned int target_period[4] ={30000,VEL_OFF,VEL_OFF,VEL_OFF};
+static volatile unsigned int previous_period[4] = {VEL_OFF,VEL_OFF,VEL_OFF,VEL_OFF};
+static volatile int update_flag[4] = {0,0,0,0};
 
 
 static int a_d_cnt[4] = {0, 0, 0, 0};
@@ -117,6 +119,7 @@ void CAR_MOTOR_init()
 	uc_tpm_set_callback(tpm_chan_3, CAR_MOTOR_CALLBACK_1);
 	uc_tpm_set_callback(tpm_chan_4, CAR_MOTOR_CALLBACK_2);
 	uc_tpm_set_callback(tpm_chan_5, CAR_MOTOR_CALLBACK_3);
+	uc_tpm_set_callback(tpm_chan_1, WAKEUP_CALLBACK);
 
 	
 	CAR_MOTOR_set_direction(motor_0, target_direction[motor_0]);
@@ -296,10 +299,12 @@ void CAR_MOTOR_CALLBACK_0()
 	
 	unsigned int final_period = CAR_MOTOR_compute_period(motor_0 , c_direction, t_direction, c_period, t_period);
 	
+	previous_period[0] =current_period[0];
 	current_period[0] = final_period;
 	
 	uc_tpm_set_compare_val(tpm_chan_2, final_period);		
-			
+	
+	update_flag[0] = 0;
 }
 
 
@@ -310,16 +315,18 @@ void CAR_MOTOR_CALLBACK_0()
 void CAR_MOTOR_CALLBACK_1()
 {
 	unsigned int c_period = current_period[1];
-		unsigned int t_period = target_period[1];
-		CAR_MOTOR_dir_t c_direction= current_direction[1];
-		CAR_MOTOR_dir_t t_direction= target_direction[1];
+	unsigned int t_period = target_period[1];
+	CAR_MOTOR_dir_t c_direction= current_direction[1];
+	CAR_MOTOR_dir_t t_direction= target_direction[1];
 		
-		unsigned int final_period = CAR_MOTOR_compute_period(motor_1 , c_direction, t_direction, c_period, t_period);
+	unsigned int final_period = CAR_MOTOR_compute_period(motor_1 , c_direction, t_direction, c_period, t_period);
 		
-		current_period[1] = final_period;
+	previous_period[1] =current_period[1];
+	current_period[1] = final_period;
 		
-		uc_tpm_set_compare_val(tpm_chan_3, final_period);
+	uc_tpm_set_compare_val(tpm_chan_3, final_period);
 
+	update_flag[1] = 0;
 }
 
 
@@ -330,16 +337,18 @@ void CAR_MOTOR_CALLBACK_1()
 void CAR_MOTOR_CALLBACK_2()
 {
 	unsigned int c_period = current_period[2];
-			unsigned int t_period = target_period[2];
-			CAR_MOTOR_dir_t c_direction= current_direction[2];
-			CAR_MOTOR_dir_t t_direction= target_direction[2];
+	unsigned int t_period = target_period[2];
+	CAR_MOTOR_dir_t c_direction= current_direction[2];
+	CAR_MOTOR_dir_t t_direction= target_direction[2];
 			
-			unsigned int final_period = CAR_MOTOR_compute_period(motor_2 , c_direction, t_direction, c_period, t_period);
-				
-			current_period[2] = final_period;
+	unsigned int final_period = CAR_MOTOR_compute_period(motor_2 , c_direction, t_direction, c_period, t_period);
 			
-			uc_tpm_set_compare_val(tpm_chan_4, final_period);
+	previous_period[2] =current_period[2];
+	current_period[2] = final_period;
+			
+	uc_tpm_set_compare_val(tpm_chan_4, final_period);
 
+	update_flag[2] = 0;
 }
 
 
@@ -350,19 +359,67 @@ void CAR_MOTOR_CALLBACK_2()
 void CAR_MOTOR_CALLBACK_3()
 {
 	unsigned int c_period = current_period[3];
-			unsigned int t_period = target_period[3];
-			CAR_MOTOR_dir_t c_direction= current_direction[3];
-			CAR_MOTOR_dir_t t_direction= target_direction[3];
+	unsigned int t_period = target_period[3];
+	CAR_MOTOR_dir_t c_direction= current_direction[3];
+	CAR_MOTOR_dir_t t_direction= target_direction[3];
 			
-			unsigned int final_period = CAR_MOTOR_compute_period(motor_3 , c_direction, t_direction, c_period, t_period);
+	unsigned int final_period = CAR_MOTOR_compute_period(motor_3 , c_direction, t_direction, c_period, t_period);
 			
-			current_period[3] = final_period;
+	previous_period[3] =current_period[3];
+	current_period[3] = final_period;
 			
-			uc_tpm_set_compare_val(tpm_chan_5, final_period);
+	uc_tpm_set_compare_val(tpm_chan_5, final_period);
 
+	update_flag[3] = 0;
 }
 
-
+void WAKEUP_CALLBACK()
+{
+	//set channel back to sleep mode
+	uc_tpm_set_compare_val(tpm_chan_1, VEL_OFF);
+	
+	int i = 0;
+	//check if motors need updating
+	for(i = 0; i < 4; i++)
+	{
+		if(update_flag[i] == 1)
+		{
+			//if current velocity is 0...
+			if(current_period[i] == VEL_OFF)
+			{
+				//...and we want to accelerate
+				if(target_period[i] != VEL_OFF)
+				{
+					//switch to new direction and update current
+					current_direction[i] = target_direction[i];
+					CAR_MOTOR_set_direction(i, target_direction[i]);
+					//interrupt ASAP
+					uc_tpm_set_compare_val(i+2, 0);
+					//update current period to slowest period in table.
+					current_period[i] = a_table[A_TABLE_SZ - 1];	
+				}
+			}
+			else
+			{
+				//check how much time is left
+				unsigned int time_left = uc_tpm_time_left(i+2);
+				
+				if(time_left > 2)
+				{
+					unsigned int final_period = CAR_MOTOR_compute_period(i, current_direction[i], target_direction[i], previous_period[i], target_period[i]);
+					
+				}
+				
+				
+				
+				
+			}
+			
+			
+			update_flag[i] = 0;
+		}
+	}
+}
 
 /*
  * sets the direction for a specific motor
@@ -597,8 +654,17 @@ void CAR_MOTOR_shutdown()
 }
 
 
-void CAR_MOTOR_wakeup(CAR_MOTOR_motor_t p_motor, unsigned int n_period)
+void CAR_MOTOR_set_flags()
 {
+
+	update_flag[0] = 1;
+	update_flag[1] = 1;
+	update_flag[2] = 1;
+	update_flag[3] = 1;
+	
+	//set tpm to go off ASAP, the 0 doesn't matter.
+	uc_tpm_set_compare_val(tpm_chan_1, 0);
+	/*
 	//if motor is stopped
 	if(current_period[p_motor] == VEL_OFF)
 	{
@@ -612,6 +678,7 @@ void CAR_MOTOR_wakeup(CAR_MOTOR_motor_t p_motor, unsigned int n_period)
 			current_period[p_motor] = a_table[A_TABLE_SZ - 1];	
 		}
 	}
+	*/
 	
 }
 
