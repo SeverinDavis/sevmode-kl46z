@@ -29,5 +29,7 @@ void uc_tpm_mask_int();
 int uc_tpm_enough_time(tpm_chan_t p_tpm_chan);
 unsigned int adjust_for_comparison(unsigned int, unsigned int);
 unsigned int uc_tpm_time_left(tpm_chan_t);
+void uc_tpm_pulse_asap(tpm_chan_t p_tpm_chan);
+void uc_tpm_set_neg_compare_value(tpm_chan_t p_tpm_chan, unsigned neg_value);
 
 #endif /* UC_TPM_H_ */

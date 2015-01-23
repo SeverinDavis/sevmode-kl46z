@@ -80,11 +80,11 @@ void uc_tpm_set_compare_val(tpm_chan_t p_tpm_chan, int p_value)
 		//if counter is currently in OFF state, wakeup channel
 		if(TPM0_CnV(p_tpm_chan) == TPM_MOD_VAL_OFF)
 		{
-			TPM0_CnV(p_tpm_chan) = ((TPM0_CNT+5)%TPM_MOD_VAL);
+			TPM0_CnV(p_tpm_chan) = ((TPM0_CNT+2)%TPM_MOD_VAL_OFF);
 		}
 		else
 		{
-			TPM0_CnV(p_tpm_chan) = ((TPM0_CnV(p_tpm_chan)+p_value)%TPM_MOD_VAL);
+			TPM0_CnV(p_tpm_chan) = ((TPM0_CnV(p_tpm_chan)+p_value)%TPM_MOD_VAL_OFF);
 		}
 		
 	}
@@ -94,7 +94,7 @@ void uc_tpm_set_compare_val(tpm_chan_t p_tpm_chan, int p_value)
 
 void TPM0_IRQHandler()
 {
-	gpio_set_pin_state(port_E, pin_22, 0);
+	
 	//grab counter value to lock counter value when interrupt occurred
 	int n;
 	// loop through all used tpm channels
@@ -111,7 +111,7 @@ void TPM0_IRQHandler()
 			}
 		}
 	
-	gpio_set_pin_state(port_E, pin_22, 1);
+
 }
 
 
@@ -204,7 +204,33 @@ unsigned int uc_tpm_time_left(tpm_chan_t p_tpm_chan)
 	else 
 	{
 		unsigned int temp = TPM_MOD_VAL - counter;
-		temp ++;
 		return c_val + temp;
 	}
 }
+
+void uc_tpm_pulse_asap(tpm_chan_t p_tpm_chan)
+{
+        
+                
+        TPM0_CnV(p_tpm_chan) = (TPM0_CNT + 2)%TPM_MOD_VAL_OFF;
+
+
+}
+
+void uc_tpm_set_neg_compare_value(tpm_chan_t p_tpm_chan, unsigned neg_value)
+{
+		//passing 0 if neg value is greater
+        if(neg_value > TPM0_CnV(p_tpm_chan))
+        {
+ 			neg_value = TPM0_CnV(p_tpm_chan) - neg_value;
+ 			TPM0_CnV(p_tpm_chan) =  TPM_MOD_VAL - neg_value;
+
+        }
+        else
+        {
+        	TPM0_CnV(p_tpm_chan) =  TPM0_CnV(p_tpm_chan) - neg_value;
+        }
+
+
+}
+
