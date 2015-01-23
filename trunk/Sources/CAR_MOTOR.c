@@ -34,8 +34,8 @@ static char car_motor = 0b00000000;
 
 static volatile CAR_MOTOR_dir_t target_direction[4] ={0,0,0,0};
 static volatile CAR_MOTOR_dir_t current_direction[4] ={0,0,0,0};
-static volatile unsigned int current_period[4] ={30000,VEL_OFF,VEL_OFF,VEL_OFF};
-static volatile unsigned int target_period[4] ={30000,VEL_OFF,VEL_OFF,VEL_OFF};
+static volatile unsigned int current_period[4] ={VEL_OFF,VEL_OFF,VEL_OFF,VEL_OFF};
+static volatile unsigned int target_period[4] ={VEL_OFF,VEL_OFF,VEL_OFF,VEL_OFF};
 static volatile unsigned int previous_period[4] = {VEL_OFF,VEL_OFF,VEL_OFF,VEL_OFF};
 static volatile int update_flag[4] = {0,0,0,0};
 
@@ -375,6 +375,7 @@ void CAR_MOTOR_CALLBACK_3()
 
 void WAKEUP_CALLBACK()
 {
+	gpio_set_pin_state(port_E, pin_22, 1);
 	//set channel back to sleep mode
 	uc_tpm_set_compare_val(tpm_chan_1, VEL_OFF);
 	
@@ -382,6 +383,7 @@ void WAKEUP_CALLBACK()
 	//check if motors need updating
 	for(i = 0; i < 4; i++)
 	{
+		//check if the regular interrupt occurred after values were update. If flag is 0, update already occured on regular motor interrupt.
 		if(update_flag[i] == 1)
 		{
 			//if current velocity is 0...
@@ -394,9 +396,9 @@ void WAKEUP_CALLBACK()
 					current_direction[i] = target_direction[i];
 					CAR_MOTOR_set_direction(i, target_direction[i]);
 					//interrupt ASAP
-					uc_tpm_set_compare_val(i+2, 0);
-					//update current period to slowest period in table.
-					current_period[i] = a_table[A_TABLE_SZ - 1];	
+					uc_tpm_pulse_asap(i+2);
+					//update current period to slowest period
+					current_period[i] = VEL_OFF-1;	
 				}
 			}
 			else
@@ -404,21 +406,35 @@ void WAKEUP_CALLBACK()
 				//check how much time is left
 				unsigned int time_left = uc_tpm_time_left(i+2);
 				
-				if(time_left > 2)
+				if(time_left > 3)
 				{
 					unsigned int final_period = CAR_MOTOR_compute_period(i, current_direction[i], target_direction[i], previous_period[i], target_period[i]);
 					
+					if(final_period > current_period[i])
+					{
+						//rewrite comparison value
+						uc_tpm_set_compare_val(i+2, final_period - current_period[i]);
+					}
+					else if(current_period[i] > final_period)
+					{
+						unsigned int time_difference = current_period[i] - final_period;
+						//counter hasnt passed pulse point yet
+						if(time_difference <= (time_left + 3))
+						{
+							uc_tpm_set_neg_compare_value(i+2, time_difference);
+						}
+						//counter passed pulse point...
+						else
+						{
+							uc_tpm_pulse_asap(i+2);
+						}
+					}
 				}
-				
-				
-				
-				
 			}
-			
-			
 			update_flag[i] = 0;
 		}
 	}
+	gpio_set_pin_state(port_E, pin_22, 0);
 }
 
 /*
@@ -663,22 +679,8 @@ void CAR_MOTOR_set_flags()
 	update_flag[3] = 1;
 	
 	//set tpm to go off ASAP, the 0 doesn't matter.
-	uc_tpm_set_compare_val(tpm_chan_1, 0);
-	/*
-	//if motor is stopped
-	if(current_period[p_motor] == VEL_OFF)
-	{
-		//trigger asap
-		if(target_period[p_motor] != VEL_OFF)
-		{
-			//uc_led_on(led_red);
-			//the 5 doesnt matter. if state is stopped, the second param isn't considered
-			uc_tpm_set_compare_val(p_motor + 2, 5);
-			//update current period to last period in table.
-			current_period[p_motor] = a_table[A_TABLE_SZ - 1];	
-		}
-	}
-	*/
+	uc_tpm_pulse_asap(tpm_chan_1);
+
 	
 }
 

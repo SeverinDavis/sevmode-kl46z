@@ -93,7 +93,7 @@ void SW3_CALLBACK()
 	
 	if(switch_3_push == 0)
 	{
-		//uc_tpm_mask_int();
+		uc_tpm_mask_int();
 		switch_3_push = 1;
 		CAR_MOTOR_set_t_direction(motor_0, 1);
 		CAR_MOTOR_set_t_period(motor_0, 20);
@@ -103,20 +103,19 @@ void SW3_CALLBACK()
 		CAR_MOTOR_set_t_period(motor_2, 20);
 		CAR_MOTOR_set_t_direction(motor_3, 1);
 		CAR_MOTOR_set_t_period(motor_3, 20);
-		CAR_MOTOR_CALLBACK_0();
-		CAR_MOTOR_CALLBACK_1();
-		CAR_MOTOR_CALLBACK_2();
-		CAR_MOTOR_CALLBACK_3();
-
+		CAR_MOTOR_set_flags();
+		uc_tpm_unmask_int();
 	}
 	else if(switch_3_push == 1)
 		{
+			uc_tpm_mask_int();
 			switch_3_push = 0;
 			CAR_MOTOR_set_t_direction(motor_0, 0);
 			CAR_MOTOR_set_t_direction(motor_1, 1);
 			CAR_MOTOR_set_t_direction(motor_2, 1);
 			CAR_MOTOR_set_t_direction(motor_3, 0);
-			//uc_tpm_unmask_int();
+			CAR_MOTOR_set_flags();
+			uc_tpm_unmask_int();
 		}
 	
 }
