@@ -27,7 +27,7 @@ void uc_uart_init()
 	
 	
 	//configuring interrupt. HARDCODED PRIORITY. MAY NEED CHANGING
-    int_init(INT_UART0, priority_1);
+    int_init(INT_UART0, priority_2);
     
 
     SIM_SOPT2 |= SIM_SOPT2_UART0SRC(3);
