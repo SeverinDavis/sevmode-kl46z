@@ -25,15 +25,15 @@
 #define A_TABLE_SZ 	13
 #define D_TABLE_SZ 	10
 #define A_D_CNT_MAX	10
-#define FLIP_ZERO	2200
+#define FLIP_ZERO	2600
 
 #define VEL_OFF 0xFFFF
 
 //A bunch of globals to save states
 static char car_motor = 0b00000000;
 
-static volatile CAR_MOTOR_dir_t target_direction[4] ={0,0,0,0};
-static volatile CAR_MOTOR_dir_t current_direction[4] ={0,0,0,0};
+static volatile CAR_MOTOR_dir_t target_direction[4] ={1,1,1,1};
+static volatile CAR_MOTOR_dir_t current_direction[4] ={1,1,1,1};
 static volatile unsigned int current_period[4] ={VEL_OFF,VEL_OFF,VEL_OFF,VEL_OFF};
 static volatile unsigned int target_period[4] ={VEL_OFF,VEL_OFF,VEL_OFF,VEL_OFF};
 static volatile unsigned int previous_period[4] = {VEL_OFF,VEL_OFF,VEL_OFF,VEL_OFF};
@@ -235,7 +235,7 @@ void CAR_MOTOR_set_current_limiter_en(CAR_MOTOR_state p_state)
 		 */
 
 		//needs tuning
-		uc_dac_set_output(500);	
+		uc_dac_set_output(600);	
 	}
 	
 	else
@@ -429,6 +429,8 @@ void WAKEUP_CALLBACK()
 							uc_tpm_pulse_asap(i+2);
 						}
 					}
+					current_period[i] = final_period;
+
 				}
 			}
 			update_flag[i] = 0;

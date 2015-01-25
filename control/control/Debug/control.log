@@ -1,4 +1,4 @@
-﻿Build started 12/14/2014 18:34:18.
+﻿Build started 1/24/2015 23:57:44.
      1>Project "E:\SEV\DATA\Documents\Project\control\control\control.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          E:\SEV\PROGRAMS\Visual Studio\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt main.cpp
@@ -11,4 +11,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.37
+Time Elapsed 00:00:00.81
