@@ -30,7 +30,7 @@ XInputSetState(0, &vibrate);
 //#define XBOX_DEBUG
 //#define RAW_VAL_PRINT
 //#define RAW_MOTOR_PRINT
-//#define PERIOD_PRINT
+#define PERIOD_PRINT
 //#define PCKG_PRINT
 
 
@@ -50,7 +50,7 @@ double min_velocity;
 
 void test()
 {
-	int testarray[4] = { 20, 30, 50, 1000 };
+	int testarray[4] = { 70, 30, 50, 1000 };
 	translate_and_send(testarray);
 
 
@@ -58,10 +58,10 @@ void test()
 
 void main()
 {
-	
+
+
 	
 	prompt_serial(&port);
-
 	XINPUT_STATE state;
 
 	prompt_controller(&state);
@@ -136,8 +136,8 @@ void poll(XINPUT_STATE * state, CSerial * port_pntr)
 	double sin_term = sin(theta + (PI_div_4));
 	double cos_term = cos(theta + (PI_div_4));
 
-	double raw_m0_vel = mag * sin_term;
-	double raw_m1_vel = mag * cos_term;
+	double raw_m0_vel = mag * cos_term;
+	double raw_m1_vel = mag * sin_term;
 	double raw_m2_vel = mag * sin_term;
 	double raw_m3_vel = mag * cos_term;
 
@@ -155,7 +155,7 @@ void poll(XINPUT_STATE * state, CSerial * port_pntr)
 	m_period[2] = compute_period(raw_m2_vel);
 	m_period[3] = compute_period(raw_m3_vel);
 
-	m_period[1] *= -1;
+	m_period[0] *= -1;
 	m_period[3] *= -1;
 
 #ifdef PERIOD_PRINT
@@ -346,7 +346,7 @@ void translate_and_send(int * m_period)
 	int converted_packet = 0;
 	for (int i = 0; i < 4; i++)
 	{
-		cout << "m" << i << " " << m_period[i] << endl;
+	//	cout << "m" << i << " " << m_period[i] << endl;
 		int converted_packet = m_period[i];
 		if (m_period[i] < 0)
 		{
@@ -359,7 +359,7 @@ void translate_and_send(int * m_period)
 		packets[1 + (i * 2)] = converted_packet & 0xFF;
 		packets[1 + (i * 2) + 1] = (converted_packet >> 8) & 0xFF;
 	}
-	cout << endl;
+//	cout << endl;
 
 
 	cout << "sent " << port.SendData(packets, 9) << " packets"<< endl;

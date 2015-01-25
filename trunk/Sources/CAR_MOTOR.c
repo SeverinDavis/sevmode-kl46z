@@ -235,7 +235,7 @@ void CAR_MOTOR_set_current_limiter_en(CAR_MOTOR_state p_state)
 		 */
 
 		//needs tuning
-		uc_dac_set_output(600);	
+		uc_dac_set_output(800);	
 	}
 	
 	else

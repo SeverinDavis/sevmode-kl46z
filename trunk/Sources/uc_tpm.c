@@ -174,7 +174,7 @@ void uc_tpm_pulse_asap(tpm_chan_t p_tpm_chan)
 {
         
                 
-        TPM0_CnV(p_tpm_chan) = (TPM0_CNT + 2)%TPM_MOD_VAL_OFF;
+        TPM0_CnV(p_tpm_chan) = (TPM0_CNT + 3)%TPM_MOD_VAL_OFF;
 
 
 }

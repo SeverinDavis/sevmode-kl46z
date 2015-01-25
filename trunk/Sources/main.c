@@ -160,6 +160,7 @@ void XBEE_CALLBACK()
 		CAR_MOTOR_set_t_direction(motor_3, direction3);
 		//set update flags in tpm
 		CAR_MOTOR_set_flags();
+
 		uc_tpm_unmask_int(); 
 		uc_led_on(led_red);
 		int i;
