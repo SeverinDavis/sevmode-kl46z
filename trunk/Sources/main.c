@@ -96,13 +96,13 @@ void SW3_CALLBACK()
 		uc_tpm_mask_int();
 		switch_3_push = 1;
 		CAR_MOTOR_set_t_direction(motor_0, 1);
-		CAR_MOTOR_set_t_period(motor_0, 20);
+		CAR_MOTOR_set_t_period(motor_0, 50);
 		CAR_MOTOR_set_t_direction(motor_1, 1);
-		CAR_MOTOR_set_t_period(motor_1, 20);
+		CAR_MOTOR_set_t_period(motor_1, 50);
 		CAR_MOTOR_set_t_direction(motor_2, 1);
-		CAR_MOTOR_set_t_period(motor_2, 20);
+		CAR_MOTOR_set_t_period(motor_2, 50);
 		CAR_MOTOR_set_t_direction(motor_3, 1);
-		CAR_MOTOR_set_t_period(motor_3, 20);
+		CAR_MOTOR_set_t_period(motor_3, 50);
 		CAR_MOTOR_set_flags();
 		uc_tpm_unmask_int();
 	}
@@ -123,13 +123,13 @@ void SW3_CALLBACK()
 void XBEE_CALLBACK()
 {
 	deadman = 1;
-	
+	uc_led_off(led_red);
 	raw_pckts[xbee_pckt_cnt] = uc_uart_get_data();
 	
 	if(xbee_pckt_cnt == 8)
 	{
 		//process these now so we keep TPM interrupt lockout as short as possible.
-				
+			
 		unsigned int period0 = 0;
 		unsigned int period1 = 0;
 		unsigned int period2 = 0;
@@ -161,8 +161,11 @@ void XBEE_CALLBACK()
 		//set update flags in tpm
 		CAR_MOTOR_set_flags();
 		uc_tpm_unmask_int(); 
-		
-
+		uc_led_on(led_red);
+		int i;
+		for(i = 0; i < 30000; i++)
+		{}
+		uc_led_off(led_red);
 	}
 	
 	//increment and loop around
@@ -207,6 +210,7 @@ void init()
 	uc_lptmr_init();
 	
 	CAR_XBEE_init();
+	uc_uart_set_callback(XBEE_CALLBACK);
 	
 	int_all_unmask();
 	

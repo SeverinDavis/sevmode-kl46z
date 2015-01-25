@@ -20,10 +20,20 @@ XInputSetState(0, &vibrate);
 
 #define BAUDRATE 9600
 
-//#define XBOX_DEBUG
-#define VAL_PRINT
-
+#define STOP_PERIOD 65535
+#define MAX_PERIOD 65534.0
+#define MIN_PERIOD 20.0
 #define PI 3.14159265
+
+
+
+//#define XBOX_DEBUG
+//#define RAW_VAL_PRINT
+//#define RAW_MOTOR_PRINT
+//#define PERIOD_PRINT
+//#define PCKG_PRINT
+
+
 
 using namespace std;
 void prompt_serial(CSerial * port_pntr);
@@ -31,21 +41,39 @@ void prompt_controller(XINPUT_STATE * state);
 void poll(XINPUT_STATE * state, CSerial * port_pntr);
 void sleep(unsigned int mseconds); 
 void xbox_debug_msg(XINPUT_STATE * p_state);
+int compute_period(double raw_velocity);
+void translate_and_send(int * m_period);
+
+CSerial port;
+double max_velocity;
+double min_velocity;
+
+void test()
+{
+	int testarray[4] = { 20, 30, 50, 1000 };
+	translate_and_send(testarray);
+
+
+}
 
 void main()
 {
-	CSerial port;
+	
+	
 	prompt_serial(&port);
 
 	XINPUT_STATE state;
 
 	prompt_controller(&state);
 
+	max_velocity = 1 / MIN_PERIOD;
+	min_velocity = 1 / MAX_PERIOD; 
+
 	while (1)
 	{
 		
 		poll(&state, &port);
-		sleep(50);
+		sleep(200);
 	}
 
 
@@ -94,29 +122,51 @@ void poll(XINPUT_STATE * state, CSerial * port_pntr)
 			theta = theta + (2*PI);
 		}
 
-		theta = (theta * 180) / PI;
+		
 		mag = (mag - XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE) / (32767 - XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE);
+
+
 	}
-
-
-
-	
-
-#ifdef VAL_PRINT
+#ifdef RAW_VAL_PRINT
 	cout << "Theta is: " << theta << endl;
 	cout << "Mag is:" << mag << endl << endl;
-#endif
+#endif 
 
 	double PI_div_4 = PI / 4;
 	double sin_term = sin(theta + (PI_div_4));
 	double cos_term = cos(theta + (PI_div_4));
 
+	double raw_m0_vel = mag * sin_term;
+	double raw_m1_vel = mag * cos_term;
+	double raw_m2_vel = mag * sin_term;
+	double raw_m3_vel = mag * cos_term;
 
+#ifdef RAW_MOTOR_PRINT
+	cout << "m0:  " << raw_m0_vel << endl;
+	cout << "m1:  " << raw_m1_vel << endl;
+	cout << "m2:  " << raw_m2_vel << endl;
+	cout << "m3:  " << raw_m3_vel << endl << endl;
+#endif
+
+	int m_period[4];
+
+	m_period[0] = compute_period(raw_m0_vel);
+	m_period[1] = compute_period(raw_m1_vel);
+	m_period[2] = compute_period(raw_m2_vel);
+	m_period[3] = compute_period(raw_m3_vel);
+
+	m_period[1] *= -1;
+	m_period[3] *= -1;
+
+#ifdef PERIOD_PRINT
+	cout << "m0_period:  " << m_period[0] << endl;
+	cout << "m1_period:  " << m_period[1] << endl;
+	cout << "m2_period:  " << m_period[2] << endl;
+	cout << "m3_period:  " << m_period[3] << endl << endl;
+#endif
 	
+	translate_and_send(m_period);
 
-
-
-	
 }
 
 void sleep(unsigned int mseconds) 
@@ -267,4 +317,51 @@ void xbox_debug_msg(XINPUT_STATE * p_state)
 	{
 		cout << "Right Thumbstick Y Position is at" << p_state->Gamepad.sThumbRY << endl;
 	}
+}
+
+int compute_period(double raw_velocity)
+{
+	if (raw_velocity == 0)
+	{
+		return STOP_PERIOD;
+	}
+	else
+	{
+		double vel_range = max_velocity - min_velocity;
+		
+		double vel_scaled = (raw_velocity * vel_range) + min_velocity;
+		//cout << "vel_scaled is  " << vel_scaled << endl << endl;
+		double period = 1 / vel_scaled; 
+		//cout << "period is  " << period << endl << endl;
+		return (int)period;
+
+
+	}
+}
+
+
+void translate_and_send(int * m_period)
+{
+	char packets[9] = {};
+	int converted_packet = 0;
+	for (int i = 0; i < 4; i++)
+	{
+		cout << "m" << i << " " << m_period[i] << endl;
+		int converted_packet = m_period[i];
+		if (m_period[i] < 0)
+		{
+			converted_packet = m_period[i] * -1;
+		}
+		else
+		{
+			packets[0] |= (1 << i);
+		}
+		packets[1 + (i * 2)] = converted_packet & 0xFF;
+		packets[1 + (i * 2) + 1] = (converted_packet >> 8) & 0xFF;
+	}
+	cout << endl;
+
+
+	cout << "sent " << port.SendData(packets, 9) << " packets"<< endl;
+
 }
