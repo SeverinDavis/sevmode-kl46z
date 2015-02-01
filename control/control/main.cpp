@@ -22,7 +22,7 @@ XInputSetState(0, &vibrate);
 
 #define STOP_PERIOD 65535
 #define MAX_PERIOD 65534.0
-#define MIN_PERIOD 20.0
+#define MIN_PERIOD 30.0
 #define PI 3.14159265
 
 
