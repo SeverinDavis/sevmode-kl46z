@@ -26,11 +26,13 @@
 volatile bool_t idle = true;
 volatile char move_mode = 'n';
 int switch_3_push = 0;
+int switch_1_push = 0;
 unsigned int switch_3_speed_hi = 50;
 unsigned int switch_3_speed_lo = 150;
 int xbee_pckt_cnt = 0;
 char raw_pckts[PCKT_NUM] = {0,0,0,0,0,0,0,0,0}; 
 
+int first_message = 0;
 int deadman = 0;
 
 
@@ -38,53 +40,50 @@ int deadman = 0;
 //has to run at lower rate than xbee callback
 void PIT0_CALLBACK()
 {
-	//xbee interrupt didn't occur to set deadman
-	if(deadman == 0)
+	//first message keeps car from shutting down on startup
+	if(first_message == 1)
 	{
-		//shutdown XBee
-		uc_uart_mask_int();
-		CAR_XBEE_sleep();
-		
-		//set status LEDs
-		CAR_LED_set_color(car_led_0, car_led_ylo);
-		CAR_LED_set_color(car_led_1, car_led_ylo);
-		CAR_LED_set_color(car_led_2, car_led_ylo);
-		CAR_LED_set_color(car_led_3, car_led_ylo);
-		CAR_LED_update();
-		//shutdown motor
-		CAR_MOTOR_shutdown();
-		CAR_MOTOR_set_output_en(disable);
-		CAR_MOTOR_update();
+		//xbee interrupt didn't occur to set deadman
+		if(deadman == 0)
+		{
+			//shutdown XBee
+			uc_uart_mask_int();
+			CAR_XBEE_sleep();
+			
+			//set status LEDs
+			CAR_LED_set_color(car_led_0, car_led_ylo);
+			CAR_LED_set_color(car_led_1, car_led_ylo);
+			CAR_LED_set_color(car_led_2, car_led_ylo);
+			CAR_LED_set_color(car_led_3, car_led_ylo);
+			CAR_LED_update();
+			//shutdown motor
+			CAR_MOTOR_shutdown();
+			CAR_MOTOR_set_output_en(disable);
+			CAR_MOTOR_update();
+		}
+		//xbee interrupt occurred. reset deadman
+		else
+		{
+			deadman = 0;
+		}
 	}
-	//xbee interrupt occurred. reset deadman
-	else
-	{
-		deadman = 0;
-	}
-}
-
-void PIT1_CALLBACK()
-{
-
 }
 
 void SW1_CALLBACK()
 {
 	//toggle idle mode
-	if(idle == true){
+	if(switch_1_push == 0){
 
-		idle = false;
+		CAR_MOTOR_set_output_en(enable);
+		CAR_MOTOR_update();
+		switch_1_push = 1;
 	}
 	else
 	{
-		idle = true;
+		CAR_MOTOR_set_output_en(disable);
+		CAR_MOTOR_update();
+		switch_1_push = 0;
 	}
-	
-	
-	//shutdown pit
-	//xbee sleep
-	//motor disable
-	//set car status light
 }
 
 void SW3_CALLBACK()
@@ -122,11 +121,11 @@ void SW3_CALLBACK()
 
 void XBEE_CALLBACK()
 {
+	first_message = 1;
 	deadman = 1;
-	uc_led_off(led_red);
 	raw_pckts[xbee_pckt_cnt] = uc_uart_get_data();
 	
-	if(xbee_pckt_cnt == 8)
+	if(xbee_pckt_cnt == PCKT_NUM - 1)
 	{
 		//process these now so we keep TPM interrupt lockout as short as possible.
 			
@@ -162,11 +161,7 @@ void XBEE_CALLBACK()
 		CAR_MOTOR_set_flags();
 
 		uc_tpm_unmask_int(); 
-		uc_led_on(led_red);
-		int i;
-		for(i = 0; i < 30000; i++)
-		{}
-		uc_led_off(led_red);
+
 	}
 	
 	//increment and loop around
@@ -204,38 +199,27 @@ void init()
 	//switches configured for interrupts
 	uc_sw_init_int(switch_1, SW1_CALLBACK);
 	uc_sw_init_int(switch_3, SW3_CALLBACK);
-	
 
 	//
 	CAR_MOTOR_init();
+	
 	uc_lptmr_init();
 	
 	CAR_XBEE_init();
 	uc_uart_set_callback(XBEE_CALLBACK);
 	
+	//must be lower frequency than UART receive frequency
+	pit_init(pit_0, priority_3, 215000, PIT0_CALLBACK);
+	pit_enable(pit_0);
+	
+	//enable interrupts
 	int_all_unmask();
 	
+	//safe motor startup
 	CAR_MOTOR_motor_startup();	
-}
-
-void idle_mode()
-{
 	CAR_MOTOR_set_output_en(disable);
-	CAR_MOTOR_update();
-
-	while(idle == true)
-	{}
-	
 }
 
-void run_mode()
-{
-	CAR_MOTOR_set_output_en(enable);
-	CAR_MOTOR_update();
-	
-	while(idle == false)
-	{}
-}
 
 
 int main(void)
@@ -243,24 +227,19 @@ int main(void)
 	
 	//initialize hardware
 	init();
-	gpio_port_init(port_E, pin_22, alt_1, output);
+	
+	CAR_LED_set_color(car_led_0, car_led_red);
+	CAR_LED_set_color(car_led_1, car_led_red);
+	CAR_LED_set_color(car_led_2, car_led_wht);
+	CAR_LED_set_color(car_led_3, car_led_wht);
+	CAR_LED_update();
 
 	//accel_test();
 	while(1)
 	{
-		if(idle == true)
-		{
-			
-			idle_mode();
-		}
-			
-		if(idle == false)
-		{
-			run_mode();
-		}
 	}
-	
-	return 0;
+
+	return 1;
 }
 
 

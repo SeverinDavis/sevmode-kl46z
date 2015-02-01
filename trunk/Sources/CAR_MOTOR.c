@@ -235,7 +235,7 @@ void CAR_MOTOR_set_current_limiter_en(CAR_MOTOR_state p_state)
 		 */
 
 		//needs tuning
-		uc_dac_set_output(800);	
+		uc_dac_set_output(1100);	
 	}
 	
 	else
@@ -375,7 +375,6 @@ void CAR_MOTOR_CALLBACK_3()
 
 void WAKEUP_CALLBACK()
 {
-	gpio_set_pin_state(port_E, pin_22, 1);
 	//set channel back to sleep mode
 	uc_tpm_set_compare_val(tpm_chan_1, VEL_OFF);
 	
@@ -436,7 +435,6 @@ void WAKEUP_CALLBACK()
 			update_flag[i] = 0;
 		}
 	}
-	gpio_set_pin_state(port_E, pin_22, 0);
 }
 
 /*
