@@ -35,6 +35,8 @@ char raw_pckts[PCKT_NUM] = {0,0,0,0,0,0,0,0,0};
 int first_message = 0;
 int deadman = 0;
 
+int led_update = 0;
+
 
 
 //has to run at lower rate than xbee callback
@@ -121,7 +123,16 @@ void SW3_CALLBACK()
 
 void XBEE_CALLBACK()
 {
-	first_message = 1;
+	if(first_message == 0)
+	{
+		first_message = 1;
+		CAR_LED_set_color(car_led_0, car_led_red);
+		CAR_LED_set_color(car_led_1, car_led_red);
+		CAR_LED_set_color(car_led_2, car_led_wht);
+		CAR_LED_set_color(car_led_3, car_led_wht);
+		led_update = 1;
+	}
+	
 	deadman = 1;
 	raw_pckts[xbee_pckt_cnt] = uc_uart_get_data();
 	
@@ -209,7 +220,7 @@ void init()
 	uc_uart_set_callback(XBEE_CALLBACK);
 	
 	//must be lower frequency than UART receive frequency
-	pit_init(pit_0, priority_3, 215000, PIT0_CALLBACK);
+	pit_init(pit_0, priority_3, 250000, PIT0_CALLBACK);
 	pit_enable(pit_0);
 	
 	//enable interrupts
@@ -228,15 +239,20 @@ int main(void)
 	//initialize hardware
 	init();
 	
-	CAR_LED_set_color(car_led_0, car_led_red);
-	CAR_LED_set_color(car_led_1, car_led_red);
-	CAR_LED_set_color(car_led_2, car_led_wht);
-	CAR_LED_set_color(car_led_3, car_led_wht);
-	CAR_LED_update();
-
-	//accel_test();
+	CAR_LED_set_color(car_led_0, car_led_trq);
+	CAR_LED_set_color(car_led_1, car_led_trq);
+	CAR_LED_set_color(car_led_2, car_led_trq);
+	CAR_LED_set_color(car_led_3, car_led_trq);
+	led_update = 1;
+	
 	while(1)
 	{
+		if(led_update == 1)
+		{
+			led_update = 0;
+			CAR_LED_update();
+			
+		}
 	}
 
 	return 1;
