@@ -17,7 +17,4 @@ void CAR_XBEE_reset_cycle();
 void CAR_XBEE_on();
 void CAR_XBEE_sleep();
 
-
-
-
 #endif

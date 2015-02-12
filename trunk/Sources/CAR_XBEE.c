@@ -5,11 +5,7 @@
  *      Author: Severin
  */
 
-
-
 #include "CAR_XBEE.h"
-
-
 
 /*
  * initializes pins for xbee
@@ -32,8 +28,6 @@ void CAR_XBEE_init()
 	uc_uart_init();
 }
 
-
-
 /*
  * performs reset cycle on XBee
  */
@@ -44,8 +38,6 @@ void CAR_XBEE_reset_cycle()
 	gpio_set_pin_state(port_E, pin_21, 1);
 }
 
-
-
 /*
  * wakes xbee
  */
@@ -54,8 +46,6 @@ void CAR_XBEE_on()
 	gpio_set_pin_state(port_E, pin_20, 1);
 }
 
-
-
 /*
  * sleeps xbee
  */
@@ -63,5 +53,3 @@ void CAR_XBEE_sleep()
 {
 	gpio_set_pin_state(port_E, pin_20, 0);
 }
-
-

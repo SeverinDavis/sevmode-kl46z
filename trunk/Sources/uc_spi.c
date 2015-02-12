@@ -69,7 +69,7 @@ void uc_spi_send(spi_t p_spi, char p_char)
 		//they should really have some kind of transmit complete flag. 
 		//this is ridonkadonk
 		
-		for(i =0; i<2100; i++)
+		for(i = 0; i<2100; i++)
 		{
 			asm("nop");
 		}
