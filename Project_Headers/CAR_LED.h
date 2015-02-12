@@ -5,7 +5,6 @@
  *      Author: Severin
  */
 
-
 #ifndef CAR_LED_H
 #define CAR_LED_H
 

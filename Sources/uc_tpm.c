@@ -171,12 +171,8 @@ unsigned int uc_tpm_time_left(tpm_chan_t p_tpm_chan)
 }
 
 void uc_tpm_pulse_asap(tpm_chan_t p_tpm_chan)
-{
-        
-                
+{      
         TPM0_CnV(p_tpm_chan) = (TPM0_CNT + 3)%TPM_MOD_VAL_OFF;
-
-
 }
 
 void uc_tpm_set_neg_compare_value(tpm_chan_t p_tpm_chan, unsigned neg_value)

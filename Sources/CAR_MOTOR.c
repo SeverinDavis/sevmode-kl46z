@@ -95,7 +95,7 @@ void CAR_MOTOR_init()
 	//set up current-limiting digital - analog converter. still needs separate call to set specific voltage
 	uc_dac_init();
 	
-	CAR_MOTOR_set_MD(step_32);
+	CAR_MOTOR_set_MD(step_128);
 	CAR_MOTOR_update();
 	
 	

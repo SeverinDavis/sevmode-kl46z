@@ -94,30 +94,12 @@ void SW3_CALLBACK()
 	
 	if(switch_3_push == 0)
 	{
-		uc_tpm_mask_int();
 		switch_3_push = 1;
-		CAR_MOTOR_set_t_direction(motor_0, 1);
-		CAR_MOTOR_set_t_period(motor_0, 50);
-		CAR_MOTOR_set_t_direction(motor_1, 1);
-		CAR_MOTOR_set_t_period(motor_1, 50);
-		CAR_MOTOR_set_t_direction(motor_2, 1);
-		CAR_MOTOR_set_t_period(motor_2, 50);
-		CAR_MOTOR_set_t_direction(motor_3, 1);
-		CAR_MOTOR_set_t_period(motor_3, 50);
-		CAR_MOTOR_set_flags();
-		uc_tpm_unmask_int();
 	}
 	else if(switch_3_push == 1)
-		{
-			uc_tpm_mask_int();
-			switch_3_push = 0;
-			CAR_MOTOR_set_t_direction(motor_0, 0);
-			CAR_MOTOR_set_t_direction(motor_1, 1);
-			CAR_MOTOR_set_t_direction(motor_2, 1);
-			CAR_MOTOR_set_t_direction(motor_3, 0);
-			CAR_MOTOR_set_flags();
-			uc_tpm_unmask_int();
-		}
+	{
+		switch_3_push = 0;
+	}
 	
 }
 
@@ -155,7 +137,7 @@ void XBEE_CALLBACK()
 		int direction2 = (raw_pckts[0] >> 2) & 1;
 		int direction3 = (raw_pckts[0] >> 3) & 1;
 										
-		//access control/, because TPM uses these. 
+		//access control, because TPM uses these. 
 		//we can't modify them while TPM is using them.
 		
 		uc_tpm_mask_int();

@@ -5,20 +5,14 @@
  *      Author: Severin
  */
 
-
-
 #include "CAR_LED.h"
-
-
 
 //keeps track of current led states
 static char car_led_0_1 = 0;
 static char car_led_2_3 = 0;
 
-
-
 /*
- *  Initializes LED GPIOs. SPI needs to be enabled separately.
+ *  Initializes LED GPIOs.
  */
 void CAR_LED_init()
 {
@@ -40,29 +34,23 @@ void CAR_LED_init()
 	CAR_LED_update();
 }
 
-
-
 /*
- * Updates LEDs to wahtever is currently in car_led_x_x when called.
+ * Updates LEDs to whatever is currently in car_led_x_x when called.
  */
 void CAR_LED_update()
 {
 	//CS/RCLK low
 	gpio_set_pin_state(port_E, pin_19, 0);
 	
-		uc_spi_send(spi_0, car_led_2_3);
-		//first three bits control j15 led.
-		uc_spi_send(spi_0, car_led_0_1);
+	uc_spi_send(spi_0, car_led_2_3);
+	uc_spi_send(spi_0, car_led_0_1);
 
 	//CS/RCLK back up, yo
 	gpio_set_pin_state(port_E, pin_19, 1);	
 }
 
-
-
 /*
  * Sets specific car led color.
- * P: car led, car led color
  */
 void CAR_LED_set_color(car_led_t p_car_led, car_led_color_t p_car_led_color)
 {
@@ -78,5 +66,4 @@ void CAR_LED_set_color(car_led_t p_car_led, car_led_color_t p_car_led_color)
 		car_led_2_3 &= ~(0b111 << (2 + ((p_car_led - 2) * 3)));
 		car_led_2_3 |= (p_car_led_color) << (2 + ((p_car_led - 2) * 3));
 	}
-	
 }
