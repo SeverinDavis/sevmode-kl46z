@@ -11,16 +11,25 @@
 static callback_t pit0_callback = 0;
 static callback_t pit1_callback = 0;
 
+/*
+ * enables pit, duh
+ */
 void pit_enable(pit_t p_timer)
 {
 	PIT_TCTRL(p_timer) |= 1;
 }
 
+/*
+ * disables pit
+ */
 void pit_disable(pit_t p_timer)
 {
 	PIT_TCTRL(p_timer) &= ~(1);
 }
 
+/*
+ * initializes pit with microsecond period
+ */
 void pit_init(pit_t p_timer, priority_t p_priority, int p_us_period, callback_t p_callback)
 {
 	//PIT clock gating
@@ -35,9 +44,11 @@ void pit_init(pit_t p_timer, priority_t p_priority, int p_us_period, callback_t 
 
 	PIT_LDVAL(p_timer) = 24 * p_us_period; 
 	PIT_TCTRL(p_timer) |= 0b10;
-
 }
 
+/*
+ * sets pit callback
+ */
 void pit_set_callback(pit_t p_timer, callback_t p_callback)
 {
 	if(p_timer == pit_0)
@@ -47,12 +58,13 @@ void pit_set_callback(pit_t p_timer, callback_t p_callback)
 	if(p_timer == pit_1)
 	{
 		pit1_callback = p_callback;
-	}
-		
+	}	
 }
 
 
-//ISR
+/*
+ * interrupt handler
+ */
 void PIT_IRQHandler()
 {
 	if(PIT_TFLG0 != 0)
@@ -72,6 +84,4 @@ void PIT_IRQHandler()
 				pit1_callback();
 			}
 		}
-	
-
 }

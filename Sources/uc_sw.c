@@ -8,7 +8,9 @@
 #include "uc_sw.h"
 #include "gpio.h"
 
-
+/*
+ * configures switch for polling
+ */
 void uc_sw_init(switch_t p_switch)
 {
 	if(p_switch == switch_1)
@@ -27,6 +29,9 @@ void uc_sw_init(switch_t p_switch)
 	}
 }
 
+/*
+ * configures switch as interrupt
+ */
 void uc_sw_init_int(switch_t p_switch, callback_t p_callback)
 {
 	if(p_switch == switch_1)
@@ -50,14 +55,17 @@ void uc_sw_init_int(switch_t p_switch, callback_t p_callback)
 	
 }
 
-
-
+/*
+ * returns state of switch1
+ */
 int uc_sw_poll_switch1()
 {
 	return gpio_get_pin_state(port_C, pin_3);
 }
 
-
+/*
+ * returns stae of switch3
+ */
 int uc_sw_poll_switch3()
 {
 	return gpio_get_pin_state(port_C, pin_12);
