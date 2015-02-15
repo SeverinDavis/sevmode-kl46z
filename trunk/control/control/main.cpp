@@ -1,13 +1,3 @@
-
-
-/*
-vibrate code example
-XINPUT_VIBRATION vibrate;
-vibrate.wLeftMotorSpeed = 23000;
-vibrate.wRightMotorSpeed = 0;
-XInputSetState(0, &vibrate);
-*/
-
 #include <Windows.h>
 #include <xinput.h>
 #include <stdio.h>
@@ -19,21 +9,17 @@ XInputSetState(0, &vibrate);
 #include "Serial.h"
 
 #define BAUDRATE 9600
-
 #define STOP_PERIOD 65535
 #define MAX_PERIOD 65534.0
-#define MIN_PERIOD 30.0
+#define MIN_PERIOD 40.0
+#define RTH_SCALER 4.0
 #define PI 3.14159265
-
-
 
 //#define XBOX_DEBUG
 //#define RAW_VAL_PRINT
 //#define RAW_MOTOR_PRINT
-#define PERIOD_PRINT
+//#define PERIOD_PRINT
 //#define PCKG_PRINT
-
-
 
 using namespace std;
 void prompt_serial(CSerial * port_pntr);
@@ -48,98 +34,140 @@ CSerial port;
 double max_velocity;
 double min_velocity;
 
-void test()
-{
-	int testarray[4] = { 70, 30, 50, 1000 };
-	translate_and_send(testarray);
-
-
-}
-
 void main()
 {
-
-
-	
+	//connect to serial port
 	prompt_serial(&port);
 	XINPUT_STATE state;
 
+	//connect to controller
 	prompt_controller(&state);
 
+	//get max and min velocities
 	max_velocity = 1 / MIN_PERIOD;
 	min_velocity = 1 / MAX_PERIOD; 
-
+	
 	while (1)
 	{
-		
 		poll(&state, &port);
 		sleep(200);
 	}
-
-
 }
 
+/*
+gets the angle of the thumbstick
+*/
+double get_theta(double x, double y)
+{
+	double theta = 0;
+	//check that nothign is 0
+	if (!((x == 0) && (y == 0)))
+	{
+		theta = atan2((double)y, (double)x);
+	}
+
+	if (y < 0)
+	{
+		theta = theta + (2 * PI);
+	}
+
+	return theta;
+}
+
+/*
+gets magnitude of the thumbstick
+*/
+double get_mag(double x, double y)
+{
+	double y_sqrd = ((double)y)*((double)y);
+	double x_sqrd = ((double)x)*((double)x);
+
+	double mag = sqrt(x_sqrd + y_sqrd);
+
+	//cap value at max
+	if (mag > 32767)
+	{
+		mag = 32767;
+	}
+	return mag;
+}
+
+/*
+polls the controller
+*/
 void poll(XINPUT_STATE * state, CSerial * port_pntr)
 {
-	int x = 0;
-	int y = 0;
-
-	double theta = 0;
-	double mag = 0;
+	//get controller state
 	prompt_controller(state);
 
 	#ifdef XBOX_DEBUG
 		xbox_debug_msg(state);
 	#endif
 
+	double lmag = get_mag(state->Gamepad.sThumbLX, state->Gamepad.sThumbLY);
+	double ltheta = get_theta(state->Gamepad.sThumbLX, state->Gamepad.sThumbLY);
+	//only care about x coordinate on right thumbstick
+	double rmag = state->Gamepad.sThumbRX;
 
-	
-	x = (state->Gamepad.sThumbLX);
-	y = (state->Gamepad.sThumbLY);
-	if (!((x == 0) && (y == 0)))
+	//check if lstick is within deadzone
+	if (lmag < XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE)
 	{
-		theta = atan2((double)y, (double)x);
-	}
-
-	double y_sqrd = ((double)y)*((double)y);
-	double x_sqrd = ((double)x)*((double)x);
-
-	mag = sqrt(x_sqrd + y_sqrd);
-	if (mag < XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE)
-	{
-		mag = 0;
-		theta = 0;
+		lmag = 0;
+		ltheta = 0;
 	}
 	else
 	{
-		if (mag > 32767)
-		{
-			mag = 32767;
-		}
-	
-		if (y < 0)
-		{
-			theta = theta + (2*PI);
-		}
-
-		
-		mag = (mag - XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE) / (32767 - XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE);
-
-
+		//scale left magnitude to value between 0 and 1
+		lmag = (lmag - XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE) / (32767 - XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE);
 	}
+
+	//check if rstick is within deadzone
+	if (abs(rmag) < XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE)
+	{
+		rmag = 0;
+	}
+	else
+	{
+		if (rmag < -32767)
+		{
+			rmag = -32767;
+		}
+		//scale right magnitude o value between 0 and 1
+		if (rmag > 0)
+		{
+			rmag = (rmag - XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE) / (32767 - XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE);
+		}
+		
+		else if (rmag < 0)
+		{
+			rmag = (rmag + XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE) / (32767 - XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE);
+		}
+	}
+
 #ifdef RAW_VAL_PRINT
-	cout << "Theta is: " << theta << endl;
-	cout << "Mag is:" << mag << endl << endl;
+	cout << "LTheta is: " << ltheta << endl;
+	cout << "LMag is:" << lmag << endl;
+	cout << "RMag is:" << rmag << endl << endl;
 #endif 
 
-	double PI_div_4 = PI / 4;
-	double sin_term = sin(theta + (PI_div_4));
-	double cos_term = cos(theta + (PI_div_4));
+	//scaled right thumb
+	rmag = rmag / RTH_SCALER;
 
-	double raw_m0_vel = mag * cos_term;
-	double raw_m1_vel = mag * sin_term;
-	double raw_m2_vel = mag * sin_term;
-	double raw_m3_vel = mag * cos_term;
+	double PI_div_4 = PI / 4;
+	double sin_term = sin(ltheta + (PI_div_4));
+	double cos_term = cos(ltheta + (PI_div_4));
+
+	//construct raw motor velocities
+	double raw_m0_vel = (lmag * cos_term) + rmag;
+	double raw_m1_vel = (lmag * sin_term) + rmag;
+	double raw_m2_vel = (lmag * sin_term) - rmag;
+	double raw_m3_vel = (lmag * cos_term) - rmag;
+
+	//scale raw velocities to between 0 and 1
+	raw_m0_vel = raw_m0_vel / (1 + (1/RTH_SCALER));
+	raw_m1_vel = raw_m1_vel / (1 + (1/RTH_SCALER));
+	raw_m2_vel = raw_m2_vel / (1 + (1/RTH_SCALER));
+	raw_m3_vel = raw_m3_vel / (1 + (1/RTH_SCALER));
 
 #ifdef RAW_MOTOR_PRINT
 	cout << "m0:  " << raw_m0_vel << endl;
@@ -150,11 +178,13 @@ void poll(XINPUT_STATE * state, CSerial * port_pntr)
 
 	int m_period[4];
 
+	//compute periods from raw
 	m_period[0] = compute_period(raw_m0_vel);
 	m_period[1] = compute_period(raw_m1_vel);
 	m_period[2] = compute_period(raw_m2_vel);
 	m_period[3] = compute_period(raw_m3_vel);
 
+	//0 and 3 needs to be reversed
 	m_period[0] *= -1;
 	m_period[3] *= -1;
 
@@ -166,16 +196,20 @@ void poll(XINPUT_STATE * state, CSerial * port_pntr)
 #endif
 	
 	translate_and_send(m_period);
-
 }
 
+/*
+sleeps for specified milliseconds
+*/
 void sleep(unsigned int mseconds) 
 { 
 	clock_t goal = mseconds + clock(); 
 	while (goal > clock()); 
 }
 
-
+/*
+Attempts to connect to a controller
+*/
 void prompt_controller(XINPUT_STATE * state)
 {
 	int flag = 0;
@@ -197,9 +231,12 @@ void prompt_controller(XINPUT_STATE * state)
 	
 }
 
+/*
+Attempts to connect to serial port
+*/
 void prompt_serial(CSerial * port_pntr)
 {
-
+	//print available ports
 	cout << "Available COM ports" << endl;
 
 	//scans ports
@@ -235,6 +272,9 @@ void prompt_serial(CSerial * port_pntr)
 	}
 }
 
+/*
+just prints the xbox controller state
+*/
 void xbox_debug_msg(XINPUT_STATE * p_state)
 {
 	if (p_state->Gamepad.wButtons & 0x0001)
@@ -319,6 +359,9 @@ void xbox_debug_msg(XINPUT_STATE * p_state)
 	}
 }
 
+/*
+computes period from given velocity
+*/
 int compute_period(double raw_velocity)
 {
 	if (raw_velocity == 0)
@@ -330,23 +373,20 @@ int compute_period(double raw_velocity)
 		double vel_range = max_velocity - min_velocity;
 		
 		double vel_scaled = (raw_velocity * vel_range) + min_velocity;
-		//cout << "vel_scaled is  " << vel_scaled << endl << endl;
 		double period = 1 / vel_scaled; 
-		//cout << "period is  " << period << endl << endl;
 		return (int)period;
-
-
 	}
 }
 
-
+/*
+packages up the four motor periods and sends them via the seria port
+*/
 void translate_and_send(int * m_period)
 {
 	char packets[9] = {};
 	int converted_packet = 0;
 	for (int i = 0; i < 4; i++)
 	{
-	//	cout << "m" << i << " " << m_period[i] << endl;
 		int converted_packet = m_period[i];
 		if (m_period[i] < 0)
 		{
@@ -359,9 +399,5 @@ void translate_and_send(int * m_period)
 		packets[1 + (i * 2)] = converted_packet & 0xFF;
 		packets[1 + (i * 2) + 1] = (converted_packet >> 8) & 0xFF;
 	}
-//	cout << endl;
-
-
 	cout << "sent " << port.SendData(packets, 9) << " packets"<< endl;
-
 }

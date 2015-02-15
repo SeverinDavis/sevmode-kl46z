@@ -5,12 +5,7 @@
  *      Author: Severin
  */
 
-
-
 #include "CAR_MOTOR.h"
-#include "uc_led.h"
-
-
 
 /*MOTOR SETTING FIELDS
  * 
@@ -24,9 +19,8 @@
 
 #define A_TABLE_SZ 	13
 #define D_TABLE_SZ 	10
-#define A_D_CNT_MAX	10
-#define FLIP_ZERO	2600
-
+#define A_D_CNT_MAX	20
+#define FLIP_ZERO	5000
 #define VEL_OFF 0xFFFF
 
 //A bunch of globals to save states
@@ -39,9 +33,7 @@ static volatile unsigned int target_period[4] ={VEL_OFF,VEL_OFF,VEL_OFF,VEL_OFF}
 static volatile unsigned int previous_period[4] = {VEL_OFF,VEL_OFF,VEL_OFF,VEL_OFF};
 static volatile int update_flag[4] = {0,0,0,0};
 
-
 static int a_d_cnt[4] = {0, 0, 0, 0};
-
 
 unsigned int get_a_period(unsigned int, unsigned int);
 unsigned int get_d_period(unsigned int, unsigned int);
@@ -65,9 +57,8 @@ unsigned int CAR_MOTOR_compute_period(CAR_MOTOR_motor_t , CAR_MOTOR_dir_t c_dire
 15		14.98988865
 */
 
-
 static const unsigned int a_bound[A_TABLE_SZ] = {15, 	31, 	63, 	127, 	255, 	511, 	1023, 	2047, 	4095, 	8191, 	16383, 	32767, 	65535};
-static const unsigned int a_table[A_TABLE_SZ] = {15, 	31, 	62, 	121, 	218, 	337, 	437, 	502, 	538, 	557, 	567, 	572, 	575};
+static const unsigned int a_table[A_TABLE_SZ] = {15, 	31, 	63, 	125, 	240, 	420, 	624, 	785, 	885, 	940, 	969, 	984, 	992};
 
 //deceleration table
 /*
@@ -83,8 +74,8 @@ static const unsigned int a_table[A_TABLE_SZ] = {15, 	31, 	62, 	121, 	218, 	337,
 2	2
 */
 
-static const unsigned int d_bound[D_TABLE_SZ] = {2, 	64, 	320, 	448, 	512, 	544, 	560, 	568, 	572, 	574};
-static const unsigned int d_table[D_TABLE_SZ] = {2, 	65, 	462, 	1126, 	2398, 	4848, 	9459, 	17680, 	31006, 	49602};
+static const unsigned int d_bound[D_TABLE_SZ] = {10, 	300, 	647, 	746, 	873, 	936, 	967, 	982, 	989, 	992};
+static const unsigned int d_table[D_TABLE_SZ] = {10, 	330, 	1113, 	1683, 	3671, 	7555, 	14898, 	27526, 	45222, 	65534};
 
 /*
  * Initializes pins to control shift registers and configures "direction" pins as GPIO
@@ -97,7 +88,6 @@ void CAR_MOTOR_init()
 	
 	CAR_MOTOR_set_MD(step_128);
 	CAR_MOTOR_update();
-	
 	
 	//CS/RCLK
 	gpio_port_init(port_E, pin_16, alt_1, output);
@@ -130,11 +120,7 @@ void CAR_MOTOR_init()
 	CAR_MOTOR_set_direction(motor_1, target_direction[motor_1]);
 	CAR_MOTOR_set_direction(motor_2, target_direction[motor_2]);
 	CAR_MOTOR_set_direction(motor_3, target_direction[motor_3]);
-	
-
 }
-
-
 
 /*
  *  updates shift register outputs to whatever was set in global setting variable
@@ -154,8 +140,6 @@ void CAR_MOTOR_update()
 	gpio_set_pin_state(port_E, pin_16, 1);	
 }
 
-
-
 /*
  * sets MD on the LV8727
  */
@@ -164,8 +148,6 @@ void CAR_MOTOR_set_MD(CAR_MOTOR_step_size_t p_step_size)
 	car_motor &= ~(7 << 4);
 	car_motor |= p_step_size << 4;
 }
-
-
 
 /*
  * enables/disables the LV8727
@@ -176,8 +158,6 @@ void CAR_MOTOR_set_chip_en(CAR_MOTOR_state p_state)
 	car_motor |= p_state << 7;
 }
 
-
-
 /*
  * enables/disables LV8727 output
  */
@@ -186,8 +166,6 @@ void CAR_MOTOR_set_output_en(CAR_MOTOR_state p_state)
 	car_motor &= ~(1 << 3);
 	car_motor |= p_state << 3;
 }
-
-
 
 /*
  * sets the reset on the LV8727
@@ -198,8 +176,6 @@ void CAR_MOTOR_set_rst(CAR_MOTOR_state p_state)
 	car_motor |= p_state << 2;
 }
 
-
-
 /*
  * performs a reset cycle on LV8727 automatically
  */
@@ -209,22 +185,15 @@ void CAR_MOTOR_set_rst_cycle()
 	CAR_MOTOR_update();
 	CAR_MOTOR_set_rst(enable);
 	CAR_MOTOR_update();
-
 }
-
-
 
 /*
  * enables enables current limiter pin for LV8727 current limiting
  */
 void CAR_MOTOR_set_current_limiter_en(CAR_MOTOR_state p_state)
 {
-	
 	if(p_state)
 	{
-		//TEMP HARDCODED!!!!!
-		//DO NOT EXCEED 1200
-		
 		/*
 		dac param	voltage (V)		output current (A)
 		0			0.000805664		0.000994647
@@ -241,13 +210,15 @@ void CAR_MOTOR_set_current_limiter_en(CAR_MOTOR_state p_state)
 		//needs tuning
 		uc_dac_set_output(1100);	
 	}
-	
 	else
 	{
 		uc_dac_set_output(0);
 	}
 }
 
+/*
+ * get acceleration period based on old period and target
+ */
 unsigned int get_a_period(unsigned int c_period, unsigned int t_period)
 {
 	int i = 1;
@@ -267,11 +238,13 @@ unsigned int get_a_period(unsigned int c_period, unsigned int t_period)
 	return a_table[A_TABLE_SZ-1];
 }
 
-
+/*
+ * get deceleration period based on old period and target
+ */
 unsigned int get_d_period(unsigned int c_period, unsigned int t_period)
 {
 	int i = 1;
-		//loop through entire table. exit early if case matched and value was set.
+	//loop through entire table. exit early if case matched and value was set.
 	while(i <= D_TABLE_SZ)
 	{
 		if(c_period < d_bound[i])
@@ -292,8 +265,6 @@ unsigned int get_d_period(unsigned int c_period, unsigned int t_period)
  */
 void CAR_MOTOR_CALLBACK_0()
 {
-	
-	
 	//local copies. don't want the uart interrupt changing these while we're using them.
 	//not sure if it matters, but it's safe.
 	unsigned int c_period = current_period[0];
@@ -303,15 +274,13 @@ void CAR_MOTOR_CALLBACK_0()
 	
 	unsigned int final_period = CAR_MOTOR_compute_period(motor_0 , c_direction, t_direction, c_period, t_period);
 	
-	previous_period[0] =current_period[0];
+	previous_period[0] = current_period[0];
 	current_period[0] = final_period;
 	
 	uc_tpm_set_compare_val(tpm_chan_2, final_period);		
 	
 	update_flag[0] = 0;
 }
-
-
 
 /*
  * Should be called by TPM and performs motor 1 stepping
@@ -333,8 +302,6 @@ void CAR_MOTOR_CALLBACK_1()
 	update_flag[1] = 0;
 }
 
-
-
 /*
  * Should be called by TPM and performs motor 2 stepping
  */
@@ -354,8 +321,6 @@ void CAR_MOTOR_CALLBACK_2()
 
 	update_flag[2] = 0;
 }
-
-
 
 /*
  * Should be called by TPM and performs motor 3 stepping
@@ -377,6 +342,9 @@ void CAR_MOTOR_CALLBACK_3()
 	update_flag[3] = 0;
 }
 
+/*
+ * called by channel 1 to update other channels preemptively. Triggered by UART
+ */
 void WAKEUP_CALLBACK()
 {
 	//set channel back to sleep mode
@@ -386,7 +354,8 @@ void WAKEUP_CALLBACK()
 	//check if motors need updating
 	for(i = 0; i < 4; i++)
 	{
-		//check if the regular interrupt occurred after values were update. If flag is 0, update already occured on regular motor interrupt.
+		//check if the regular interrupt occurred after values were update. 
+		//If flag is 0, update already occured on regular motor interrupt.
 		if(update_flag[i] == 1)
 		{
 			//if current velocity is 0...
@@ -413,27 +382,35 @@ void WAKEUP_CALLBACK()
 				{
 					unsigned int final_period = CAR_MOTOR_compute_period(i, current_direction[i], target_direction[i], previous_period[i], target_period[i]);
 					
-					if(final_period > current_period[i])
+					if(final_period == VEL_OFF)
 					{
-						//rewrite comparison value
-						uc_tpm_set_compare_val(i+2, final_period - current_period[i]);
+						uc_tpm_sleep(i+2);
+						current_period[i] = VEL_OFF;
+						previous_period[i] = VEL_OFF;
 					}
-					else if(current_period[i] > final_period)
+					else
 					{
-						unsigned int time_difference = current_period[i] - final_period;
-						//counter hasnt passed pulse point yet
-						if(time_difference <= (time_left + 3))
+						if(final_period > current_period[i])
 						{
-							uc_tpm_set_neg_compare_value(i+2, time_difference);
+							//rewrite comparison value
+							uc_tpm_set_compare_val(i+2, final_period - current_period[i]);
 						}
-						//counter passed pulse point...
-						else
+						else if(current_period[i] > final_period)
 						{
-							uc_tpm_pulse_asap(i+2);
+							unsigned int time_difference = current_period[i] - final_period;
+							//counter hasnt passed pulse point yet
+							if(time_difference <= (time_left + 3))
+							{
+								uc_tpm_set_neg_compare_value(i+2, time_difference);
+							}
+							//counter passed pulse point...
+							else
+							{
+								uc_tpm_pulse_asap(i+2);
+							}
 						}
+						current_period[i] = final_period;				
 					}
-					current_period[i] = final_period;
-
 				}
 			}
 			update_flag[i] = 0;
@@ -456,8 +433,6 @@ void CAR_MOTOR_set_direction(CAR_MOTOR_motor_t p_motor, CAR_MOTOR_dir_t p_dir)
 	}
 }
 
-
-
 /*
  * sets new target period
  */
@@ -471,8 +446,6 @@ void CAR_MOTOR_set_t_direction(CAR_MOTOR_motor_t p_motor, CAR_MOTOR_dir_t p_dir)
 {
 	target_direction[p_motor]=p_dir;
 }
-
-
 
 /*
  * starts up LV8727s safely.
@@ -495,11 +468,7 @@ void CAR_MOTOR_motor_startup()
 	//rst_cycle() auto-cycles and updates
 	CAR_MOTOR_set_rst_cycle();
 	
-	//enable output
-	//CAR_MOTOR_set_output_en(enable);
-	//CAR_MOTOR_update();
 }
-
 
 unsigned int CAR_MOTOR_compute_period(CAR_MOTOR_motor_t p_motor, CAR_MOTOR_dir_t c_direction, CAR_MOTOR_dir_t t_direction, unsigned int c_period, unsigned int t_period)
 {
@@ -567,14 +536,11 @@ unsigned int CAR_MOTOR_compute_period(CAR_MOTOR_motor_t p_motor, CAR_MOTOR_dir_t
 				a_d_cnt[p_motor] = 0;
 			}
 			
-			
 			//check if target overshot and correct
 			if(final_period < t_period)
 			{
 				final_period = t_period;
 			}
-			
-			
 		}
 			
 		//target speed reached, continue
@@ -582,13 +548,11 @@ unsigned int CAR_MOTOR_compute_period(CAR_MOTOR_motor_t p_motor, CAR_MOTOR_dir_t
 		{
 			final_period = t_period;
 		}
-		
 	}
 	
 	//decelerate until direction flip
 	else
 	{
-
 		//current period is already so low that we accelerate right away
 		if(c_period >= FLIP_ZERO)
 		{
@@ -639,11 +603,9 @@ unsigned int CAR_MOTOR_compute_period(CAR_MOTOR_motor_t p_motor, CAR_MOTOR_dir_t
 				CAR_MOTOR_set_direction(p_motor, t_direction);
 			}
 		}
-		
 	}	
 	
 	return final_period;
-
 }
 
 
@@ -682,9 +644,7 @@ void CAR_MOTOR_set_flags()
 	update_flag[2] = 1;
 	update_flag[3] = 1;
 	
-	//set tpm to go off ASAP, the 0 doesn't matter.
+	//set tpm to go off ASAP
 	uc_tpm_pulse_asap(tpm_chan_1);
-
-	
 }
 

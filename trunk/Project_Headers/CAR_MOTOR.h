@@ -15,14 +15,6 @@
 #include "gpio.h"
 
 typedef enum{
-	STATE_CNST,
-	STATE_ACCL,
-	STATE_DCEL,
-	STATE_STOP,
-	
-}CAR_MOTOR_state_t;
-
-typedef enum{
 	CAR_MOTOR_dir_f,
 	CAR_MOTOR_dir_b
 }CAR_MOTOR_dir_t;
@@ -69,7 +61,6 @@ void WAKEUP_CALLBACK();
 void CAR_MOTOR_motor_startup();
 void CAR_MOTOR_shutdown();
 void CAR_MOTOR_set_flags();
-
 void CAR_MOTOR_set_t_period(CAR_MOTOR_motor_t, unsigned int);
 void CAR_MOTOR_set_t_direction(CAR_MOTOR_motor_t, CAR_MOTOR_dir_t);
 unsigned int get_a_period(unsigned int, unsigned int);
