@@ -6,15 +6,17 @@
  */
 
 #include "uc_tpm.h"
-#include "uc_led.h"
 
 #define TPM_MOD_VAL 0xFFFE
 #define TPM_MOD_VAL_OFF 0xFFFF
-
 #define MIN_TIME 50
 
 static callback_t tpm_callback[6] ={0,0,0,0,0,0};
 
+/*
+ * initializes tpm 
+ * hardcoded for motor/output compare function
+ */
 void uc_tpm_init()
 {
 		//motors are driven off D2-D4 outputs with TPM function (alt4)
@@ -59,16 +61,19 @@ void uc_tpm_init()
 		}
 }
 
+/*
+ * sets the callback pointer
+ */
 void uc_tpm_set_callback(tpm_chan_t p_tpm_chan, callback_t p_callback)
 {
 	tpm_callback[p_tpm_chan] = p_callback;
 }
 
+/*
+ * sets the new compare value
+ */
 void uc_tpm_set_compare_val(tpm_chan_t p_tpm_chan, int p_value)
 {
-	
-
-
 	//set compare value to "OFF" state
 	if(p_value == TPM_MOD_VAL_OFF)
 	{
@@ -86,15 +91,14 @@ void uc_tpm_set_compare_val(tpm_chan_t p_tpm_chan, int p_value)
 		{
 			TPM0_CnV(p_tpm_chan) = ((TPM0_CnV(p_tpm_chan)+p_value)%TPM_MOD_VAL_OFF);
 		}
-		
 	}
-
 }
 
-
+/*
+ * Interrupt handler
+ */
 void TPM0_IRQHandler()
 {
-	
 	//grab counter value to lock counter value when interrupt occurred
 	int n;
 	// loop through all used tpm channels
@@ -110,48 +114,27 @@ void TPM0_IRQHandler()
 				tpm_callback[n]();
 			}
 		}
-	
-
 }
 
-
+/*
+ * masks tpm interrupt
+ */
 void uc_tpm_mask_int()
 {
 	int_mask(INT_TPM0);
 }
 
+/*
+ * unmasks tpm interrupt
+ */
 void uc_tpm_unmask_int()
 {
 	int_unmask(INT_TPM0);
 }
 
-int uc_tpm_enough_time(tpm_chan_t p_tpm_chan)
-{
-	unsigned int counter = TPM0_CNT;
-	unsigned int c_val = TPM0_CnV(p_tpm_chan);
-	
-	if(c_val < counter)
-	{
-		if(((counter - 65534) + c_val) > MIN_TIME)
-		{
-			return 1;
-		}
-	}
-	
-	else if(counter < c_val)
-	{
-		if((c_val - counter) > MIN_TIME)
-		{
-			return 1;
-		}
-	}
-	
-	return 0;
-	
-}
-
-
-
+/*
+ * returns the time left until the next pulse occurs
+ */
 unsigned int uc_tpm_time_left(tpm_chan_t p_tpm_chan)
 {
 	//get counter and written value
@@ -170,11 +153,26 @@ unsigned int uc_tpm_time_left(tpm_chan_t p_tpm_chan)
 	}
 }
 
+/*
+ * sets a channel to pulse as soon as possible
+ */
 void uc_tpm_pulse_asap(tpm_chan_t p_tpm_chan)
 {      
         TPM0_CnV(p_tpm_chan) = (TPM0_CNT + 3)%TPM_MOD_VAL_OFF;
 }
 
+/*
+ * sets a channel to the off value, puts it to sleep
+ */
+void uc_tpm_sleep(tpm_chan_t p_tpm_chan)
+{
+	TPM0_CnV(p_tpm_chan) = TPM_MOD_VAL_OFF;
+}
+
+/*
+ * instead of adding to the current compare value, this goes backwards
+ * so it subtracts from the current value and the pulse will occur earlier
+ */
 void uc_tpm_set_neg_compare_value(tpm_chan_t p_tpm_chan, unsigned neg_value)
 {
 		//passing 0 if neg value is greater
@@ -188,7 +186,5 @@ void uc_tpm_set_neg_compare_value(tpm_chan_t p_tpm_chan, unsigned neg_value)
         {
         	TPM0_CnV(p_tpm_chan) =  TPM0_CnV(p_tpm_chan) - neg_value;
         }
-
-
 }
 
