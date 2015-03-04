@@ -20,7 +20,7 @@
 #define A_TABLE_SZ 	13
 #define D_TABLE_SZ 	10
 #define A_D_CNT_MAX	20
-#define FLIP_ZERO	5000
+#define FLIP_ZERO	7000
 #define VEL_OFF 0xFFFF
 
 //A bunch of globals to save states
@@ -58,7 +58,7 @@ unsigned int CAR_MOTOR_compute_period(CAR_MOTOR_motor_t , CAR_MOTOR_dir_t c_dire
 */
 
 static const unsigned int a_bound[A_TABLE_SZ] = {15, 	31, 	63, 	127, 	255, 	511, 	1023, 	2047, 	4095, 	8191, 	16383, 	32767, 	65535};
-static const unsigned int a_table[A_TABLE_SZ] = {15, 	31, 	63, 	125, 	240, 	420, 	624, 	785, 	885, 	940, 	969, 	984, 	992};
+static const unsigned int a_table[A_TABLE_SZ] = {15, 	31, 	63, 	126, 	247, 	457, 	741, 	1007, 	1190, 	1297, 	1354, 	1384, 	1399};
 
 //deceleration table
 /*
@@ -74,8 +74,8 @@ static const unsigned int a_table[A_TABLE_SZ] = {15, 	31, 	63, 	125, 	240, 	420,
 2	2
 */
 
-static const unsigned int d_bound[D_TABLE_SZ] = {10, 	300, 	647, 	746, 	873, 	936, 	967, 	982, 	989, 	992};
-static const unsigned int d_table[D_TABLE_SZ] = {10, 	330, 	1113, 	1683, 	3671, 	7555, 	14898, 	27526, 	45222, 	65534};
+static const unsigned int d_bound[D_TABLE_SZ] = {10, 	450, 	898, 	1153, 	1280, 	1343, 	1374, 	1389, 	1396, 	1399};
+static const unsigned int d_table[D_TABLE_SZ] = {10, 	501, 	1505, 	3439, 	7080, 	13680, 	24509, 	39305, 	54549, 	65534};
 
 /*
  * Initializes pins to control shift registers and configures "direction" pins as GPIO

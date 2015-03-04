@@ -383,8 +383,11 @@ packages up the four motor periods and sends them via the seria port
 */
 void translate_and_send(int * m_period)
 {
-	char packets[9] = {};
+	char packets[12] = {};
 	int converted_packet = 0;
+	packets[0] = 0;
+	packets[1] = 0;
+
 	for (int i = 0; i < 4; i++)
 	{
 		int converted_packet = m_period[i];
@@ -394,10 +397,20 @@ void translate_and_send(int * m_period)
 		}
 		else
 		{
-			packets[0] |= (1 << i);
+			packets[2] |= (1 << i);
 		}
-		packets[1 + (i * 2)] = converted_packet & 0xFF;
-		packets[1 + (i * 2) + 1] = (converted_packet >> 8) & 0xFF;
+		packets[3 + (i * 2)] = converted_packet & 0xFF;
+		packets[3 + (i * 2) + 1] = (converted_packet >> 8) & 0xFF;
 	}
-	cout << "sent " << port.SendData(packets, 9) << " packets"<< endl;
+	packets[2] |= 0xA0;
+
+	packets[11] = packets[2] ^ packets[3] ^ packets[4] ^ packets[5] ^ packets[6] ^ packets[7] ^ packets[8] ^ packets[9] ^ packets[10];
+
+	for (int i = 0; i < 12; i++)
+	{
+		cout << i  << "     " << (int)packets[i] << endl;
+	}
+	cout << "sent " << port.SendData(packets, 12) << " packets"<< endl;
+
+
 }
